@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Добавлен Tone.js для звуков -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <style>
         :root {
@@ -21,23 +20,49 @@
         body {
             font-family: var(--font-main); background-color: var(--bg-main); color: var(--text-secondary);
             touch-action: none; overflow: hidden; height: 100vh; -webkit-user-select: none; user-select: none;
-            
-            /* --- НАСТРОЙКА ФОНОВ --- */
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
+            background-size: cover; background-position: center center; background-repeat: no-repeat;
             transition: background-image 0.5s ease;
         }
         
-        /* --- ФОНЫ ДЛЯ ТЕМ --- */
         body.theme-critters { background-image: url('bg-critters.png'); --bg-main: #f0f8ff; --bg-secondary: #e6f2ff; --bg-modal: rgba(135, 206, 250, 0.8); --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6; --border-color: #ff69b4; }
         body.theme-sweets { background-image: url('bg-sweets.png'); --bg-main: #f8cdda; --bg-secondary: #fce4ec; --bg-modal: rgba(233, 30, 99, 0.8); --text-primary: #880e4f; --text-secondary: #263238; --accent-color: #f48fb1; --border-color: #c2185b; }
         body.theme-nature { background-image: url('bg-nature.png'); --bg-main: #2d4c1e; --bg-secondary: #3e6d2b; --bg-modal: rgba(45, 76, 30, 0.9); --text-primary: #f0a500; --text-secondary: #ffffff; --accent-color: #1b3d1a; --border-color: #f0a500; }
         body.theme-gems { background-image: url('bg-gems.png'); --bg-main: #4a148c; --bg-secondary: #6a1b9a; --bg-modal: rgba(74, 20, 140, 0.9); --text-primary: #ffeb3b; --text-secondary: #ffffff; --accent-color: #38006b; --border-color: #fdd835; }
+        
+        /* --- ЭКРАН ЗАГРУЗКИ --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-main); /* Используем фон темы по умолчанию */
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 2000; transition: opacity 0.5s ease;
+        }
+        #loading-title {
+            font-size: 2.5rem; font-weight: 900; color: var(--text-primary);
+            text-shadow: 2px 2px 0px var(--accent-color);
+            margin-bottom: 2rem;
+        }
+        #loading-bar-container {
+            width: 80%; max-width: 300px; height: 20px;
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px; overflow: hidden;
+            box-shadow: 0 4px 0 0 var(--border-color);
+        }
+        #loading-bar-fill {
+            width: 0%; height: 100%;
+            background-color: var(--text-primary);
+            transition: width 0.3s ease;
+        }
+        #loading-status {
+            margin-top: 1rem; font-size: 1rem; font-weight: 700;
+            color: var(--text-secondary);
+        }
+        /* --- --- */
 
-        /* --- Удалены старые стили тем для фишек --- */
-
-        .main-container { background-color: transparent; /* Фон теперь на body */ display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; }
+        .main-container { 
+            background-color: transparent; display: none; /* <-- Скрыт по умолчанию */
+            justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; 
+        }
         .main-menu, .game-screen { width: 100%; max-width: 420px; height: 100%; max-height: 900px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem 1.5rem; box-sizing: border-box; }
         .game-title { font-size: 3.2rem; font-weight: 900; color: var(--text-primary); text-shadow: 2px 2px 0px var(--accent-color), 4px 4px 0px rgba(0,0,0,0.1); margin-bottom: 2rem; }
         .btn { background-color: var(--accent-color); color: var(--text-secondary); border: 2px solid var(--border-color); border-radius: 1rem; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: 700; width: 100%; margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 0 0 var(--border-color); text-transform: uppercase; }
@@ -73,24 +98,17 @@
         #goals-list-wrapper::-webkit-scrollbar { display: none; }
         #goals-container .goal { display: inline-flex; align-items: center; margin: 0 0.4rem; color: var(--text-secondary); font-weight: 700; vertical-align: middle; flex-shrink: 0; font-size: 0.9rem; }
         .goal-tile-container { width: 20px; height: 20px; display: inline-flex; justify-content: center; align-items: center; margin-right: 4px; vertical-align: middle; }
-        .goal-tile-container .tile-inner, .goal-tile-container .unmovable-goal { width: 100%; height: 100%; box-shadow: none; background-size: contain; background-repeat: no-repeat; background-position: center; }
+        .goal-tile-container .tile-inner { width: 100%; height: 100%; box-shadow: none; background-size: contain; background-repeat: no-repeat; background-position: center; }
         
         #game-board { position: relative; aspect-ratio: 7 / 10; width: 100%; overflow: hidden; background-color: var(--accent-color); border-radius: 1rem; box-sizing: border-box; }
         .tile { aspect-ratio: 1 / 1; position: absolute; transition: top 0.3s ease, left 0.3s ease, transform 0.3s ease; will-change: top, left, transform; display: flex; justify-content: center; align-items: center; -webkit-user-drag: none; user-drag: none; }
         
-        /* --- СТИЛИ ФИШЕК --- */
         .tile-inner {
-            width: 100%; /* Увеличено с 85% */
-            height: 100%; /* Увеличено с 85% */
-            /* Удален box-shadow */
+            width: 100%; height: 100%;
             transition: transform 0.2s ease, background 0.3s ease;
-            /* Добавлены стили для картинок */
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
         }
 
-        /* --- Ссылки на ассеты фишек --- */
         .tile-red .tile-inner { background-image: url('tile-red.png'); }
         .tile-blue .tile-inner { background-image: url('tile-blue.png'); }
         .tile-green .tile-inner { background-image: url('tile-green.png'); }
@@ -102,8 +120,7 @@
         .tile.rocket .tile-inner { background-image: url('tile-rocket.png'); }
         .tile.unmovable .tile-inner { background-image: url('tile-unmovable.png'); }
         
-        /* Иконка для цели "блок" */
-        .goal-tile-container .unmovable-goal { background-image: url('goal-unmovable.png'); }
+        /* goal-unmovable.png больше не нужен, используется tile-unmovable.png */
 
         .tile.match { animation: match 0.4s ease-in forwards; }
         @keyframes match { 0% { transform: scale(1.1); } 100% { transform: scale(0); opacity: 0; } }
@@ -113,10 +130,8 @@
 
         .hidden { display: none !important; }
         
-        /* Удалены старые стили .bomb .tile-inner и т.д. */
-        .bomb .tile-inner::after, .rocket .tile-inner::after { content: none; /* Текст 'B' и 'R' больше не нужен */ }
+        .bomb .tile-inner::after, .rocket .tile-inner::after { content: none; }
         @keyframes pulse-bonus { from { transform: scale(1); } to { transform: scale(1.1); } }
-        /* Применяем анимацию ко всей фишке */
         .bomb .tile-inner, .rocket .tile-inner { animation: pulse-bonus 1s infinite alternate; }
         
         .theme-selection button { width: 50px; height: 50px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: border-color 0.2s; }
@@ -144,6 +159,15 @@
 </head>
 <body class="theme-critters">
     
+    <!-- --- ЭКРАН ЗАГРУЗКИ --- -->
+    <div id="preloader">
+        <h1 id="loading-title">Tile Pop Mania</h1>
+        <div id="loading-bar-container">
+            <div id="loading-bar-fill"></div>
+        </div>
+        <div id="loading-status">Загрузка...</div>
+    </div>
+
     <!-- Элемент для фоновой музыки -->
     <audio id="bg-music" src="background-music.mp3" loop preload="auto"></audio>
 
@@ -158,20 +182,13 @@
             </div>
             <div class="icon-btn-group">
                 <button id="settings-btn" class="icon-btn">
-                    <svg viewBox="0 0 24 24">
-                        <path class="primary-path" d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.71-1.66-0.98l-0.37-2.54C14.49,2.18,14.27,2,14,2h-4 c-0.27,0-0.49,0.18-0.51,0.42L9.11,4.96c-0.6,0.27-1.16,0.6-1.66,0.98l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.55,8.53 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.66,11.06,4.64,11.37,4.64,11.7c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.06,0.71,1.66,0.98l0.37,2.54 C9.51,21.82,9.73,22,10,22h4c0.27,0,0.49-0.18,0.51-0.42l0.37-2.54c0.6-0.27,1.16-0.6,1.66-0.98l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.5c-1.93,0-3.5-1.57-3.5-3.5 s1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5S13.93,15.5,12,15.5z"/>
-                    </svg>
+                    <svg viewBox="0 0 24 24"><path class="primary-path" d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.71-1.66-0.98l-0.37-2.54C14.49,2.18,14.27,2,14,2h-4 c-0.27,0-0.49,0.18-0.51,0.42L9.11,4.96c-0.6,0.27-1.16,0.6-1.66,0.98l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.55,8.53 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.66,11.06,4.64,11.37,4.64,11.7c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.06,0.71,1.66,0.98l0.37,2.54 C9.51,21.82,9.73,22,10,22h4c0.27,0,0.49-0.18,0.51-0.42l0.37-2.54c0.6-0.27,1.16-0.6,1.66-0.98l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.5c-1.93,0-3.5-1.57-3.5-3.5 s1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5S13.93,15.5,12,15.5z"/></svg>
                 </button>
                 <button id="rules-btn" class="icon-btn">
-                    <svg viewBox="0 0 24 24">
-                        <path class="secondary-path" d="M11 7h2v2h-2zm0 4h2v6h-2z"></path>
-                        <path class="primary-path" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path>
-                    </svg>
+                    <svg viewBox="0 0 24 24"><path class="secondary-path" d="M11 7h2v2h-2zm0 4h2v6h-2z"></path><path class="primary-path" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
                 </button>
                 <button id="stats-btn" class="icon-btn">
-                    <svg viewBox="0 0 24 24">
-                         <path class="primary-path" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-5h2v5zm4 0h-2V7h2v10zm4 0h-2v-3h2v3z"/>
-                    </svg>
+                    <svg viewBox="0 0 24 24"><path class="primary-path" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-5h2v5zm4 0h-2V7h2v10zm4 0h-2v-3h2v3z"/></svg>
                 </button>
             </div>
         </div>
@@ -210,8 +227,6 @@
                 <button id="theme-nature" data-theme="nature"></button>
                 <button id="theme-gems" data-theme="gems"></button>
             </div>
-
-            <!-- Слайдер Звуков -->
             <div class="flex justify-between items-center w-full mt-8">
                 <h3 class="text-xl text-left font-semibold" style="color: var(--text-secondary);">Звуки</h3>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -222,8 +237,6 @@
                 </label>
             </div>
             <style> #mute-toggle:checked + div { background-color: var(--text-primary) !important; } </style>
-            
-             <!-- Слайдер Музыки -->
             <div class="flex justify-between items-center w-full mt-4">
                 <h3 class="text-xl text-left font-semibold" style="color: var(--text-secondary);">Музыка</h3>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -234,7 +247,6 @@
                 </label>
             </div>
             <style> #mute-music-toggle:checked + div { background-color: var(--text-primary) !important; } </style>
-
             <button id="close-settings-btn" class="btn mt-6">Закрыть</button>
         </div>
     </div>
@@ -242,62 +254,50 @@
     <div id="stats-modal" class="modal"><div class="modal-content"><h2 class="modal-title">Статистика</h2><div id="stats-content-container" class="stats-content"></div><button id="close-stats-btn" class="btn mt-6">Закрыть</button></div></div>
     
     <script>
-    /* --- СПИСОК АССЕТОВ ДЛЯ ЗАГРУЗКИ ---
-      Помести эти файлы в ту же папку, что и .html файл
-      
-      Музыка:
+    /* --- СПИСОК АССЕТОВ ДЛЯ ЗАГРУЗКИ (14 ФАЙЛОВ) ---
       - background-music.mp3
-
-      Фоны (4):
-      - bg-critters.png
-      - bg-sweets.png
-      - bg-nature.png
-      - bg-gems.png
-      
-      Фишки (6 цветов):
-      - tile-red.png
-      - tile-blue.png
-      - tile-green.png
-      - tile-yellow.png
-      - tile-purple.png
-      - tile-orange.png
-
-      Специальные фишки (4):
-      - tile-bomb.png
-      - tile-rocket.png
-      - tile-unmovable.png
-      - goal-unmovable.png (маленькая иконка для целей)
+      - bg-critters.png, bg-sweets.png, bg-nature.png, bg-gems.png
+      - tile-red.png, tile-blue.png, tile-green.png, tile-yellow.png, tile-purple.png, tile-orange.png
+      - tile-bomb.png, tile-rocket.png, tile-unmovable.png
     */
+    const ASSET_LIST = [
+        'background-music.mp3',
+        'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png',
+        'tile-red.png', 'tile-blue.png', 'tile-green.png', 'tile-yellow.png', 'tile-purple.png', 'tile-orange.png',
+        'tile-bomb.png', 'tile-rocket.png', 'tile-unmovable.png'
+    ];
 
     // Гарантированный запуск аудиоконтекста при первом касании
     document.body.addEventListener('pointerdown', async () => {
         if (Tone.context.state !== 'running') {
             await Tone.start();
             console.log("Audio ready.");
-            // После активации аудио, пытаемся запустить музыку, если она не выключена
             playMusic();
         }
     }, { once: true });
 
     document.addEventListener('DOMContentLoaded', () => {
+        const preloader = document.getElementById('preloader');
+        const loadingBarFill = document.getElementById('loading-bar-fill');
+        const loadingStatus = document.getElementById('loading-status');
+        const mainContainer = document.querySelector('.main-container');
+
         const mainMenuScreen = document.getElementById('main-menu-screen');
         const gameScreen = document.getElementById('game-screen');
         const boardElement = document.getElementById('game-board');
         const scoreElement = document.getElementById('score');
         const movesCountElement = document.getElementById('moves-count');
         const movesLabelElement = document.getElementById('moves-label');
-        const riseProgressBar = document.getElementById('rise-progress-bar');
         const timeBar = document.getElementById('time-bar');
         const goalsContainer = document.getElementById('goals-container');
         const goalsHeader = document.getElementById('goals-header');
         const goalsListWrapper = document.getElementById('goals-list-wrapper');
         const levelsModeBtn = document.getElementById('levels-mode-btn');
         const muteToggle = document.getElementById('mute-toggle');
-        const muteMusicToggle = document.getElementById('mute-music-toggle'); // Слайдер музыки
-        const bgMusic = document.getElementById('bg-music'); // Аудио элемент
+        const muteMusicToggle = document.getElementById('mute-music-toggle');
+        const bgMusic = document.getElementById('bg-music');
         
         const ROWS = 10; const COLS = 7; const GAP = 4;
-        // --- Цвета заменены на строки для CSS-классов ---
         const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
         
         function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
@@ -306,8 +306,6 @@
         let gameMode = 'levels', isPaused = false, isProcessing = false;
         
         let maxReachedLevel = parseInt(localStorage.getItem('tilepop_max_level_v1') || '1');
-        updateLevelsButton(maxReachedLevel);
-
         let stats = JSON.parse(localStorage.getItem('tilepop_stats_v9')) || {
             goals: { games: 0, hiLevel: 0 },
             speed: { games: 0, hiScore: 0 }
@@ -326,60 +324,39 @@
             tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
             match: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination(),
             bomb: new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination(),
-            // Упрощенный звук ракеты
             rocket: new Tone.NoiseSynth({ noise: { type: 'white' }, filter: { Q: 1, type: 'bandpass', frequency: 1500 }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination(),
-            // Более приятный звук победы (арпеджио)
             win: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination(),
             lose: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.2 } }).toDestination()
         };
         synths.bomb.volume.value = -10;
         synths.rocket.volume.value = -15;
 
-        // --- Управление ЗВУКОМ (Эффекты) ---
-        function updateMuteButton() {
-            muteToggle.checked = !isMuted;
-        }
+        function updateMuteButton() { muteToggle.checked = !isMuted; }
         updateMuteButton();
 
         function toggleMute() {
-            isMuted = !muteToggle.checked; // Логика исправлена
+            isMuted = !muteToggle.checked;
             localStorage.setItem('tilepop_muted', isMuted);
             playSound('tap');
         }
         muteToggle.addEventListener('change', toggleMute);
         
-        // --- Управление МУЗЫКОЙ ---
-        function updateMusicMuteButton() {
-            muteMusicToggle.checked = !isMusicMuted;
-        }
+        function updateMusicMuteButton() { muteMusicToggle.checked = !isMusicMuted; }
         updateMusicMuteButton();
         
         function toggleMusicMute() {
             isMusicMuted = !muteMusicToggle.checked;
             localStorage.setItem('tilepop_music_muted', isMusicMuted);
-            if (isMusicMuted) {
-                stopMusic();
-            } else {
-                playMusic();
-            }
+            if (isMusicMuted) { stopMusic(); } else { playMusic(); }
         }
         muteMusicToggle.addEventListener('change', toggleMusicMute);
 
         async function playMusic() {
             if (isMusicMuted || !audioReady) return;
-            try {
-                if (bgMusic.paused) {
-                    await bgMusic.play();
-                }
-            } catch (e) {
-                console.error("Music play failed:", e);
-            }
+            try { if (bgMusic.paused) { await bgMusic.play(); } } 
+            catch (e) { console.error("Music play failed:", e); }
         }
-
-        function stopMusic() {
-            bgMusic.pause();
-            bgMusic.currentTime = 0;
-        }
+        function stopMusic() { bgMusic.pause(); bgMusic.currentTime = 0; }
 
         async function initAudio() {
              if (audioReady) return;
@@ -387,23 +364,19 @@
                 await Tone.start();
                 audioReady = true;
                 console.log("Audio ready.");
-                playMusic(); // Попытка включить музыку после инициализации
-             } catch (e) {
-                console.error("Audio context failed to start:", e);
-             }
+                playMusic();
+             } catch (e) { console.error("Audio context failed to start:", e); }
         }
 
         function playSound(sound, time = Tone.now(), ...args) {
             if (!audioReady) initAudio();
             if (isMuted || !audioReady) return;
-
             try {
                 if (sound === 'tap') synths.tap.triggerAttackRelease('C5', '8n', time);
                 else if (sound === 'match') synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', time);
                 else if (sound === 'bomb') synths.bomb.triggerAttackRelease('2n', time);
-                else if (sound === 'rocket') synths.rocket.triggerAttackRelease('8n', time); // Упрощенный триггер
+                else if (sound === 'rocket') synths.rocket.triggerAttackRelease('8n', time);
                 else if (sound === 'win') {
-                    // Приятное арпеджио
                     const now = Tone.now();
                     synths.win.triggerAttackRelease('C4', '8n', now);
                     synths.win.triggerAttackRelease('E4', '8n', now + 0.1);
@@ -414,713 +387,772 @@
             } catch (e) { console.error("Sound play error:", e); }
         }
 
-        // Добавляем звук нажатия на все кнопки
         document.querySelectorAll('.btn, .icon-btn, .theme-selection button').forEach(btn => {
             btn.addEventListener('pointerdown', () => playSound('tap'));
         });
         // --- Конец Настройки Звуков ---
+
+        // --- ЛОГИКА ПРЕДЗАГРУЗКИ ---
+        function preloadAssets() {
+            let assetsLoaded = 0;
+            const totalAssets = ASSET_LIST.length;
+            loadingStatus.textContent = `Загружено 0 из ${totalAssets}`;
+
+            if (totalAssets === 0) {
+                showMainMenu();
+                return;
+            }
+
+            const assetLoaded = (assetName) => {
+                assetsLoaded++;
+                const percent = (assetsLoaded / totalAssets) * 100;
+                loadingBarFill.style.width = `${percent}%`;
+                loadingStatus.textContent = `Загружено ${assetsLoaded} из ${totalAssets}`;
+
+                if (assetsLoaded === totalAssets) {
+                    setTimeout(showMainMenu, 300); // Дать время увидеть 100%
+                }
+            };
+
+            ASSET_LIST.forEach(assetName => {
+                if (assetName.endsWith('.mp3')) {
+                    const audio = new Audio();
+                    audio.addEventListener('canplaythrough', () => assetLoaded(assetName), { once: true });
+                    audio.addEventListener('error', () => { console.error(`Failed to load: ${assetName}`); assetLoaded(assetName); }, { once: true });
+                    audio.src = assetName;
+                    audio.load();
+                } else if (assetName.endsWith('.png')) {
+                    const img = new Image();
+                    img.addEventListener('load', () => assetLoaded(assetName), { once: true });
+                    img.addEventListener('error', () => { console.error(`Failed to load: ${assetName}`); assetLoaded(assetName); }, { once: true });
+                    img.src = assetName;
+                }
+            });
+        }
+
+        function showMainMenu() {
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+                mainContainer.style.display = 'flex';
+                // Вся игровая логика теперь зависит от этого
+                initGameLogic();
+                // Пытаемся запустить аудио и музыку
+                initAudio().then(playMusic);
+            }, 500); // Соответствует transition
+        }
+
+        // Запускаем предзагрузку
+        preloadAssets();
         
-        function updateLevelsButton(levelToShow) {
-            levelsModeBtn.textContent = `Уровень ${levelToShow}`;
-        }
-
-        function startGame(mode, levelOverride = null) {
-            gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; isProcessing = false;
-            clearInterval(timerInterval); pausedTimeLeft = 0;
-            updateScore(0);
+        // --- initGameLogic содержит всю остальную логику игры ---
+        function initGameLogic() {
+            updateLevelsButton(maxReachedLevel);
+            // Восстанавливаем сохраненную тему
+            (() => { 
+                const savedTheme = localStorage.getItem('tilepop_theme') || 'critters'; 
+                document.body.className = `theme-${savedTheme}`; 
+                const btn = document.querySelector(`.theme-selection button[data-theme="${savedTheme}"]`); 
+                if(btn) btn.classList.add('active'); 
+            })();
             
-            if (gameMode === 'levels') {
-                level = levelOverride || maxReachedLevel;
-                currentLevel = level;
-            } else if (gameMode === 'goals') {
-                level = 1; 
-                if (stats.goals) stats.goals.games++;
-            } else if (gameMode === 'speed') {
-                level = 1;
-                 if (stats.speed) stats.speed.games++;
-            }
-            
-            mainMenuScreen.classList.add('hidden');
-            gameScreen.classList.remove('hidden');
-
-            document.getElementById('rise-progress-bar-container').classList.add('hidden');
-            document.getElementById('time-bar-container').classList.toggle('hidden', gameMode !== 'speed');
-            document.getElementById('goals-container').classList.toggle('hidden', gameMode !== 'goals' && gameMode !== 'levels');
-            document.querySelector('.moves-container').classList.toggle('hidden', gameMode === 'speed');
-            
-            if (gameMode === 'goals' || gameMode === 'levels') setupGoalsLevel();
-            if (gameMode === 'speed') { timeLeft = totalTime; startTimer(); }
-            updateMovesDisplay();
-            
-            requestAnimationFrame(initBoard);
-        }
-
-        function initBoard() {
-            boardElement.innerHTML = '';
-            board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
-            resizeBoard();
-            
-            let unmovableToPlace = 0;
-            if ((gameMode === 'levels' || gameMode === 'goals') && level >= 20) {
-                unmovableToPlace = Math.min(10, Math.floor((level - 20) / 3) + 2);
+            // Все остальные функции и слушатели
+            function updateLevelsButton(levelToShow) {
+                levelsModeBtn.textContent = `Уровень ${levelToShow}`;
             }
 
-            for (let r = 0; r < ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    createTile(r, c, 'gem', getRandomColor());
-                }
-            }
-
-            let placed = 0;
-            while (placed < unmovableToPlace) {
-                const r = Math.floor(Math.random() * (ROWS - 2)) + 1; 
-                const c = Math.floor(Math.random() * COLS);
-                if (board[r][c] && board[r][c].type === 'gem') {
-                    board[r][c].element.remove();
-                    createTile(r, c, 'unmovable');
-                    placed++;
-                }
-            }
-
-            while(true) {
-                const { matches } = findMatches();
-                if (matches.size === 0) {
-                    if (checkForPossibleMoves()) break;
+            function startGame(mode, levelOverride = null) {
+                gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; isProcessing = false;
+                clearInterval(timerInterval); pausedTimeLeft = 0;
+                updateScore(0);
+                
+                if (gameMode === 'levels') {
+                    level = levelOverride || maxReachedLevel;
+                    currentLevel = level;
+                } else if (gameMode === 'goals') {
+                    level = 1; 
+                    if (stats.goals) stats.goals.games++;
+                } else if (gameMode === 'speed') {
+                    level = 1;
+                    if (stats.speed) stats.speed.games++;
                 }
                 
-                matches.forEach(tile => {
-                    const {r, c} = tile;
-                    if(board[r][c]) board[r][c].element.remove();
-                    createTile(r, c, 'gem', getRandomColor());
-                });
+                mainMenuScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
 
-                if (matches.size === 0) {
-                     for (let r = 0; r < ROWS; r++) {
-                        for (let c = 0; c < COLS; c++) {
-                            if (board[r][c] && board[r][c].type !== 'unmovable') {
-                                board[r][c].element.remove();
-                                createTile(r, c, 'gem', getRandomColor());
+                document.getElementById('rise-progress-bar-container').classList.add('hidden');
+                document.getElementById('time-bar-container').classList.toggle('hidden', gameMode !== 'speed');
+                document.getElementById('goals-container').classList.toggle('hidden', gameMode !== 'goals' && gameMode !== 'levels');
+                document.querySelector('.moves-container').classList.toggle('hidden', gameMode === 'speed');
+                
+                if (gameMode === 'goals' || gameMode === 'levels') setupGoalsLevel();
+                if (gameMode === 'speed') { timeLeft = totalTime; startTimer(); }
+                updateMovesDisplay();
+                
+                requestAnimationFrame(initBoard);
+            }
+
+            function initBoard() {
+                boardElement.innerHTML = '';
+                board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+                resizeBoard();
+                
+                let unmovableToPlace = 0;
+                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 20) {
+                    unmovableToPlace = Math.min(10, Math.floor((level - 20) / 3) + 2);
+                }
+
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        createTile(r, c, 'gem', getRandomColor());
+                    }
+                }
+
+                let placed = 0;
+                while (placed < unmovableToPlace) {
+                    const r = Math.floor(Math.random() * (ROWS - 2)) + 1; 
+                    const c = Math.floor(Math.random() * COLS);
+                    if (board[r][c] && board[r][c].type === 'gem') {
+                        board[r][c].element.remove();
+                        createTile(r, c, 'unmovable');
+                        placed++;
+                    }
+                }
+
+                while(true) {
+                    const { matches } = findMatches();
+                    if (matches.size === 0) {
+                        if (checkForPossibleMoves()) break;
+                    }
+                    
+                    matches.forEach(tile => {
+                        const {r, c} = tile;
+                        if(board[r][c]) board[r][c].element.remove();
+                        createTile(r, c, 'gem', getRandomColor());
+                    });
+
+                    if (matches.size === 0) {
+                        for (let r = 0; r < ROWS; r++) {
+                            for (let c = 0; c < COLS; c++) {
+                                if (board[r][c] && board[r][c].type !== 'unmovable') {
+                                    board[r][c].element.remove();
+                                    createTile(r, c, 'gem', getRandomColor());
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        
-        function resizeBoard() {
-            const boardWidth = boardElement.clientWidth;
-            TILE_SIZE = (boardWidth - (COLS + 1) * GAP) / COLS;
-            boardElement.querySelectorAll('.tile').forEach(tileEl => {
-                const r = parseInt(tileEl.dataset.r), c = parseInt(tileEl.dataset.c);
-                tileEl.style.width = `${TILE_SIZE}px`; tileEl.style.height = `${TILE_SIZE}px`;
-                tileEl.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
-                tileEl.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
+            
+            function resizeBoard() {
+                const boardWidth = boardElement.clientWidth;
+                if (boardWidth === 0) return; // Не выполнять, если доска скрыта
+                TILE_SIZE = (boardWidth - (COLS + 1) * GAP) / COLS;
+                boardElement.querySelectorAll('.tile').forEach(tileEl => {
+                    const r = parseInt(tileEl.dataset.r), c = parseInt(tileEl.dataset.c);
+                    tileEl.style.width = `${TILE_SIZE}px`; tileEl.style.height = `${TILE_SIZE}px`;
+                    tileEl.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
+                    tileEl.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
+                });
+            }
+            window.addEventListener('resize', resizeBoard);
+            // Также вызываем resize, когда игра начинается
+            const gameScreenObserver = new MutationObserver(() => {
+                if (gameScreen.classList.contains('hidden')) return;
+                resizeBoard();
             });
-        }
-        window.addEventListener('resize', resizeBoard);
-        
-        function createTile(r, c, type, color = null, bonus = null) {
-            const tileElement = document.createElement('div');
-            tileElement.classList.add('tile');
-            const tileInner = document.createElement('div');
-            tileInner.classList.add('tile-inner');
-            tileElement.appendChild(tileInner);
-            const tileData = { r, c, type, color, bonus, element: tileElement, id: `tile-${r}-${c}-${Math.random()}` };
-            board[r][c] = tileData;
-            tileElement.dataset.r = r; tileElement.dataset.c = c;
+            gameScreenObserver.observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
             
-            // --- Логика Ассетов ---
-            if (type === 'gem' && color) {
-                tileElement.classList.add(`tile-${color}`); // Добавляем класс, .e.g, "tile-red"
+            function createTile(r, c, type, color = null, bonus = null) {
+                const tileElement = document.createElement('div');
+                tileElement.classList.add('tile');
+                const tileInner = document.createElement('div');
+                tileInner.classList.add('tile-inner');
+                tileElement.appendChild(tileInner);
+                const tileData = { r, c, type, color, bonus, element: tileElement, id: `tile-${r}-${c}-${Math.random()}` };
+                board[r][c] = tileData;
+                tileElement.dataset.r = r; tileElement.dataset.c = c;
+                
+                if (type === 'gem' && color) {
+                    tileElement.classList.add(`tile-${color}`);
+                }
+                if(bonus) {
+                    tileElement.classList.add(bonus);
+                    tileData.color = null; 
+                } else if (type === 'unmovable') {
+                    tileElement.classList.add('unmovable');
+                }
+
+                positionTile(tileData, r, c);
+                boardElement.appendChild(tileElement);
+                return tileData;
             }
-            if(bonus) {
-                 tileElement.classList.add(bonus); // "bomb" или "rocket"
-                 tileData.color = null; 
-            } else if (type === 'unmovable') {
-                tileElement.classList.add('unmovable');
+            
+            function positionTile(tileData, r, c) {
+                tileData.r = r; tileData.c = c;
+                tileData.element.dataset.r = r; tileData.element.dataset.c = c;
+                tileData.element.style.width = `${TILE_SIZE}px`; tileData.element.style.height = `${TILE_SIZE}px`;
+                tileData.element.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
+                tileData.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
             }
-            // --- Конец ---
 
-            positionTile(tileData, r, c);
-            boardElement.appendChild(tileElement);
-            return tileData;
-        }
-        
-        function positionTile(tileData, r, c) {
-            tileData.r = r; tileData.c = c;
-            tileData.element.dataset.r = r; tileData.element.dataset.c = c;
-            tileData.element.style.width = `${TILE_SIZE}px`; tileData.element.style.height = `${TILE_SIZE}px`;
-            tileData.element.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
-            tileData.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
-        }
+            boardElement.addEventListener('pointerdown', e => { 
+                if (isProcessing || isPaused) return; 
+                const tileElement = e.target.closest('.tile'); 
+                if (!tileElement) return;
+                playSound('tap');
+                const r = parseInt(tileElement.dataset.r), c = parseInt(tileElement.dataset.c);
+                const tile = board[r]?.[c];
+                if (tile && tile.type === 'gem') dragStart = { r, c, x: e.clientX, y: e.clientY, moved: false };
+            });
 
-        boardElement.addEventListener('pointerdown', e => { 
-            if (isProcessing || isPaused) return; 
-            const tileElement = e.target.closest('.tile'); 
-            if (!tileElement) return;
-            playSound('tap');
-            const r = parseInt(tileElement.dataset.r), c = parseInt(tileElement.dataset.c);
-            const tile = board[r]?.[c];
-            if (tile && tile.type === 'gem') dragStart = { r, c, x: e.clientX, y: e.clientY, moved: false };
-        });
+            boardElement.addEventListener('pointermove', e => { 
+                if (!dragStart) return; 
+                const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y; 
+                if (!dragStart.moved && (Math.abs(dx) > TILE_SIZE * 0.3 || Math.abs(dy) > TILE_SIZE * 0.3)) { 
+                    dragStart.moved = true; 
+                    let dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'); 
+                    handleSwipe(dragStart.r, dragStart.c, dir); 
+                    dragStart = null; 
+                } 
+            });
 
-        boardElement.addEventListener('pointermove', e => { 
-            if (!dragStart) return; 
-            const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y; 
-            if (!dragStart.moved && (Math.abs(dx) > TILE_SIZE * 0.3 || Math.abs(dy) > TILE_SIZE * 0.3)) { 
-                dragStart.moved = true; 
-                let dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'); 
-                handleSwipe(dragStart.r, dragStart.c, dir); 
+            boardElement.addEventListener('pointerup', async () => { 
+                if (dragStart && !dragStart.moved) {
+                    const tile = board[dragStart.r][dragStart.c];
+                    const currentTime = new Date().getTime();
+                    if (currentTime - lastTap < 300) {
+                        if (tile && tile.bonus) {
+                            isProcessing = true;
+                            incrementMoves();
+                            await handleBonusActivation(new Set([tile]));
+                            isProcessing = false;
+                            checkGameStatus();
+                        }
+                    }
+                    lastTap = currentTime;
+                }
                 dragStart = null; 
-            } 
-        });
+            }); 
 
-        boardElement.addEventListener('pointerup', async () => { 
-            if (dragStart && !dragStart.moved) {
-                const tile = board[dragStart.r][dragStart.c];
-                const currentTime = new Date().getTime();
-                if (currentTime - lastTap < 300) {
-                    if (tile && tile.bonus) {
-                        isProcessing = true;
-                        incrementMoves();
-                        await handleBonusActivation(new Set([tile]));
-                        isProcessing = false;
-                        checkGameStatus();
+            boardElement.addEventListener('pointerleave', () => { dragStart = null; });
+
+            async function handleSwipe(r, c, direction) {
+                if (isProcessing) return; let r2 = r, c2 = c;
+                if (direction === 'left') c2--; else if (direction === 'right') c2++; else if (direction === 'up') r2--; else if (direction === 'down') r2++;
+                if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) return;
+                const tile1 = board[r][c], tile2 = board[r2][c2];
+                if (!tile1 || !tile2 || tile1.type !== 'gem' || tile2.type !== 'gem') return;
+                
+                isProcessing = true;
+                await animateSwap(tile1, tile2);
+
+                const isCombo = (tile1.bonus === 'bomb' && tile2.bonus === 'rocket') || (tile1.bonus === 'rocket' && tile2.bonus === 'bomb');
+                const isBonusMove = tile1.bonus || tile2.bonus;
+                const { matches } = findMatches();
+
+                if (isCombo) {
+                    incrementMoves();
+                    playSound('bomb');
+                    await new Promise(r => setTimeout(r, 100));
+                    playSound('rocket');
+                    const tilesToDestroy = new Set();
+                    const centerTile = tile1;
+                    
+                    const comboEffect = document.createElement('div');
+                    comboEffect.className = 'combo-effect';
+                    comboEffect.style.width = `${TILE_SIZE * 3}px`; comboEffect.style.height = `${TILE_SIZE * 3}px`;
+                    comboEffect.style.top = `${centerTile.element.offsetTop - TILE_SIZE}px`; comboEffect.style.left = `${centerTile.element.offsetLeft - TILE_SIZE}px`;
+                    boardElement.appendChild(comboEffect);
+                    await new Promise(resolve => setTimeout(() => { comboEffect.remove(); resolve(); }, 400));
+                    
+                    for (let i = -1; i <= 1; i++) {
+                        const r_offset = centerTile.r + i;
+                        if (r_offset >= 0 && r_offset < ROWS) {
+                            for (let c_iter = 0; c_iter < COLS; c_iter++) { if (board[r_offset][c_iter]) tilesToDestroy.add(board[r_offset][c_iter]); }
+                        }
+                        const c_offset = centerTile.c + i;
+                        if (c_offset >= 0 && c_offset < COLS) {
+                            for (let r_iter = 0; r_iter < ROWS; r_iter++) { if (board[r_iter][c_offset]) tilesToDestroy.add(board[r_iter][c_offset]); }
+                        }
                     }
+                    
+                    await collectTilesFromBonuses(tilesToDestroy, tilesToDestroy);
+                    updateGameStats(tilesToDestroy);
+                    await animateMatches(tilesToDestroy);
+                    await dropAndRefill();
+                    await processAllMatches();
+
+                } else if (isBonusMove) {
+                    incrementMoves();
+                    await handleBonusActivation(new Set([tile1, tile2]));
+                
+                } else if (matches.size > 0) {
+                    incrementMoves();
+                    await processAllMatches({ r: r2, c: c2 });
+                
+                } else {
+                    await animateSwap(tile1, tile2);
                 }
-                lastTap = currentTime;
+                
+                isProcessing = false;
+                checkGameStatus();
             }
-            dragStart = null; 
-        }); 
-
-        boardElement.addEventListener('pointerleave', () => { dragStart = null; });
-
-        async function handleSwipe(r, c, direction) {
-            if (isProcessing) return; let r2 = r, c2 = c;
-            if (direction === 'left') c2--; else if (direction === 'right') c2++; else if (direction === 'up') r2--; else if (direction === 'down') r2++;
-            if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) return;
-            const tile1 = board[r][c], tile2 = board[r2][c2];
-            if (!tile1 || !tile2 || tile1.type !== 'gem' || tile2.type !== 'gem') return;
             
-            isProcessing = true;
-            await animateSwap(tile1, tile2);
+            function incrementMoves() {
+                totalMoves++;
+                if (gameMode === 'goals' || gameMode === 'levels') movesLimit--;
+                updateMovesDisplay();
+            }
 
-            const isCombo = (tile1.bonus === 'bomb' && tile2.bonus === 'rocket') || (tile1.bonus === 'rocket' && tile2.bonus === 'bomb');
-            const isBonusMove = tile1.bonus || tile2.bonus;
-            const { matches } = findMatches();
+            function animateSwap(tile1, tile2) {
+                const r1 = tile1.r, c1 = tile1.c, r2 = tile2.r, c2 = tile2.c;
+                board[r1][c1] = tile2; board[r2][c2] = tile1;
+                positionTile(tile1, r2, c2); positionTile(tile2, r1, c1);
+                return new Promise(resolve => setTimeout(resolve, 300));
+            }
 
-            if (isCombo) {
-                incrementMoves();
-                playSound('bomb');
-                await new Promise(r => setTimeout(r, 100));
-                playSound('rocket');
-                const tilesToDestroy = new Set();
-                const centerTile = tile1;
-                
-                const comboEffect = document.createElement('div');
-                comboEffect.className = 'combo-effect';
-                comboEffect.style.width = `${TILE_SIZE * 3}px`; comboEffect.style.height = `${TILE_SIZE * 3}px`;
-                comboEffect.style.top = `${centerTile.element.offsetTop - TILE_SIZE}px`; comboEffect.style.left = `${centerTile.element.offsetLeft - TILE_SIZE}px`;
-                boardElement.appendChild(comboEffect);
-                await new Promise(resolve => setTimeout(() => { comboEffect.remove(); resolve(); }, 400));
-                
-                for (let i = -1; i <= 1; i++) {
-                    const r_offset = centerTile.r + i;
-                    if (r_offset >= 0 && r_offset < ROWS) {
-                        for (let c_iter = 0; c_iter < COLS; c_iter++) { if (board[r_offset][c_iter]) tilesToDestroy.add(board[r_offset][c_iter]); }
+            async function processAllMatches(swipeData = null) {
+                let initialSwipeCoords = swipeData ? { r: swipeData.r, c: swipeData.c } : null;
+
+                while (true) {
+                    const { matches, bonusInfo } = findMatches();
+                    if (matches.size === 0) break;
+                    
+                    playSound('match', Tone.now() + 0.1);
+            
+                    let bonusesToCreate = [];
+                    if (bonusInfo.length > 0) {
+                        const handledTilesForBonus = new Set();
+                        bonusInfo.forEach(info => {
+                            let createCoords = null;
+                            
+                            if (initialSwipeCoords) {
+                                const swipedTile = board[initialSwipeCoords.r]?.[initialSwipeCoords.c];
+                                if (swipedTile && info.tiles.has(swipedTile) && !handledTilesForBonus.has(swipedTile)) {
+                                    createCoords = initialSwipeCoords;
+                                }
+                            }
+
+                            if (!createCoords) {
+                                const unhandledTiles = [...info.tiles].filter(t => !handledTilesForBonus.has(t));
+                                if (unhandledTiles.length > 0) {
+                                    let intersection = unhandledTiles.find(t => {
+                                        const hMatch = getLine(t.r, t.c, 0, 1, t.color).concat(getLine(t.r, t.c, 0, -1, t.color).slice(1));
+                                        const vMatch = getLine(t.r, t.c, 1, 0, t.color).concat(getLine(t.r, t.c, -1, 0, t.color).slice(1));
+                                        return hMatch.length >= 3 && vMatch.length >= 3;
+                                    });
+
+                                    if (intersection) {
+                                        createCoords = { r: intersection.r, c: intersection.c };
+                                    } else {
+                                        const middleTile = unhandledTiles[Math.floor(unhandledTiles.length / 2)];
+                                        createCoords = { r: middleTile.r, c: middleTile.c };
+                                    }
+                                }
+                            }
+
+                            if (createCoords) {
+                                bonusesToCreate.push({ r: createCoords.r, c: createCoords.c, type: info.type });
+                                info.tiles.forEach(t => handledTilesForBonus.add(t));
+                            }
+                        });
                     }
-                    const c_offset = centerTile.c + i;
-                    if (c_offset >= 0 && c_offset < COLS) {
-                        for (let r_iter = 0; r_iter < ROWS; r_iter++) { if (board[r_iter][c_offset]) tilesToDestroy.add(board[r_iter][c_offset]); }
+                    
+                    initialSwipeCoords = null;
+            
+                    const tilesToDestroy = new Set(matches);
+                    await collectTilesFromBonuses(matches, tilesToDestroy);
+                    const unmovableToDestroy = findAdjacentUnmovables(tilesToDestroy);
+                    unmovableToDestroy.forEach(t => tilesToDestroy.add(t));
+                    updateGameStats(tilesToDestroy);
+                    
+                    bonusesToCreate.forEach(bonus => {
+                        const tile = board[bonus.r]?.[bonus.c];
+                        if(tile) tilesToDestroy.delete(tile);
+                    });
+                    
+                    await animateMatches(tilesToDestroy);
+
+                    bonusesToCreate.forEach(bonus => {
+                        const tile = board[bonus.r]?.[bonus.c];
+                        if(tile && tile.type === 'gem' && !tile.bonus) {
+                            tile.bonus = bonus.type;
+                            tile.element.classList.remove(`tile-${tile.color}`);
+                            tile.color = null;
+                            tile.element.classList.add(bonus.type);
+                            
+                            tile.element.classList.add('bonus-create');
+                            setTimeout(() => tile.element.classList.remove('bonus-create'), 400);
+                        }
+                    });
+            
+                    await dropAndRefill();
+                }
+            }
+
+            function checkGameStatus() {
+                if (isPaused || isProcessing) return;
+
+                const possibleMoves = checkForPossibleMoves();
+                const goalsMet = (gameMode === 'levels' || gameMode === 'goals') && Object.keys(goals).length === 0;
+
+                if (goalsMet) {
+                    if (gameMode === 'levels') {
+                        levelComplete();
+                    } else if (gameMode === 'goals') {
+                        level++;
+                        setupGoalsLevel();
+                        if (!checkForPossibleMoves()) {
+                            setTimeout(() => gameOver("Нет ходов"), 500);
+                        }
+                    }
+                } else if ((gameMode === 'levels' || gameMode === 'goals') && movesLimit <= 0) {
+                    gameOver("Ходы закончились");
+                } else if (!possibleMoves) {
+                    gameOver("Нет ходов");
+                }
+            }
+            
+            function findMatches() {
+                const matches = new Set(); const bonusInfo = [];
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        const tile = board[r][c];
+                        if (!tile || tile.type !== 'gem' || !tile.color) continue;
+                        
+                        const hMatch = getLine(r, c, 0, 1, tile.color).concat(getLine(r, c, 0, -1, tile.color).slice(1));
+                        const vMatch = getLine(r, c, 1, 0, tile.color).concat(getLine(r, c, -1, 0, tile.color).slice(1));
+                        
+                        if (hMatch.length >= 5 || vMatch.length >= 5) {
+                            bonusInfo.push({type: 'rocket', tiles: new Set(hMatch.length >= 5 ? hMatch : vMatch)});
+                        } else if (hMatch.length >= 4 || vMatch.length >= 4) {
+                            bonusInfo.push({type: 'bomb', tiles: new Set(hMatch.length >= 4 ? hMatch : vMatch)});
+                        }
+                        if (hMatch.length >= 3 && vMatch.length >= 3) {
+                            bonusInfo.push({type: 'rocket', tiles: new Set([...hMatch, ...vMatch])});
+                        }
+
+                        if (hMatch.length >= 3) hMatch.forEach(t => matches.add(t));
+                        if (vMatch.length >= 3) vMatch.forEach(t => matches.add(t));
                     }
                 }
+                return { matches, bonusInfo };
+            }
+
+            function getLine(r, c, dr, dc, color) {
+                const line = []; let cr = r; let cc = c;
+                while(cr >= 0 && cr < ROWS && cc >= 0 && cc < COLS && board[cr][cc]?.type === 'gem' && board[cr][cc]?.color === color) { line.push(board[cr][cc]); cr += dr; cc += dc; }
+                return line;
+            }
+
+            function findAdjacentUnmovables(matches) {
+                const toDestroy = new Set();
+                for(const tile of matches) { const { r, c } = tile; [[r-1,c], [r+1,c], [r,c-1], [r,c+1]].forEach(([nr, nc]) => { if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc]?.type === 'unmovable') toDestroy.add(board[nr][nc]); }); }
+                return toDestroy;
+            }
+            
+            async function animateRocket(r, c) {
+                playSound('rocket');
+                const rowEffect = document.createElement('div');
+                rowEffect.className = 'rocket-effect row';
+                rowEffect.style.top = `${GAP + r * (TILE_SIZE + GAP) + TILE_SIZE * 0.15 / 2}px`; rowEffect.style.left = `${GAP}px`;
+                rowEffect.style.width = `${COLS * (TILE_SIZE + GAP) - GAP}px`; rowEffect.style.height = `${TILE_SIZE * 0.85}px`;
+                const colEffect = document.createElement('div');
+                colEffect.className = 'rocket-effect col';
+                colEffect.style.top = `${GAP}px`; colEffect.style.left = `${GAP + c * (TILE_SIZE + GAP) + TILE_SIZE * 0.15 / 2}px`;
+                colEffect.style.width = `${TILE_SIZE * 0.85}px`; colEffect.style.height = `${ROWS * (TILE_SIZE + GAP) - GAP}px`;
+                boardElement.appendChild(rowEffect); boardElement.appendChild(colEffect);
+                await new Promise(resolve => setTimeout(() => { rowEffect.remove(); colEffect.remove(); resolve(); }, 300));
+            }
+
+            async function collectTilesFromBonuses(initialActivators, masterDestroySet) {
+                const queue = [...initialActivators].filter(t => t.bonus);
+                const processed = new Set(queue);
+                let rocketAnimations = [];
+                let bombSoundPlayed = false;
+                while (queue.length > 0) {
+                    const tile = queue.shift();
+                    if (tile.bonus === 'bomb') {
+                        if (!bombSoundPlayed) { playSound('bomb'); bombSoundPlayed = true; }
+                        for (let r = Math.max(0, tile.r - 1); r <= Math.min(ROWS - 1, tile.r + 1); r++) {
+                            for (let c = Math.max(0, tile.c - 1); c <= Math.min(COLS - 1, tile.c + 1); c++) {
+                                const neighbor = board[r][c];
+                                if (neighbor && !masterDestroySet.has(neighbor)) {
+                                    masterDestroySet.add(neighbor);
+                                    if (neighbor.bonus && !processed.has(neighbor)) { processed.add(neighbor); queue.push(neighbor); }
+                                }
+                            }
+                        }
+                    } else if (tile.bonus === 'rocket') {
+                        rocketAnimations.push(animateRocket(tile.r, tile.c));
+                        for (let c = 0; c < COLS; c++) { const n = board[tile.r][c]; if (n && !masterDestroySet.has(n)) { masterDestroySet.add(n); if (n.bonus && !processed.has(n)) { processed.add(n); queue.push(n); }}}
+                        for (let r = 0; r < ROWS; r++) { const n = board[r][tile.c]; if (n && !masterDestroySet.has(n)) { masterDestroySet.add(n); if (n.bonus && !processed.has(n)) { processed.add(n); queue.push(n); }}}
+                    }
+                }
+                if(rocketAnimations.length > 0) await Promise.all(rocketAnimations);
+            }
+            
+            function animateMatches(tiles) {
+                tiles.forEach(tile => { if (tile?.element && board[tile.r]?.[tile.c] === tile) { tile.element.classList.add('match'); board[tile.r][tile.c] = null; } });
+                return new Promise(resolve => setTimeout(() => { tiles.forEach(tile => tile?.element?.remove()); resolve(); }, 400));
+            }
+
+            async function dropAndRefill() {
+                let maxDelay = 0;
+                for (let c = 0; c < COLS; c++) { let emptyRow = -1; for (let r = ROWS - 1; r >= 0; r--) { if (board[r][c] === null && emptyRow === -1) emptyRow = r; else if (board[r][c] !== null && emptyRow !== -1) { const tile = board[r][c]; board[emptyRow][c] = tile; board[r][c] = null; positionTile(tile, emptyRow, c); emptyRow--; } } }
+                await new Promise(r => setTimeout(r, 300));
+                const newTiles = [];
+                for (let c = 0; c < COLS; c++) {
+                    let fillCount = 0;
+                    for (let r = ROWS - 1; r >= 0; r--) {
+                        if (board[r][c] === null) {
+                            const newTile = createTile(r, c, 'gem', getRandomColor());
+                            newTile.element.style.top = `${GAP + (r - ROWS) * (TILE_SIZE + GAP)}px`;
+                            const delay = (c * 0.02 + fillCount * 0.08);
+                            newTile.element.style.transitionDelay = `${delay}s`;
+                            maxDelay = Math.max(maxDelay, delay);
+                            newTiles.push(newTile);
+                            fillCount++;
+                        }
+                    }
+                }
+                requestAnimationFrame(() => { newTiles.forEach(tile => positionTile(tile, tile.r, tile.c)); });
+                await new Promise(r => setTimeout(r, maxDelay * 1000 + 300));
+                newTiles.forEach(tile => tile.element.style.transitionDelay = '0s');
+            }
+
+            function updateScore(newScore) { score = newScore; scoreElement.textContent = score; }
+            
+            function updateMovesDisplay() {
+                if (gameMode === 'goals' || gameMode === 'levels') {
+                    movesLabelElement.textContent = 'Ходы: ';
+                    movesCountElement.textContent = movesLimit;
+                } else {
+                    movesLabelElement.textContent = 'Ход: ';
+                    movesCountElement.textContent = totalMoves;
+                }
+            }
+            
+            function levelComplete() {
+                if (isPaused) return;
+                isPaused = true;
+                isProcessing = true;
+                playSound('win');
                 
-                await collectTilesFromBonuses(tilesToDestroy, tilesToDestroy);
+                if (currentLevel === maxReachedLevel) {
+                    maxReachedLevel++;
+                    localStorage.setItem('tilepop_max_level_v1', maxReachedLevel);
+                    updateLevelsButton(maxReachedLevel);
+                }
+                
+                const modal = document.getElementById('level-complete-modal');
+                modal.querySelector('#level-complete-score-value').textContent = score;
+                openModal(modal);
+            }
+
+            function gameOver(reason) {
+                if (isPaused) return;
+                isPaused = true; clearInterval(timerInterval);
+                playSound('lose');
+                
+                const modal = document.getElementById('game-over-modal');
+                modal.querySelector('#final-score-value').textContent = score;
+                modal.querySelector('#final-moves-value').textContent = totalMoves;
+                modal.querySelector('#final-level-value').textContent = level;
+
+                modal.querySelector('#final-score-line').classList.remove('hidden');
+                modal.querySelector('#final-moves-line').classList.toggle('hidden', gameMode === 'goals' || gameMode === 'levels');
+                modal.querySelector('#final-level-line').classList.toggle('hidden', gameMode !== 'goals');
+                
+                if (gameMode === 'levels') {
+                    modal.querySelector('.modal-title').textContent = "Попробуй еще раз!";
+                    modal.querySelector('#final-level-line').classList.add('hidden');
+                    modal.querySelector('#final-moves-line').classList.add('hidden');
+                } else {
+                    modal.querySelector('.modal-title').textContent = "Игра окончена!";
+                }
+
+                saveStats(); openModal(modal);
+            }
+
+            function checkForPossibleMoves() {
+                for (let r = 0; r < ROWS; r++) { for (let c = 0; c < COLS; c++) { if (canCreateMatchBySwapping(r, c, r, c + 1) || canCreateMatchBySwapping(r, c, r + 1, c)) return true; } } return false;
+            }
+            
+            function canCreateMatchBySwapping(r1, c1, r2, c2) {
+                if (r2 >= ROWS || c2 >= COLS) return false;
+                const tile1 = board[r1][c1], tile2 = board[r2][c2];
+                if (!tile1 || !tile2 || tile1.type === 'unmovable' || tile2.type === 'unmovable') return false;
+
+                if (tile1.bonus || tile2.bonus) return true;
+                if(!tile1.color || !tile2.color) return false;
+                
+                let hasMatch = false;
+                const tempColor1 = tile1.color, tempColor2 = tile2.color;
+                tile1.color = tempColor2; tile2.color = tempColor1;
+
+                if (tile1.color) {
+                    const hMatch = getLine(r1, c1, 0, 1, tile1.color).concat(getLine(r1, c1, 0, -1, tile1.color).slice(1));
+                    const vMatch = getLine(r1, c1, 1, 0, tile1.color).concat(getLine(r1, c1, -1, 0, tile1.color).slice(1));
+                    if(hMatch.length >= 3 || vMatch.length >= 3) hasMatch = true;
+                }
+                if (!hasMatch && tile2.color) {
+                    const hMatch = getLine(r2, c2, 0, 1, tile2.color).concat(getLine(r2, c2, 0, -1, tile2.color).slice(1));
+                    const vMatch = getLine(r2, c2, 1, 0, tile2.color).concat(getLine(r2, c2, -1, 0, tile2.color).slice(1));
+                    if(hMatch.length >= 3 || vMatch.length >= 3) hasMatch = true;
+                }
+
+                tile1.color = tempColor1; tile2.color = tempColor2;
+                return hasMatch;
+            }
+            
+            async function handleBonusActivation(bonuses) {
+                const tilesToDestroy = new Set(bonuses);
+                await collectTilesFromBonuses(bonuses, tilesToDestroy);
+                const unmovableToDestroy = findAdjacentUnmovables(tilesToDestroy);
+                unmovableToDestroy.forEach(t => tilesToDestroy.add(t));
                 updateGameStats(tilesToDestroy);
                 await animateMatches(tilesToDestroy);
                 await dropAndRefill();
                 await processAllMatches();
-
-            } else if (isBonusMove) {
-                incrementMoves();
-                await handleBonusActivation(new Set([tile1, tile2]));
-            
-            } else if (matches.size > 0) {
-                incrementMoves();
-                await processAllMatches({ r: r2, c: c2 });
-            
-            } else {
-                 await animateSwap(tile1, tile2);
             }
-            
-            isProcessing = false;
-            checkGameStatus();
-        }
-        
-        function incrementMoves() {
-            totalMoves++;
-            if (gameMode === 'goals' || gameMode === 'levels') movesLimit--;
-            updateMovesDisplay();
-        }
 
-        function animateSwap(tile1, tile2) {
-            const r1 = tile1.r, c1 = tile1.c, r2 = tile2.r, c2 = tile2.c;
-            board[r1][c1] = tile2; board[r2][c2] = tile1;
-            positionTile(tile1, r2, c2); positionTile(tile2, r1, c1);
-            return new Promise(resolve => setTimeout(resolve, 300));
-        }
+            function updateGameStats(tilesToDestroy){
+                if (gameMode === 'goals' || gameMode === 'levels') updateGoals(tilesToDestroy);
+                if (gameMode === 'speed' && tilesToDestroy.size > 0) {
+                    const timeToAdd = tilesToDestroy.size * 500;
+                    timeLeft = Math.min(totalTime, timeLeft + timeToAdd);
+                    timerStartTime = Date.now() - (totalTime - timeLeft);
+                }
+                score += tilesToDestroy.size * 10; 
+                updateScore(score);
+            }
 
-        async function processAllMatches(swipeData = null) {
-            let initialSwipeCoords = swipeData ? { r: swipeData.r, c: swipeData.c } : null;
-
-            while (true) {
-                const { matches, bonusInfo } = findMatches();
-                if (matches.size === 0) break;
+            function setupGoalsLevel() {
+                movesLimit = 20 + Math.floor(level / 5) * 2;
+                const numGoalTypes = Math.min(COLORS.length, 1 + Math.floor(level / 3));
+                const baseAmount = 10 + Math.floor(level / 2) * 2;
+                const colorsToPick = [...COLORS].sort(() => 0.5 - Math.random()).slice(0, numGoalTypes);
                 
-                playSound('match', Tone.now() + 0.1);
-        
-                let bonusesToCreate = [];
-                if (bonusInfo.length > 0) {
-                    const handledTilesForBonus = new Set();
-                    bonusInfo.forEach(info => {
-                        let createCoords = null;
-                        
-                        if (initialSwipeCoords) {
-                            const swipedTile = board[initialSwipeCoords.r]?.[initialSwipeCoords.c];
-                            if (swipedTile && info.tiles.has(swipedTile) && !handledTilesForBonus.has(swipedTile)) {
-                                createCoords = initialSwipeCoords;
-                            }
-                        }
-
-                        if (!createCoords) {
-                            const unhandledTiles = [...info.tiles].filter(t => !handledTilesForBonus.has(t));
-                            if (unhandledTiles.length > 0) {
-                                let intersection = unhandledTiles.find(t => {
-                                    const hMatch = getLine(t.r, t.c, 0, 1, t.color).concat(getLine(t.r, t.c, 0, -1, t.color).slice(1));
-                                    const vMatch = getLine(t.r, t.c, 1, 0, t.color).concat(getLine(t.r, t.c, -1, 0, t.color).slice(1));
-                                    return hMatch.length >= 3 && vMatch.length >= 3;
-                                });
-
-                                if (intersection) {
-                                    createCoords = { r: intersection.r, c: intersection.c };
-                                } else {
-                                    const middleTile = unhandledTiles[Math.floor(unhandledTiles.length / 2)];
-                                    createCoords = { r: middleTile.r, c: middleTile.c };
-                                }
-                            }
-                        }
-
-                        if (createCoords) {
-                            bonusesToCreate.push({ r: createCoords.r, c: createCoords.c, type: info.type });
-                            info.tiles.forEach(t => handledTilesForBonus.add(t));
-                        }
-                    });
-                }
+                goals = {};
+                colorsToPick.forEach(color => goals[color] = baseAmount + Math.floor(Math.random() * 5));
                 
-                initialSwipeCoords = null;
-        
-                const tilesToDestroy = new Set(matches);
-                await collectTilesFromBonuses(matches, tilesToDestroy);
-                const unmovableToDestroy = findAdjacentUnmovables(tilesToDestroy);
-                unmovableToDestroy.forEach(t => tilesToDestroy.add(t));
-                updateGameStats(tilesToDestroy);
+                if (level >= 20) {
+                    goals['unmovable'] = 5 + Math.floor((level - 20) / 3);
+                }
+
+                updateGoalsUI(); 
+                updateMovesDisplay(); 
+            }
+
+            function updateGoals(destroyedTiles) { 
+                destroyedTiles.forEach(tile => { 
+                    if (tile.color && goals[tile.color]) { 
+                        goals[tile.color] = Math.max(0, goals[tile.color] - 1); 
+                        if (goals[tile.color] === 0) delete goals[tile.color]; 
+                    } else if (tile.type === 'unmovable' && goals['unmovable']) {
+                        goals['unmovable'] = Math.max(0, goals['unmovable'] - 1);
+                        if (goals['unmovable'] === 0) delete goals['unmovable'];
+                    }
+                }); 
+                updateGoalsUI(); 
+            }
+            
+            function updateGoalsUI() { 
+                if (gameMode !== 'goals' && gameMode !== 'levels') return;
+                goalsHeader.innerHTML = `<span>Ур. ${level}: </span>`;
+                goalsListWrapper.innerHTML = Object.entries(goals).map(([type, count]) => {
+                    let tileContent = '';
+                    if (type === 'unmovable') {
+                        // --- ИСПРАВЛЕНО: Используем tile-unmovable.png ---
+                        tileContent = `<div class="tile-inner" style="background-image: url('tile-unmovable.png');"></div>`;
+                    } else {
+                        tileContent = `<div class="tile-inner" style="background-image: url('tile-${type}.png');"></div>`;
+                    }
+                    return `<span class="goal"><div class="goal-tile-container">${tileContent}</div><span>${count}</span></span>`;
+                }).join(''); 
+            }
+            
+            function startTimer() {
+                timerStartTime = Date.now() - (totalTime - timeLeft);
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => { 
+                    if (isPaused) return;
+                    const elapsed = Date.now() - timerStartTime; 
+                    timeLeft = totalTime - elapsed; 
+                    timeBar.style.width = `${Math.max(0, timeLeft / totalTime * 100)}%`; 
+                    if (timeLeft <= 0) { clearInterval(timerInterval); gameOver("Время вышло"); } 
+                }, 100);
+            }
+            
+            function saveStats() {
+                if (gameMode === 'levels') return;
+                if (!stats[gameMode]) return;
                 
-                bonusesToCreate.forEach(bonus => {
-                    const tile = board[bonus.r]?.[bonus.c];
-                    if(tile) tilesToDestroy.delete(tile);
-                });
-                
-                await animateMatches(tilesToDestroy);
-
-                bonusesToCreate.forEach(bonus => {
-                    const tile = board[bonus.r]?.[bonus.c];
-                    if(tile && tile.type === 'gem' && !tile.bonus) {
-                        tile.bonus = bonus.type;
-                        // --- Логика Ассетов ---
-                        tile.element.classList.remove(`tile-${tile.color}`); // Удаляем класс цвета
-                        tile.color = null;
-                        tile.element.classList.add(bonus.type);
-                        // ---
-                        
-                        tile.element.classList.add('bonus-create');
-                        setTimeout(() => tile.element.classList.remove('bonus-create'), 400);
-                    }
-                });
-        
-                await dropAndRefill();
-            }
-        }
-
-        function checkGameStatus() {
-            if (isPaused || isProcessing) return;
-
-            const possibleMoves = checkForPossibleMoves();
-            const goalsMet = (gameMode === 'levels' || gameMode === 'goals') && Object.keys(goals).length === 0;
-
-            if (goalsMet) {
-                if (gameMode === 'levels') {
-                    levelComplete();
-                } else if (gameMode === 'goals') {
-                    level++;
-                    setupGoalsLevel();
-                    if (!checkForPossibleMoves()) {
-                         setTimeout(() => gameOver("Нет ходов"), 500);
-                    }
+                const modeStats = stats[gameMode];
+                if (gameMode === 'goals') {
+                    if(level > modeStats.hiLevel) modeStats.hiLevel = level;
+                } else if (gameMode === 'speed') {
+                    if(score > modeStats.hiScore) modeStats.hiScore = score;
                 }
-            } else if ((gameMode === 'levels' || gameMode === 'goals') && movesLimit <= 0) {
-                gameOver("Ходы закончились");
-            } else if (!possibleMoves) {
-                gameOver("Нет ходов");
+                localStorage.setItem('tilepop_stats_v9', JSON.stringify(stats));
             }
-        }
-        
-        function findMatches() {
-            const matches = new Set(); const bonusInfo = [];
-            for (let r = 0; r < ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    const tile = board[r][c];
-                    if (!tile || tile.type !== 'gem' || !tile.color) continue;
-                    
-                    const hMatch = getLine(r, c, 0, 1, tile.color).concat(getLine(r, c, 0, -1, tile.color).slice(1));
-                    const vMatch = getLine(r, c, 1, 0, tile.color).concat(getLine(r, c, -1, 0, tile.color).slice(1));
-                    
-                    if (hMatch.length >= 5 || vMatch.length >= 5) {
-                        bonusInfo.push({type: 'rocket', tiles: new Set(hMatch.length >= 5 ? hMatch : vMatch)});
-                    } else if (hMatch.length >= 4 || vMatch.length >= 4) {
-                        bonusInfo.push({type: 'bomb', tiles: new Set(hMatch.length >= 4 ? hMatch : vMatch)});
-                    }
-                    if (hMatch.length >= 3 && vMatch.length >= 3) {
-                        bonusInfo.push({type: 'rocket', tiles: new Set([...hMatch, ...vMatch])});
-                    }
 
-                    if (hMatch.length >= 3) hMatch.forEach(t => matches.add(t));
-                    if (vMatch.length >= 3) vMatch.forEach(t => matches.add(t));
-                }
-            }
-            return { matches, bonusInfo };
-        }
+            function openModal(modal) { if (modal) modal.classList.add('active'); }
+            function closeModal(modal) { if (modal) modal.classList.remove('active'); }
 
-        function getLine(r, c, dr, dc, color) {
-            const line = []; let cr = r; let cc = c;
-            while(cr >= 0 && cr < ROWS && cc >= 0 && cc < COLS && board[cr][cc]?.type === 'gem' && board[cr][cc]?.color === color) { line.push(board[cr][cc]); cr += dr; cc += dc; }
-            return line;
-        }
-
-        function findAdjacentUnmovables(matches) {
-            const toDestroy = new Set();
-            for(const tile of matches) { const { r, c } = tile; [[r-1,c], [r+1,c], [r,c-1], [r,c+1]].forEach(([nr, nc]) => { if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc]?.type === 'unmovable') toDestroy.add(board[nr][nc]); }); }
-            return toDestroy;
-        }
-        
-        async function animateRocket(r, c) {
-            playSound('rocket');
-            const rowEffect = document.createElement('div');
-            rowEffect.className = 'rocket-effect row';
-            rowEffect.style.top = `${GAP + r * (TILE_SIZE + GAP) + TILE_SIZE * 0.15 / 2}px`; rowEffect.style.left = `${GAP}px`;
-            rowEffect.style.width = `${COLS * (TILE_SIZE + GAP) - GAP}px`; rowEffect.style.height = `${TILE_SIZE * 0.85}px`;
-            const colEffect = document.createElement('div');
-            colEffect.className = 'rocket-effect col';
-            colEffect.style.top = `${GAP}px`; colEffect.style.left = `${GAP + c * (TILE_SIZE + GAP) + TILE_SIZE * 0.15 / 2}px`;
-            colEffect.style.width = `${TILE_SIZE * 0.85}px`; colEffect.style.height = `${ROWS * (TILE_SIZE + GAP) - GAP}px`;
-            boardElement.appendChild(rowEffect); boardElement.appendChild(colEffect);
-            await new Promise(resolve => setTimeout(() => { rowEffect.remove(); colEffect.remove(); resolve(); }, 300));
-        }
-
-        async function collectTilesFromBonuses(initialActivators, masterDestroySet) {
-            const queue = [...initialActivators].filter(t => t.bonus);
-            const processed = new Set(queue);
-            let rocketAnimations = [];
-            let bombSoundPlayed = false;
-            while (queue.length > 0) {
-                const tile = queue.shift();
-                if (tile.bonus === 'bomb') {
-                    if (!bombSoundPlayed) { playSound('bomb'); bombSoundPlayed = true; }
-                    for (let r = Math.max(0, tile.r - 1); r <= Math.min(ROWS - 1, tile.r + 1); r++) {
-                        for (let c = Math.max(0, tile.c - 1); c <= Math.min(COLS - 1, tile.c + 1); c++) {
-                            const neighbor = board[r][c];
-                            if (neighbor && !masterDestroySet.has(neighbor)) {
-                                masterDestroySet.add(neighbor);
-                                if (neighbor.bonus && !processed.has(neighbor)) { processed.add(neighbor); queue.push(neighbor); }
-                            }
-                        }
-                    }
-                } else if (tile.bonus === 'rocket') {
-                    rocketAnimations.push(animateRocket(tile.r, tile.c));
-                    for (let c = 0; c < COLS; c++) { const n = board[tile.r][c]; if (n && !masterDestroySet.has(n)) { masterDestroySet.add(n); if (n.bonus && !processed.has(n)) { processed.add(n); queue.push(n); }}}
-                    for (let r = 0; r < ROWS; r++) { const n = board[r][tile.c]; if (n && !masterDestroySet.has(n)) { masterDestroySet.add(n); if (n.bonus && !processed.has(n)) { processed.add(n); queue.push(n); }}}
-                }
-            }
-            if(rocketAnimations.length > 0) await Promise.all(rocketAnimations);
-        }
-        
-        function animateMatches(tiles) {
-            tiles.forEach(tile => { if (tile?.element && board[tile.r]?.[tile.c] === tile) { tile.element.classList.add('match'); board[tile.r][tile.c] = null; } });
-            return new Promise(resolve => setTimeout(() => { tiles.forEach(tile => tile?.element?.remove()); resolve(); }, 400));
-        }
-
-        async function dropAndRefill() {
-            let maxDelay = 0;
-            for (let c = 0; c < COLS; c++) { let emptyRow = -1; for (let r = ROWS - 1; r >= 0; r--) { if (board[r][c] === null && emptyRow === -1) emptyRow = r; else if (board[r][c] !== null && emptyRow !== -1) { const tile = board[r][c]; board[emptyRow][c] = tile; board[r][c] = null; positionTile(tile, emptyRow, c); emptyRow--; } } }
-            await new Promise(r => setTimeout(r, 300));
-            const newTiles = [];
-            for (let c = 0; c < COLS; c++) {
-                let fillCount = 0;
-                for (let r = ROWS - 1; r >= 0; r--) {
-                    if (board[r][c] === null) {
-                        const newTile = createTile(r, c, 'gem', getRandomColor());
-                        newTile.element.style.top = `${GAP + (r - ROWS) * (TILE_SIZE + GAP)}px`;
-                        const delay = (c * 0.02 + fillCount * 0.08);
-                        newTile.element.style.transitionDelay = `${delay}s`;
-                        maxDelay = Math.max(maxDelay, delay);
-                        newTiles.push(newTile);
-                        fillCount++;
-                    }
-                }
-            }
-            requestAnimationFrame(() => { newTiles.forEach(tile => positionTile(tile, tile.r, tile.c)); });
-            await new Promise(r => setTimeout(r, maxDelay * 1000 + 300));
-            newTiles.forEach(tile => tile.element.style.transitionDelay = '0s');
-        }
-
-        function updateScore(newScore) { score = newScore; scoreElement.textContent = score; }
-        
-        function updateMovesDisplay() {
-            if (gameMode === 'goals' || gameMode === 'levels') {
-                movesLabelElement.textContent = 'Ходы: ';
-                movesCountElement.textContent = movesLimit;
-            } else {
-                movesLabelElement.textContent = 'Ход: ';
-                movesCountElement.textContent = totalMoves;
-            }
-        }
-        
-        function levelComplete() {
-            if (isPaused) return;
-            isPaused = true;
-            isProcessing = true;
-            playSound('win');
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.addEventListener('click', () => startGame(btn.dataset.mode)));
+            document.getElementById('pause-btn').addEventListener('click', () => { if(!isPaused) { openModal(document.getElementById('pause-modal')); isPaused = true; if(gameMode === 'speed') { pausedTimeLeft = timeLeft; clearInterval(timerInterval); } } });
+            document.getElementById('resume-btn').addEventListener('click', () => { closeModal(document.getElementById('pause-modal')); isPaused = false; if(gameMode === 'speed') { timeLeft = pausedTimeLeft; startTimer(); } });
+            document.getElementById('restart-game-btn').addEventListener('click', () => { closeModal(document.getElementById('pause-modal')); startGame(gameMode, gameMode === 'levels' ? currentLevel : null); });
+            document.getElementById('main-menu-btn-pause').addEventListener('click', () => { document.querySelectorAll('.modal').forEach(closeModal); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); updateLevelsButton(maxReachedLevel); });
+            document.getElementById('restart-game-over-btn').addEventListener('click', () => { closeModal(document.getElementById('game-over-modal')); startGame(gameMode, gameMode === 'levels' ? currentLevel : null); });
+            document.getElementById('main-menu-btn-over').addEventListener('click', () => { document.querySelectorAll('.modal').forEach(closeModal); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); updateLevelsButton(maxReachedLevel); });
             
-            if (currentLevel === maxReachedLevel) {
-                maxReachedLevel++;
-                localStorage.setItem('tilepop_max_level_v1', maxReachedLevel);
-                updateLevelsButton(maxReachedLevel);
+            document.getElementById('next-level-btn').addEventListener('click', () => { closeModal(document.getElementById('level-complete-modal')); startGame('levels', currentLevel + 1); });
+            document.getElementById('main-menu-btn-complete').addEventListener('click', () => { document.querySelectorAll('.modal').forEach(closeModal); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); updateLevelsButton(maxReachedLevel); });
+
+            document.getElementById('settings-btn').addEventListener('click', () => openModal(document.getElementById('settings-modal')));
+            document.getElementById('close-settings-btn').addEventListener('click', () => closeModal(document.getElementById('settings-modal')));
+            document.getElementById('rules-btn').addEventListener('click', () => openModal(document.getElementById('rules-modal')));
+            document.getElementById('close-rules-btn').addEventListener('click', () => closeModal(document.getElementById('rules-modal')));
+            document.getElementById('stats-btn').addEventListener('click', () => { updateStatsDisplay(); openModal(document.getElementById('stats-modal')); });
+            document.getElementById('close-stats-btn').addEventListener('click', () => closeModal(document.getElementById('stats-modal')));
+
+            function updateStatsDisplay() {
+                const contentContainer = document.getElementById('stats-content-container');
+                contentContainer.innerHTML = ''; 
+
+                const speedData = stats.speed;
+                const goalsData = stats.goals;
+
+                contentContainer.innerHTML = `
+                    <div class="stats-group">
+                        <h3 class="stats-group-title">Скоростной</h3>
+                        <div class="stats-row"><span class="stats-row-label">Игр сыграно</span><span class="stats-row-value">${speedData.games}</span></div>
+                        <div class="stats-row"><span class="stats-row-label">Рекорд</span><span class="stats-row-value">${speedData.hiScore}</span></div>
+                    </div>
+                    <div class="stats-group">
+                        <h3 class="stats-group-title">Бесконечные цели</h3>
+                        <div class="stats-row"><span class="stats-row-label">Игр сыграно</span><span class="stats-row-value">${goalsData.games}</span></div>
+                        <div class="stats-row"><span class="stats-row-label">Макс. уровень</span><span class="stats-row-value">${goalsData.hiLevel}</span></div>
+                    </div>
+                `;
             }
             
-            const modal = document.getElementById('level-complete-modal');
-            modal.querySelector('#level-complete-score-value').textContent = score;
-            openModal(modal);
-        }
-
-        function gameOver(reason) {
-            if (isPaused) return;
-            isPaused = true; clearInterval(timerInterval);
-            playSound('lose');
+            document.querySelector('.theme-selection').addEventListener('click', e => { 
+                const newTheme = e.target.dataset.theme; 
+                if (!newTheme) return; 
+                document.body.className = `theme-${newTheme}`;
+                localStorage.setItem('tilepop_theme', newTheme); 
+                document.querySelectorAll('.theme-selection button').forEach(btn => btn.classList.remove('active')); 
+                e.target.classList.add('active'); 
+            });
             
-            const modal = document.getElementById('game-over-modal');
-            modal.querySelector('#final-score-value').textContent = score;
-            modal.querySelector('#final-moves-value').textContent = totalMoves;
-            modal.querySelector('#final-level-value').textContent = level;
-
-            modal.querySelector('#final-score-line').classList.remove('hidden');
-            modal.querySelector('#final-moves-line').classList.toggle('hidden', gameMode === 'goals' || gameMode === 'levels');
-            modal.querySelector('#final-level-line').classList.toggle('hidden', gameMode !== 'goals');
-            
-            if (gameMode === 'levels') {
-                 modal.querySelector('.modal-title').textContent = "Попробуй еще раз!";
-                 modal.querySelector('#final-level-line').classList.add('hidden');
-                 modal.querySelector('#final-moves-line').classList.add('hidden');
-            } else {
-                 modal.querySelector('.modal-title').textContent = "Игра окончена!";
-            }
-
-            saveStats(); openModal(modal);
-        }
-
-        function checkForPossibleMoves() {
-            for (let r = 0; r < ROWS; r++) { for (let c = 0; c < COLS; c++) { if (canCreateMatchBySwapping(r, c, r, c + 1) || canCreateMatchBySwapping(r, c, r + 1, c)) return true; } } return false;
-        }
+            playMusic();
+        } // --- Конец initGameLogic ---
         
-        function canCreateMatchBySwapping(r1, c1, r2, c2) {
-            if (r2 >= ROWS || c2 >= COLS) return false;
-            const tile1 = board[r1][c1], tile2 = board[r2][c2];
-            if (!tile1 || !tile2 || tile1.type === 'unmovable' || tile2.type === 'unmovable') return false;
-
-            if (tile1.bonus || tile2.bonus) return true;
-            if(!tile1.color || !tile2.color) return false;
-            
-            let hasMatch = false;
-            const tempColor1 = tile1.color, tempColor2 = tile2.color;
-            tile1.color = tempColor2; tile2.color = tempColor1;
-
-            if (tile1.color) {
-                const hMatch = getLine(r1, c1, 0, 1, tile1.color).concat(getLine(r1, c1, 0, -1, tile1.color).slice(1));
-                const vMatch = getLine(r1, c1, 1, 0, tile1.color).concat(getLine(r1, c1, -1, 0, tile1.color).slice(1));
-                if(hMatch.length >= 3 || vMatch.length >= 3) hasMatch = true;
-            }
-            if (!hasMatch && tile2.color) {
-                const hMatch = getLine(r2, c2, 0, 1, tile2.color).concat(getLine(r2, c2, 0, -1, tile2.color).slice(1));
-                const vMatch = getLine(r2, c2, 1, 0, tile2.color).concat(getLine(r2, c2, -1, 0, tile2.color).slice(1));
-                if(hMatch.length >= 3 || vMatch.length >= 3) hasMatch = true;
-            }
-
-            tile1.color = tempColor1; tile2.color = tempColor2;
-            return hasMatch;
-        }
-        
-        async function handleBonusActivation(bonuses) {
-             const tilesToDestroy = new Set(bonuses);
-             await collectTilesFromBonuses(bonuses, tilesToDestroy);
-             const unmovableToDestroy = findAdjacentUnmovables(tilesToDestroy);
-             unmovableToDestroy.forEach(t => tilesToDestroy.add(t));
-             updateGameStats(tilesToDestroy);
-             await animateMatches(tilesToDestroy);
-             await dropAndRefill();
-             await processAllMatches();
-        }
-
-        function updateGameStats(tilesToDestroy){
-            if (gameMode === 'goals' || gameMode === 'levels') updateGoals(tilesToDestroy);
-            if (gameMode === 'speed' && tilesToDestroy.size > 0) {
-                 const timeToAdd = tilesToDestroy.size * 500;
-                 timeLeft = Math.min(totalTime, timeLeft + timeToAdd);
-                 timerStartTime = Date.now() - (totalTime - timeLeft);
-            }
-            score += tilesToDestroy.size * 10; 
-            updateScore(score);
-        }
-
-        function setupGoalsLevel() {
-            movesLimit = 20 + Math.floor(level / 5) * 2;
-            const numGoalTypes = Math.min(COLORS.length, 1 + Math.floor(level / 3));
-            const baseAmount = 10 + Math.floor(level / 2) * 2;
-            const colorsToPick = [...COLORS].sort(() => 0.5 - Math.random()).slice(0, numGoalTypes);
-            
-            goals = {};
-            colorsToPick.forEach(color => goals[color] = baseAmount + Math.floor(Math.random() * 5));
-            
-            if (level >= 20) {
-                 goals['unmovable'] = 5 + Math.floor((level - 20) / 3);
-            }
-
-            updateGoalsUI(); 
-            updateMovesDisplay(); 
-        }
-
-        function updateGoals(destroyedTiles) { 
-            destroyedTiles.forEach(tile => { 
-                if (tile.color && goals[tile.color]) { 
-                    goals[tile.color] = Math.max(0, goals[tile.color] - 1); 
-                    if (goals[tile.color] === 0) delete goals[tile.color]; 
-                } else if (tile.type === 'unmovable' && goals['unmovable']) {
-                    goals['unmovable'] = Math.max(0, goals['unmovable'] - 1);
-                    if (goals['unmovable'] === 0) delete goals['unmovable'];
-                }
-            }); 
-            updateGoalsUI(); 
-        }
-        
-        function updateGoalsUI() { 
-            if (gameMode !== 'goals' && gameMode !== 'levels') return;
-            goalsHeader.innerHTML = `<span>Ур. ${level}: </span>`;
-            goalsListWrapper.innerHTML = Object.entries(goals).map(([type, count]) => {
-                let tileContent = '';
-                if (type === 'unmovable') {
-                    // --- Логика Ассетов ---
-                    tileContent = `<div class="unmovable-goal"></div>`; // Стиль с background-image применится через CSS
-                } else {
-                    // type это 'red', 'blue', etc.
-                    tileContent = `<div class="tile-inner" style="background-image: url('tile-${type}.png');"></div>`;
-                }
-                return `<span class="goal"><div class="goal-tile-container">${tileContent}</div><span>${count}</span></span>`;
-            }).join(''); 
-        }
-        
-        function startTimer() {
-            timerStartTime = Date.now() - (totalTime - timeLeft);
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => { 
-                if (isPaused) return;
-                const elapsed = Date.now() - timerStartTime; 
-                timeLeft = totalTime - elapsed; 
-                timeBar.style.width = `${Math.max(0, timeLeft / totalTime * 100)}%`; 
-                if (timeLeft <= 0) { clearInterval(timerInterval); gameOver("Время вышло"); } 
-            }, 100);
-        }
-        
-        function saveStats() {
-            if (gameMode === 'levels') return;
-            if (!stats[gameMode]) return;
-            
-            const modeStats = stats[gameMode];
-            if (gameMode === 'goals') {
-                if(level > modeStats.hiLevel) modeStats.hiLevel = level;
-            } else if (gameMode === 'speed') {
-                if(score > modeStats.hiScore) modeStats.hiScore = score;
-            }
-            localStorage.setItem('tilepop_stats_v9', JSON.stringify(stats));
-        }
-
-        function openModal(modal) { if (modal) modal.classList.add('active'); }
-        function closeModal(modal) { if (modal) modal.classList.remove('active'); }
-
-        document.querySelectorAll('.mode-btn').forEach(btn => btn.addEventListener('click', () => startGame(btn.dataset.mode)));
-        document.getElementById('pause-btn').addEventListener('click', () => { if(!isPaused) { openModal(document.getElementById('pause-modal')); isPaused = true; if(gameMode === 'speed') { pausedTimeLeft = timeLeft; clearInterval(timerInterval); } } });
-        document.getElementById('resume-btn').addEventListener('click', () => { closeModal(document.getElementById('pause-modal')); isPaused = false; if(gameMode === 'speed') { timeLeft = pausedTimeLeft; startTimer(); } });
-        document.getElementById('restart-game-btn').addEventListener('click', () => { closeModal(document.getElementById('pause-modal')); startGame(gameMode, gameMode === 'levels' ? currentLevel : null); });
-        document.getElementById('main-menu-btn-pause').addEventListener('click', () => { document.querySelectorAll('.modal').forEach(closeModal); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); updateLevelsButton(maxReachedLevel); });
-        document.getElementById('restart-game-over-btn').addEventListener('click', () => { closeModal(document.getElementById('game-over-modal')); startGame(gameMode, gameMode === 'levels' ? currentLevel : null); });
-        document.getElementById('main-menu-btn-over').addEventListener('click', () => { document.querySelectorAll('.modal').forEach(closeModal); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); updateLevelsButton(maxReachedLevel); });
-        
-        document.getElementById('next-level-btn').addEventListener('click', () => { closeModal(document.getElementById('level-complete-modal')); startGame('levels', currentLevel + 1); });
-        document.getElementById('main-menu-btn-complete').addEventListener('click', () => { document.querySelectorAll('.modal').forEach(closeModal); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); updateLevelsButton(maxReachedLevel); });
-
-        document.getElementById('settings-btn').addEventListener('click', () => openModal(document.getElementById('settings-modal')));
-        document.getElementById('close-settings-btn').addEventListener('click', () => closeModal(document.getElementById('settings-modal')));
-        document.getElementById('rules-btn').addEventListener('click', () => openModal(document.getElementById('rules-modal')));
-        document.getElementById('close-rules-btn').addEventListener('click', () => closeModal(document.getElementById('rules-modal')));
-        document.getElementById('stats-btn').addEventListener('click', () => { updateStatsDisplay(); openModal(document.getElementById('stats-modal')); });
-        document.getElementById('close-stats-btn').addEventListener('click', () => closeModal(document.getElementById('stats-modal')));
-
-        function updateStatsDisplay() {
-            const contentContainer = document.getElementById('stats-content-container');
-            contentContainer.innerHTML = ''; 
-
-            const speedData = stats.speed;
-            const goalsData = stats.goals;
-
-            contentContainer.innerHTML = `
-                <div class="stats-group">
-                    <h3 class="stats-group-title">Скоростной</h3>
-                    <div class="stats-row"><span class="stats-row-label">Игр сыграно</span><span class="stats-row-value">${speedData.games}</span></div>
-                    <div class="stats-row"><span class="stats-row-label">Рекорд</span><span class="stats-row-value">${speedData.hiScore}</span></div>
-                </div>
-                <div class="stats-group">
-                    <h3 class="stats-group-title">Бесконечные цели</h3>
-                    <div class="stats-row"><span class="stats-row-label">Игр сыграно</span><span class="stats-row-value">${goalsData.games}</span></div>
-                    <div class="stats-row"><span class="stats-row-label">Макс. уровень</span><span class="stats-row-value">${goalsData.hiLevel}</span></div>
-                </div>
-            `;
-        }
-        
-        document.querySelector('.theme-selection').addEventListener('click', e => { 
-            const newTheme = e.target.dataset.theme; 
-            if (!newTheme) return; 
-            document.body.className = `theme-${newTheme}`; // Это применит новый фон
-            localStorage.setItem('tilepop_theme', newTheme); 
-            document.querySelectorAll('.theme-selection button').forEach(btn => btn.classList.remove('active')); 
-            e.target.classList.add('active'); 
-        });
-        (() => { 
-            const savedTheme = localStorage.getItem('tilepop_theme') || 'critters'; 
-            document.body.className = `theme-${savedTheme}`; 
-            const btn = document.querySelector(`.theme-selection button[data-theme="${savedTheme}"]`); 
-            if(btn) btn.classList.add('active'); 
-        })();
-        
-        updateLevelsButton(maxReachedLevel);
-        
-        // Попытка запустить музыку при загрузке, если разрешено
-        playMusic();
     });
     </script>
 </body>
