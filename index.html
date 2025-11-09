@@ -15,7 +15,8 @@
     <style>
         :root {
             --bg-main: #f0f8ff; --bg-secondary: #e6f2ff;
-            --bg-modal: rgba(255, 255, 255, 0.1); 
+            /* ИЗМЕНЕНО: Фон модалок стал менее прозрачным */
+            --bg-modal: rgba(255, 255, 255, 0.4); 
             --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6;
             --border-color: #ff69b4; 
             --font-main: 'Nunito', sans-serif;
@@ -32,10 +33,11 @@
             transition: background-image 0.5s ease;
         }
         
-        body.theme-critters { background-image: url('bg-critters.png'); --bg-main: #f0f8ff; --bg-secondary: #e6f2ff; --bg-modal: rgba(240, 248, 255, 0.2); --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6; --border-color: #ff69b4; }
-        body.theme-sweets { background-image: url('bg-sweets.png'); --bg-main: #f8cdda; --bg-secondary: #fce4ec; --bg-modal: rgba(248, 205, 218, 0.2); --text-primary: #880e4f; --text-secondary: #263238; --accent-color: #f48fb1; --border-color: #c2185b; }
-        body.theme-nature { background-image: url('bg-nature.png'); --bg-main: #2d4c1e; --bg-secondary: #3e6d2b; --bg-modal: rgba(45, 76, 30, 0.2); --text-primary: #f0a500; --text-secondary: #ffffff; --accent-color: #1b3d1a; --border-color: #f0a500; }
-        body.theme-gems { background-image: url('bg-gems.png'); --bg-main: #4a148c; --bg-secondary: #6a1b9a; --bg-modal: rgba(74, 20, 140, 0.2); --text-primary: #ffeb3b; --text-secondary: #ffffff; --accent-color: #38006b; --border-color: #fdd835; }
+        /* ИЗМЕНЕНО: Фон модалок стал менее прозрачным */
+        body.theme-critters { background-image: url('bg-critters.png'); --bg-main: #f0f8ff; --bg-secondary: #e6f2ff; --bg-modal: rgba(240, 248, 255, 0.6); --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6; --border-color: #ff69b4; }
+        body.theme-sweets { background-image: url('bg-sweets.png'); --bg-main: #f8cdda; --bg-secondary: #fce4ec; --bg-modal: rgba(248, 205, 218, 0.6); --text-primary: #880e4f; --text-secondary: #263238; --accent-color: #f48fb1; --border-color: #c2185b; }
+        body.theme-nature { background-image: url('bg-nature.png'); --bg-main: #2d4c1e; --bg-secondary: #3e6d2b; --bg-modal: rgba(45, 76, 30, 0.7); --text-primary: #f0a500; --text-secondary: #ffffff; --accent-color: #1b3d1a; --border-color: #f0a500; }
+        body.theme-gems { background-image: url('bg-gems.png'); --bg-main: #4a148c; --bg-secondary: #6a1b9a; --bg-modal: rgba(74, 20, 140, 0.7); --text-primary: #ffeb3b; --text-secondary: #ffffff; --accent-color: #38006b; --border-color: #fdd835; }
         
         #preloader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -70,7 +72,13 @@
             background-color: transparent; display: none;
             justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; 
         }
-        .main-menu, .game-screen { width: 100%; max-width: 420px; height: 100%; max-height: 900px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem 1.5rem; box-sizing: border-box; }
+        /* ИЗМЕНЕНО: Добавлен padding-bottom для баннера VK */
+        .main-menu, .game-screen { 
+            width: 100%; max-width: 420px; height: 100%; max-height: 900px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            padding: 1rem 1.5rem 80px 1.5rem; /* <-- 80px отступ снизу */
+            box-sizing: border-box; 
+        }
         .game-title {
             font-family: var(--font-title); font-size: 3.8rem; 
             font-weight: 900; color: var(--text-primary); text-shadow: 2px 2px 0px var(--accent-color), 4px 4px 0px rgba(0,0,0,0.1); margin-bottom: 2rem; 
@@ -100,11 +108,20 @@
         .modal-content::-webkit-scrollbar { display: none; }
         .modal.active .modal-content { transform: scale(1); }
         .modal-title { font-size: 2rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1.5rem; text-align: center; }
-        .game-header { width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center; margin-bottom: 1rem; padding: 0.5rem; background: var(--accent-color); border-radius: 1rem; }
-        .header-item { display: flex; align-items: center; background-color: var(--bg-main); padding: 0.5rem 1rem; border-radius: 0.75rem; }
-        .header-item svg { width: 24px; height: 24px; fill: var(--text-primary); margin-right: 0.5rem; }
-        .header-item span { font-size: 1.1rem; font-weight: 700; color: var(--text-secondary); }
+        
+        /* ИЗМЕНЕНО: Хедер стал компактнее */
+        .game-header { 
+            width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.5rem; align-items: center; 
+            margin-bottom: 0.5rem; padding: 0.25rem; 
+            background: var(--accent-color); border-radius: 1rem; 
+        }
+        .header-item { display: flex; align-items: center; background-color: var(--bg-main); padding: 0.25rem 0.75rem; border-radius: 0.75rem; }
+        .header-item svg { width: 20px; height: 20px; fill: var(--text-primary); margin-right: 0.5rem; }
+        .header-item span { font-size: 1rem; font-weight: 700; color: var(--text-secondary); }
         .pause-btn-container { justify-self: center; background: none; padding: 0; box-shadow: none; border: none;}
+        .pause-btn-container .icon-btn { width: 44px; height: 44px; } /* <-- Кнопка паузы уменьшена */
+        .pause-btn-container .icon-btn svg { width: 24px; height: 24px; }
+        
         .moves-container { justify-self: end; }
         #time-bar-container { grid-column: 1 / -1; height: 10px; background-color: var(--progress-bar-bg); border-radius: 5px; overflow: hidden; margin: 0.25rem 0.5rem 0.5rem; border: 2px solid var(--accent-color); }
         #time-bar { width: 100%; height: 100%; background-color: var(--progress-bar-fill); transition: width 0.1s linear; }
@@ -117,11 +134,10 @@
         .goal-tile-container { width: 20px; height: 20px; display: inline-flex; justify-content: center; align-items: center; margin-right: 4px; vertical-align: middle; }
         .goal-tile-container .tile-inner { width: 100%; height: 100%; box-shadow: none; background-size: contain; background-repeat: no-repeat; background-position: center; }
         
-        /* ИЗМЕНЕНО: Фон поля полупрозрачный */
+        /* ИЗМЕНЕНО: Фон поля полупрозрачный и без размытия */
         #game-board { 
             position: relative; aspect-ratio: 7 / 10; width: 100%; overflow: hidden; 
             background-color: var(--bg-modal); /* <-- Используем фон модалки */
-            backdrop-filter: blur(4px); /* <-- Добавлено размытие */
             border-radius: 1rem; box-sizing: border-box; 
         }
         .tile { aspect-ratio: 1 / 1; position: absolute; transition: top 0.3s ease, left 0.3s ease, transform 0.3s ease; will-change: top, left, transform; display: flex; justify-content: center; align-items: center; -webkit-user-drag: none; user-drag: none; }
@@ -182,17 +198,53 @@
         .stats-row-label { font-size: 1rem; font-weight: 600; opacity: 0.9; }
         .stats-row-value { font-size: 1.2rem; font-weight: 900; color: var(--text-primary); }
         
-        /* ИЗМЕНЕНО: Стили слайдеров перенесены сюда */
-        #mute-toggle:checked + div { background-color: var(--text-primary) !important; }
-        #mute-music-toggle:checked + div { background-color: var(--text-primary) !important; }
-        
+        /* --- ИЗМЕНЕНО: Новые стили для слайдеров --- */
+        .slider-label {
+            position: relative;
+            display: inline-block;
+            width: 56px; /* w-14 */
+            height: 32px; /* h-8 */
+            cursor: pointer;
+        }
+        .slider-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider-track {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--accent-color);
+            border-radius: 9999px; /* rounded-full */
+            transition: background-color 0.2s ease;
+        }
+        .slider-track::before {
+            content: '';
+            position: absolute;
+            left: 4px; /* left-1 */
+            top: 4px; /* top-1 */
+            width: 24px; /* w-6 */
+            height: 24px; /* h-6 */
+            background-color: white;
+            border-radius: 50%; /* rounded-full */
+            transition: transform 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .slider-input:checked + .slider-track {
+            background-color: var(--text-primary);
+        }
+        .slider-input:checked + .slider-track::before {
+            transform: translateX(24px); /* w-14 - w-6 - left-1*2 = 56-24-8 = 24px */
+        }
+        /* --- Конец новых стилей --- */
+
         /* VK Ads */
         #vk_ads_banner {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            z-index: 1001; /* Выше модальных окон */
+            z-index: 1001;
         }
     </style>
 </head>
@@ -236,7 +288,7 @@
                     <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
                     <span id="score">0</span>
                 </div>
-                <div class="pause-btn-container"><button id="pause-btn" class="icon-btn" style="width: 50px; height: 50px;"><svg viewBox="0 0 24 24" style="width: 28px; height: 28px;"><path class="primary-path" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></button></div>
+                <div class="pause-btn-container"><button id="pause-btn" class="icon-btn"><svg viewBox="0 0 24 24"><path class="primary-path" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></button></div>
                 <div class="header-item moves-container"><span id="moves-label">Ход: </span><span id="moves-count">0</span></div>
                 <div id="time-bar-container" class="hidden"><div id="time-bar"></div></div>
                 <div id="goals-container" class="hidden">
@@ -263,26 +315,21 @@
                 <button id="theme-nature" data-theme="nature"></button>
                 <button id="theme-gems" data-theme="gems"></button>
             </div>
+            <!-- ИЗМЕНЕНО: Новая HTML-структура для слайдера -->
             <div class="flex justify-between items-center w-full mt-8">
                 <h3 class="text-xl text-left font-semibold" style="color: var(--text-secondary);">Звуки</h3>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="mute-toggle" class="sr-only peer">
-                    <div class="w-14 h-8 rounded-full peer" style="background-color: var(--accent-color); transition: background-color 0.2s ease;">
-                        <div class="w-14 h-8 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
-                    </div>
+                <label class="slider-label">
+                    <input type="checkbox" id="mute-toggle" class="slider-input">
+                    <span class="slider-track"></span>
                 </label>
             </div>
-            <!-- ИЗМЕНЕНО: Удален встроенный <style> -->
             <div class="flex justify-between items-center w-full mt-4">
                 <h3 class="text-xl text-left font-semibold" style="color: var(--text-secondary);">Музыка</h3>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="mute-music-toggle" class="sr-only peer">
-                    <div class="w-14 h-8 rounded-full peer" style="background-color: var(--accent-color); transition: background-color 0.2s ease;">
-                        <div class="w-14 h-8 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
-                    </div>
+                <label class="slider-label">
+                    <input type="checkbox" id="mute-music-toggle" class="slider-input">
+                    <span class="slider-track"></span>
                 </label>
             </div>
-            <!-- ИЗМЕНЕНО: Удален встроенный <style> -->
             <button id="close-settings-btn" class="btn mt-6">Закрыть</button>
         </div>
     </div>
@@ -355,8 +402,8 @@
 
         // --- Настройка Звуков (Объявление) ---
         let audioReady = Tone.context.state === 'running';
-        let isMuted = true; // По умолчанию выключено, пока не загрузятся данные
-        let isMusicMuted = true; // По умолчанию выключено, пока не загрузятся данные
+        let isMuted = true;
+        let isMusicMuted = true;
 
         let synths = {
             tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
@@ -388,7 +435,7 @@
                 loadingStatus.textContent = `Загружено ${assetsLoaded} из ${totalAssets}`;
 
                 if (assetsLoaded === totalAssets) {
-                    setTimeout(showMainMenu, 300); // Дать время увидеть 100%
+                    setTimeout(showMainMenu, 300);
                 }
             };
 
@@ -413,16 +460,13 @@
             setTimeout(() => {
                 preloader.style.display = 'none';
                 mainContainer.style.display = 'flex';
-                // Вся игровая логика теперь зависит от этого
                 initGameLogic();
-            }, 500); // Соответствует transition
+            }, 500); 
         }
 
         // Запускаем предзагрузку
         preloadAssets();
         
-        // --- initGameLogic содержит всю остальную логику игры ---
-        // Эта функция вызывается ОДИН РАЗ после загрузки ассетов
         async function initGameLogic() {
             
             // --- Инициализация Аудио ---
@@ -450,24 +494,37 @@
 
             async function playMusic() {
                 if (isMusicMuted || !audioReady) return;
-                try { if (bgMusic.paused) { bgMusic.volume = 0.3; await bgMusic.play(); } } 
+                try { 
+                    if (bgMusic.paused) { 
+                        bgMusic.volume = 0.3; 
+                        await bgMusic.play(); 
+                        console.log("Music started playing.");
+                    } 
+                } 
                 catch (e) { console.error("Music play failed:", e); }
             }
-            function stopMusic() { bgMusic.pause(); bgMusic.currentTime = 0; }
+            function stopMusic() { 
+                bgMusic.pause(); 
+                bgMusic.currentTime = 0; 
+                console.log("Music stopped.");
+            }
 
             async function initAudio() {
-                if (audioReady) return;
+                if (audioReady) {
+                    playMusic(); // Если уже готово, просто пытаемся играть
+                    return;
+                }
                 try {
                     await Tone.start();
                     audioReady = true;
                     console.log("Audio ready.");
-                    playMusic(); // Пытаемся включить музыку после инициализации
+                    playMusic();
                 } catch (e) { console.error("Audio context failed to start:", e); }
             }
 
             function playSound(sound, time = Tone.now(), ...args) {
-                if (!audioReady) initAudio(); // Попытка инициализации
-                if (isMuted || !audioReady) return; // Повторная проверка
+                if (!audioReady) initAudio(); 
+                if (isMuted || !audioReady) return;
                 try {
                     if (sound === 'tap') synths.tap.triggerAttackRelease('C5', '8n', time);
                     else if (sound === 'match') synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', time);
@@ -484,11 +541,7 @@
                 } catch (e) { console.error("Sound play error:", e); }
             }
             
-            document.body.addEventListener('pointerdown', async () => {
-                if (Tone.context.state !== 'running') {
-                    await initAudio();
-                }
-            }, { once: true });
+            document.body.addEventListener('pointerdown', initAudio, { once: true });
             
             // --- Логика "Залипания" Кнопок ---
             document.querySelectorAll('.btn, .icon-btn').forEach(btn => {
@@ -499,7 +552,11 @@
                 const removeActive = () => btn.classList.remove('manual-active');
                 btn.addEventListener('pointerup', removeActive);
                 btn.addEventListener('pointerleave', removeActive);
-                btn.addEventListener('pointercancel', removeActive); // <-- ИСПРАВЛЕНО
+                btn.addEventListener('pointercancel', removeActive);
+            });
+            // ИЗМЕНЕНО: Глобальный "отпускатель" кнопок
+            document.addEventListener('pointerup', () => {
+                document.querySelectorAll('.btn.manual-active, .icon-btn.manual-active').forEach(btn => btn.classList.remove('manual-active'));
             });
             
             // --- VK Инициализация и Загрузка Данных ---
@@ -529,9 +586,11 @@
                     vkUserId = 'test_user_001'; // Fallback
                 }
                 
-                await loadGameData(); // Загружаем данные после получения ID
-                showBannerAd(); // Показываем баннер после загрузки
-                await initAudio(); // Инициализируем аудио
+                await loadGameData();
+                showBannerAd();
+                // Инициализация аудио перенесена на первый клик, но мы можем попытаться
+                // запустить музыку, если она уже была разрешена
+                if(audioReady) playMusic();
             }
 
             async function saveGameData() {
@@ -574,19 +633,16 @@
                     levelsSinceAd = loadedData.levelsSinceAd || 0;
                     currentTheme = loadedData.theme || 'critters';
                 } else {
-                    // Устанавливаем значения по умолчанию, если данных нет
                     isMuted = false;
                     isMusicMuted = false;
                     currentTheme = 'critters';
                 }
 
-                // Обновляем UI из загруженных (или дефолтных) данных
                 updateMuteButton();
                 updateMusicMuteButton();
                 updateLevelsButton(maxReachedLevel);
                 updateStatsDisplay();
                 
-                // Устанавливаем тему
                 document.body.className = `theme-${currentTheme}`;
                 const btn = document.querySelector(`.theme-selection button[data-theme="${currentTheme}"]`);
                 if(btn) {
@@ -987,7 +1043,7 @@
                         if (!tile || tile.type !== 'gem' || !tile.color) continue;
                         
                         const hMatch = getLine(r, c, 0, 1, tile.color).concat(getLine(r, c, 0, -1, tile.color).slice(1));
-                        const vMatch = getLine(r, c, 1, 0, tile.color).concat(getLine(r, c, -1, 0, tile.color).slice(1));
+                        const vMatch = getLine(r, c, 1, 0, t.color).concat(getLine(r, c, -1, 0, tile.color).slice(1));
                         
                         if (hMatch.length >= 5 || vMatch.length >= 5) {
                             bonusInfo.push({type: 'rocket', tiles: new Set(hMatch.length >= 5 ? hMatch : vMatch)});
