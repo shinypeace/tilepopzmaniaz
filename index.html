@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tower Blocks</title>
+    <!-- Yandex Games SDK -->
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-top: #1a237e;
+            --bg-bottom: #0d47a1;
+            --text-color: #0d47a1;
+            --text-color-light: #5472d3;
+            --accent-color: #ffc107;
+        }
+
+        html, body {
+            margin: 0;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+            position: relative;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-color);
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+        }
+        #container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        #game {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            text-align: center;
+        }
+        .ui-layer > * {
+            pointer-events: all;
+        }
+        
+        /* --- Menu --- */
+        #main-menu .title {
+            font-family: 'Oswald', sans-serif;
+            line-height: 1;
+            margin-bottom: 0.75em;
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+        #main-menu .title-line-1 {
+            font-size: 4.5rem;
+            font-weight: 700;
+            display: block;
+        }
+        #main-menu .title-line-2 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            display: block;
+            margin-top: -0.3em;
+        }
+        #main-menu .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1em;
+        }
+        
+        .main-content {
+             /* This block will be centered by the parent .ui-layer */
+        }
+
+        #main-menu p {
+            font-size: 1.1rem;
+            color: #bbdefb;
+            font-weight: bold;
+            margin-top: 1em;
+        }
+        .button {
+            background-color: #ffffff;
+            color: var(--text-color);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 220px;
+            box-sizing: border-box;
+        }
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        /* --- In-Game UI --- */
+        #in-game-ui {
+            justify-content: flex-start;
+        }
+        #score {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 10vh;
+            font-family: 'Oswald', sans-serif;
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            transform: translateY(-200px) scale(1);
+            opacity: 0;
+        }
+        #perfect-placement-text {
+            position: absolute;
+            top: 25vh;
+            font-size: 2rem;
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent-color);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.5s ease;
+        }
+        #pause-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+        #pause-button span {
+            display: block;
+            width: 5px;
+            height: 20px;
+            background-color: var(--text-color);
+            margin: 0 3px;
+        }
+        
+        /* --- Modal & Menus --- */
+        .modal-background, .menu-background {
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-box, .menu-box {
+            background: rgba(255,255,255,0.95);
+            padding: 30px 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: clamp(280px, 80vw, 400px);
+            max-height: 80vh; /* Limit height */
+            overflow-y: auto; /* Enable scroll if needed */
+        }
+        .menu-box .button, .modal-box .button {
+            display: block;
+            margin: 15px auto 0 auto;
+            width: 100%;
+        }
+        .modal-box h2, .menu-box h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5em;
+            margin-top: 0;
+        }
+        .modal-box p {
+            text-align: left;
+            margin-bottom: 1em;
+            line-height: 1.5;
+        }
+        .modal-box ul {
+            text-align: left;
+            padding-left: 20px;
+            margin-bottom: 1.5em;
+        }
+        .menu-box .score-display {
+            margin-bottom: 1.5em;
+        }
+        .menu-box .score-display span {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--text-color-light);
+        }
+        .menu-box .score-display strong {
+            display: block;
+            font-size: 2rem;
+            color: var(--text-color);
+        }
+
+        /* --- State Handling --- */
+        .hidden {
+            display: none !important;
+        }
+        #container.playing #score,
+        #container.ended #score {
+            transform: translateY(0px) scale(1);
+            opacity: 1;
+        }
+        #container.ended #score {
+            transform: translateY(6vh) scale(1.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="game"></div>
+
+        <div id="main-menu" class="ui-layer">
+            <div class="main-content">
+                <div class="title">
+                    <span class="title-line-1">TOWER</span>
+                    <span class="title-line-2">BLOCKS</span>
+                </div>
+                <div class="button-group">
+                    <button id="start-button" class="button" data-lang-key="play">Играть</button>
+                    <button id="rules-button" class="button" data-lang-key="rules">Правила</button>
+                </div>
+                <p><span data-lang-key="record_prefix">Рекорд:</span> <span id="high-score">0</span></p>
+            </div>
+        </div>
+        
+        <div id="rules-modal" class="ui-layer modal-background hidden">
+            <div class="modal-box">
+                <h2 data-lang-key="rules_title">Правила Игры</h2>
+                <p data-lang-key="rules_p1">Ваша задача — построить как можно более высокую башню, устанавливая блоки друг на друга.</p>
+                <ul>
+                    <li data-lang-key="rules_li1">Нажимайте на экран (или пробел), чтобы остановить движущийся блок.</li>
+                    <li data-lang-key="rules_li2">Часть блока, вышедшая за пределы нижнего, отколется.</li>
+                    <li data-lang-key="rules_li3">Башня станет уже, и строить будет сложнее!</li>
+                </ul>
+                <p><strong data-lang-key="rules_combo_title">⭐ Идеальное Комбо:</strong></p>
+                <ul>
+                    <li data-lang-key="rules_combo_li1">Установите <strong>6 блоков идеально</strong> подряд, чтобы активировать комбо.</li>
+                    <li data-lang-key="rules_combo_li2">Каждое следующее идеальное попадание будет <strong>увеличивать размер</strong> платформы, возвращая ее к первоначальной ширине!</li>
+                </ul>
+                <button id="close-rules-button" class="button" data-lang-key="rules_close">Понятно</button>
+            </div>
+        </div>
+
+        <div id="in-game-ui" class="ui-layer hidden">
+            <div id="score">0</div>
+            <div id="perfect-placement-text" data-lang-key="perfect">ИДЕАЛЬНО!</div>
+            <div id="pause-button">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <div id="pause-menu" class="ui-layer menu-background hidden">
+            <div class="menu-box">
+                <button id="resume-button" class="button" data-lang-key="resume">Продолжить</button>
+                <button id="restart-button" class="button" data-lang-key="restart">Заново</button>
+                <button id="menu-button" class="button" data-lang-key="main_menu">В меню</button>
+            </div>
+        </div>
+        
+        <div id="game-over-menu" class="ui-layer menu-background hidden">
+             <div class="menu-box">
+                <h2 data-lang-key="game_over">Игра окончена</h2>
+                <div class="score-display">
+                    <span data-lang-key="your_score">Ваш счет</span>
+                    <strong id="final-score">0</strong>
+                </div>
+                 <div class="score-display">
+                    <span data-lang-key="record">Рекорд</span>
+                    <strong id="game-over-high-score">0</strong>
+                </div>
+                <button id="restart-game-over-button" class="button" data-lang-key="play_again">Играть снова</button>
+                <button id="menu-game-over-button" class="button" data-lang-key="main_menu_2">В меню</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.clear();
+        
+        // --- Translation Data ---
+        const translations = {
+            en: {
+                play: 'Play',
+                rules: 'Rules',
+                record_prefix: 'High Score:',
+                rules_title: 'Game Rules',
+                rules_p1: 'Your goal is to build the tallest tower possible by stacking blocks on top of each other.',
+                rules_li1: 'Tap the screen (or press space) to stop the moving block.',
+                rules_li2: 'The part of the block that goes beyond the one below will be chopped off.',
+                rules_li3: 'The tower will get narrower, making it harder to build!',
+                rules_combo_title: '⭐ Perfect Combo:',
+                rules_combo_li1: 'Place <strong>6 blocks perfectly</strong> in a row to activate a combo.',
+                rules_combo_li2: 'Each subsequent perfect placement will <strong>increase the platform size</strong>, restoring it to its original width!',
+                rules_close: 'Got It',
+                perfect: 'PERFECT!',
+                resume: 'Resume',
+                restart: 'Restart',
+                main_menu: 'Main Menu',
+                game_over: 'Game Over',
+                your_score: 'Your Score',
+                record: 'High Score',
+                play_again: 'Play Again',
+                main_menu_2: 'Main Menu',
+            },
+            ru: {
+                play: 'Играть',
+                rules: 'Правила',
+                record_prefix: 'Рекорд:',
+                rules_title: 'Правила Игры',
+                rules_p1: 'Ваша задача — построить как можно более высокую башню, устанавливая блоки друг на друга.',
+                rules_li1: 'Нажимайте на экран (или пробел), чтобы остановить движущийся блок.',
+                rules_li2: 'Часть блока, вышедшая за пределы нижнего, отколется.',
+                rules_li3: 'Башня станет уже, и строить будет сложнее!',
+                rules_combo_title: '⭐ Идеальное Комбо:',
+                rules_combo_li1: 'Установите <strong>6 блоков идеально</strong> подряд, чтобы активировать комбо.',
+                rules_combo_li2: 'Каждое следующее идеальное попадание будет <strong>увеличивать размер</strong> платформы, возвращая ее к первоначальной ширине!',
+                rules_close: 'Понятно',
+                perfect: 'ИДЕАЛЬНО!',
+                resume: 'Продолжить',
+                restart: 'Заново',
+                main_menu: 'В меню',
+                game_over: 'Игра окончена',
+                your_score: 'Ваш счет',
+                record: 'Рекорд',
+                play_again: 'Играть снова',
+                main_menu_2: 'В меню',
+            }
+        };
+
+        class Stage {
+            // ... (no changes in this class)
+            constructor() {
+                this.container = document.getElementById('game');
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setClearColor(0x000000, 0);
+                this.container.appendChild(this.renderer.domElement);
+                
+                this.scene = new THREE.Scene();
+                
+                const aspect = window.innerWidth / window.innerHeight;
+                const d = 20;
+                this.camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, -100, 1000);
+                this.camera.position.set(2, 2, 2);
+                this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+                
+                this.light = new THREE.DirectionalLight(0xffffff, 0.5);
+                this.light.position.set(0, 499, 0);
+                this.scene.add(this.light);
+                
+                this.softLight = new THREE.AmbientLight(0xffffff, 0.4);
+                this.scene.add(this.softLight);
+
+                window.addEventListener('resize', () => this.onResize());
+                this.onResize();
+            }
+
+            setCamera(y, speed = 0.3) {
+                TweenLite.to(this.camera.position, speed, { y: y + 4, ease: Power1.easeInOut });
+                TweenLite.to(this.camera.lookAt, speed, { y: y, ease: Power1.easeInOut });
+            }
+
+            onResize() {
+                const viewSize = 30;
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.camera.left = window.innerWidth / -viewSize;
+                this.camera.right = window.innerWidth / viewSize;
+                this.camera.top = window.innerHeight / viewSize;
+                this.camera.bottom = window.innerHeight / -viewSize;
+                this.camera.updateProjectionMatrix();
+            }
+
+            render = () => this.renderer.render(this.scene, this.camera);
+            add = (elem) => this.scene.add(elem);
+            remove = (elem) => this.scene.remove(elem);
+        }
+
+        class Block {
+             // ... (no changes in this class)
+            constructor(block, newDimensions = null) {
+                this.STATES = { ACTIVE: 'active', STOPPED: 'stopped', MISSED: 'missed' };
+                this.MOVE_AMOUNT = 12;
+
+                this.targetBlock = block;
+                this.index = (this.targetBlock ? this.targetBlock.index : 0) + 1;
+                this.workingPlane = this.index % 2 ? 'x' : 'z';
+                this.workingDimension = this.index % 2 ? 'width' : 'depth';
+
+                this.dimension = {
+                    width: (newDimensions && newDimensions.width) || (this.targetBlock ? this.targetBlock.dimension.width : 10),
+                    height: 2,
+                    depth: (newDimensions && newDimensions.depth) || (this.targetBlock ? this.targetBlock.dimension.depth : 10),
+                };
+                
+                this.originalDimension = { ...this.dimension };
+
+                this.position = {
+                    x: this.targetBlock ? this.targetBlock.position.x : 0,
+                    y: this.dimension.height * this.index,
+                    z: this.targetBlock ? this.targetBlock.position.z : 0,
+                };
+                
+                this.colorOffset = this.targetBlock ? this.targetBlock.colorOffset : Math.round(Math.random() * 100);
+
+                if (!this.targetBlock) {
+                    this.color = new THREE.Color(0x333344);
+                } else {
+                    const offset = this.index + this.colorOffset;
+                    const r = Math.sin(0.3 * offset) * 55 + 200;
+                    const g = Math.sin(0.3 * offset + 2) * 55 + 200;
+                    const b = Math.sin(0.3 * offset + 4) * 55 + 200;
+                    this.color = new THREE.Color(r / 255, g / 255, b / 255);
+                }
+
+                this.state = this.index > 1 ? this.STATES.ACTIVE : this.STATES.STOPPED;
+                this.speed = -0.1 - (this.index * 0.005);
+                if (this.speed < -4) this.speed = -4;
+                this.direction = this.speed;
+
+                const geometry = new THREE.BoxGeometry(this.dimension.width, this.dimension.height, this.dimension.depth);
+                geometry.applyMatrix(new THREE.Matrix4().makeTranslation(this.dimension.width / 2, this.dimension.height / 2, this.dimension.depth / 2));
+                this.material = new THREE.MeshToonMaterial({ color: this.color.getHex(), shading: THREE.FlatShading });
+                this.mesh = new THREE.Mesh(geometry, this.material);
+                this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+
+                if (this.state === this.STATES.ACTIVE) {
+                    this.position[this.workingPlane] = Math.random() > 0.5 ? -this.MOVE_AMOUNT : this.MOVE_AMOUNT;
+                }
+            }
+
+            reverseDirection = () => {
+                this.direction = this.direction > 0 ? this.speed : Math.abs(this.speed);
+            }
+
+            place() {
+                this.state = this.STATES.STOPPED;
+
+                let overlap = this.targetBlock.dimension[this.workingDimension] - Math.abs(this.position[this.workingPlane] - this.targetBlock.position[this.workingPlane]);
+
+                const blocksToReturn = {
+                    plane: this.workingPlane,
+                    direction: this.direction,
+                    bonus: false
+                };
+                
+                if (this.dimension[this.workingDimension] - overlap < 0.3) {
+                    blocksToReturn.bonus = true;
+                    this.dimension.width = this.targetBlock.dimension.width;
+                    this.dimension.depth = this.targetBlock.dimension.depth;
+                    overlap = this.targetBlock.dimension[this.workingDimension];
+                    this.position.x = this.targetBlock.position.x;
+                    this.position.z = this.targetBlock.position.z;
+                }
+
+                if (overlap > 0) {
+                    const choppedDimensions = { ...this.dimension };
+                    choppedDimensions[this.workingDimension] -= overlap;
+                    this.dimension[this.workingDimension] = overlap;
+
+                    const placedGeometry = new THREE.BoxGeometry(this.dimension.width, this.dimension.height, this.dimension.depth);
+                    placedGeometry.applyMatrix(new THREE.Matrix4().makeTranslation(this.dimension.width / 2, this.dimension.height / 2, this.dimension.depth / 2));
+                    const placedMesh = new THREE.Mesh(placedGeometry, this.material);
+
+                    const choppedGeometry = new THREE.BoxGeometry(choppedDimensions.width, choppedDimensions.height, choppedDimensions.depth);
+                    choppedGeometry.applyMatrix(new THREE.Matrix4().makeTranslation(choppedDimensions.width / 2, choppedDimensions.height / 2, choppedDimensions.depth / 2));
+                    const choppedMesh = new THREE.Mesh(choppedGeometry, this.material);
+
+                    const choppedPosition = { x: this.position.x, y: this.position.y, z: this.position.z };
+
+                    if (this.position[this.workingPlane] < this.targetBlock.position[this.workingPlane]) {
+                        this.position[this.workingPlane] = this.targetBlock.position[this.workingPlane];
+                    } else {
+                        choppedPosition[this.workingPlane] += overlap;
+                    }
+
+                    placedMesh.position.set(this.position.x, this.position.y, this.position.z);
+                    choppedMesh.position.set(choppedPosition.x, choppedPosition.y, choppedPosition.z);
+
+                    blocksToReturn.placed = placedMesh;
+                    if (!blocksToReturn.bonus) blocksToReturn.chopped = choppedMesh;
+                } else {
+                    this.state = this.STATES.MISSED;
+                }
+                
+                return blocksToReturn;
+            }
+
+            tick() {
+                if (this.state === this.STATES.ACTIVE) {
+                    const value = this.position[this.workingPlane];
+                    if (value > this.MOVE_AMOUNT || value < -this.MOVE_AMOUNT) this.reverseDirection();
+                    this.position[this.workingPlane] += this.direction;
+                    this.mesh.position[this.workingPlane] = this.position[this.workingPlane];
+                }
+            }
+        }
+
+        class Game {
+            constructor(ysdk) {
+                // --- Yandex SDK Properties ---
+                this.ysdk = ysdk;
+                this.player = null;
+                this.currentLang = 'en';
+
+                this.STATES = { MENU: 'menu', PLAYING: 'playing', PAUSED: 'paused', ENDED: 'ended', RESETTING: 'resetting' };
+                
+                this.stage = new Stage();
+                this.ui = {
+                    body: document.body,
+                    mainMenu: document.getElementById('main-menu'),
+                    rulesModal: document.getElementById('rules-modal'),
+                    inGameUI: document.getElementById('in-game-ui'),
+                    pauseMenu: document.getElementById('pause-menu'),
+                    gameOverMenu: document.getElementById('game-over-menu'),
+                    score: document.getElementById('score'),
+                    highScore: document.getElementById('high-score'),
+                    finalScore: document.getElementById('final-score'),
+                    gameOverHighScore: document.getElementById('game-over-high-score'),
+                    perfectPlacementText: document.getElementById('perfect-placement-text'),
+                    gameCanvas: document.getElementById('game')
+                };
+                this.buttons = {
+                    start: document.getElementById('start-button'),
+                    rules: document.getElementById('rules-button'),
+                    closeRules: document.getElementById('close-rules-button'),
+                    pause: document.getElementById('pause-button'),
+                    resume: document.getElementById('resume-button'),
+                    restart: document.getElementById('restart-button'),
+                    menu: document.getElementById('menu-button'),
+                    restartGameOver: document.getElementById('restart-game-over-button'),
+                    menuGameOver: document.getElementById('menu-game-over-button')
+                };
+
+                this.newBlocks = new THREE.Group();
+                this.placedBlocks = new THREE.Group();
+                this.choppedBlocks = new THREE.Group();
+                this.perfectSliceGroup = new THREE.Group();
+                this.starsGroup = new THREE.Group();
+                this.stage.add(this.newBlocks);
+                this.stage.add(this.placedBlocks);
+                this.stage.add(this.choppedBlocks);
+                this.stage.add(this.perfectSliceGroup);
+                this.stage.scene.add(this.starsGroup);
+                
+                this.perfectCombo = 0;
+                this.initialBlockSize = { width: 10, depth: 10 };
+                this.blocksSinceColorChange = 0;
+                
+                this.bgColors = {
+                    top: new THREE.Color(0x1a237e),
+                    bottom: new THREE.Color(0x0d47a1),
+                    targetTop: new THREE.Color(0x1a237e),
+                    targetBottom: new THREE.Color(0x0d47a1)
+                };
+
+                this.init();
+            }
+
+            async init() {
+                this.setLanguage();
+                await this.initPlayer();
+                this.showBannerAd();
+                this.addStars();
+                this.bindEvents();
+                this.setState(this.STATES.MENU);
+                this.tick();
+            }
+
+            // --- Yandex SDK Integration ---
+            setLanguage() {
+                const lang = this.ysdk.environment.i18n.lang;
+                this.currentLang = (lang === 'ru') ? 'ru' : 'en';
+                document.documentElement.lang = this.currentLang;
+                
+                document.querySelectorAll('[data-lang-key]').forEach(elem => {
+                    const key = elem.dataset.langKey;
+                    if (translations[this.currentLang] && translations[this.currentLang][key]) {
+                        elem.innerHTML = translations[this.currentLang][key];
+                    }
+                });
+            }
+
+            async initPlayer() {
+                try {
+                    this.player = await this.ysdk.getPlayer();
+                    if (this.player.getMode() === 'lite') {
+                        // Player is not authorized, use localStorage
+                        await this.loadHighScore(false);
+                    } else {
+                        // Player is authorized, use Yandex Cloud Save
+                        await this.loadHighScore(true);
+                    }
+                } catch (error) {
+                    console.error('Player init failed:', error);
+                    // Fallback to localStorage on error
+                    await this.loadHighScore(false);
+                }
+            }
+
+            async saveHighScore(isAuthorized) {
+                const dataString = this.highScore.toString();
+                if (isAuthorized && this.player) {
+                    try {
+                        await this.player.setData({ highScore: this.highScore });
+                    } catch (e) {
+                        console.error('Yandex Cloud Save failed:', e);
+                        localStorage.setItem('TowerBlocksHighScore', dataString); // Fallback
+                    }
+                } else {
+                    localStorage.setItem('TowerBlocksHighScore', dataString);
+                }
+            }
+
+            async loadHighScore(isAuthorized) {
+                let loadedData = '0';
+                if (isAuthorized && this.player) {
+                    try {
+                        const data = await this.player.getData(['highScore']);
+                        if (data.highScore) {
+                            loadedData = data.highScore.toString();
+                        }
+                    } catch (e) {
+                        console.error('Yandex Cloud Load failed:', e);
+                        loadedData = localStorage.getItem('TowerBlocksHighScore') || '0'; // Fallback
+                    }
+                } else {
+                    loadedData = localStorage.getItem('TowerBlocksHighScore') || '0';
+                }
+                this.highScore = parseInt(loadedData, 10);
+                this.ui.highScore.innerText = this.highScore;
+            }
+            
+            showBannerAd() {
+                if (this.ysdk) {
+                     this.ysdk.adv.showBannerAdv();
+                }
+            }
+            
+            showInterstitialAd() {
+                 if(this.ysdk) {
+                    this.ysdk.adv.showFullscreenAdv({
+                        callbacks: {
+                            onOpen: () => console.log('Interstitial ad opened.'),
+                            onClose: (wasShown) => console.log(`Interstitial ad closed. Was shown: ${wasShown}`),
+                            onError: (error) => console.error('Interstitial ad error:', error)
+                        }
+                    });
+                }
+            }
+
+            bindEvents() {
+                this.buttons.start.addEventListener('click', () => this.startGame());
+                this.buttons.rules.addEventListener('click', () => this.ui.rulesModal.classList.remove('hidden'));
+                this.buttons.closeRules.addEventListener('click', () => this.ui.rulesModal.classList.add('hidden'));
+                this.buttons.pause.addEventListener('click', () => this.togglePause());
+                this.buttons.resume.addEventListener('click', () => this.togglePause());
+                this.buttons.restart.addEventListener('click', () => this.restartGame());
+                this.buttons.menu.addEventListener('click', () => this.goToMenu());
+                this.buttons.restartGameOver.addEventListener('click', () => this.restartGame());
+                this.buttons.menuGameOver.addEventListener('click', () => this.goToMenu());
+                
+                window.addEventListener('keydown', (e) => { if (e.keyCode === 32) this.onAction(); });
+                this.stage.container.addEventListener('click', () => this.onAction());
+                this.stage.container.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.onAction();
+                });
+            }
+
+            setState(newState) {
+                this.state = newState;
+                
+                this.ui.mainMenu.classList.add('hidden');
+                this.ui.rulesModal.classList.add('hidden');
+                this.ui.inGameUI.classList.add('hidden');
+                this.ui.pauseMenu.classList.add('hidden');
+                this.ui.gameOverMenu.classList.add('hidden');
+                this.ui.gameCanvas.style.display = 'none';
+                document.getElementById('container').className = 'container';
+                
+                this.showBannerAd();
+
+                switch (newState) {
+                    case this.STATES.MENU:
+                        this.ui.mainMenu.classList.remove('hidden');
+                        this.bgColors.targetTop.setHex(0x1a237e);
+                        this.bgColors.targetBottom.setHex(0x0d47a1);
+                        break;
+                    case this.STATES.PLAYING:
+                        this.ui.inGameUI.classList.remove('hidden');
+                        this.ui.gameCanvas.style.display = 'block';
+                        document.getElementById('container').classList.add('playing');
+                        break;
+                    case this.STATES.PAUSED:
+                        this.ui.inGameUI.classList.remove('hidden');
+                        this.ui.pauseMenu.classList.remove('hidden');
+                        this.ui.gameCanvas.style.display = 'block';
+                        break;
+                    case this.STATES.ENDED:
+                        this.ui.inGameUI.classList.remove('hidden');
+                        this.ui.gameOverMenu.classList.remove('hidden');
+                        this.ui.gameCanvas.style.display = 'block';
+                        document.getElementById('container').classList.add('ended');
+                        break;
+                }
+            }
+
+            onAction() {
+                if (this.state === this.STATES.PLAYING) {
+                    this.placeBlock();
+                }
+            }
+            
+            togglePause() {
+                if (this.state === this.STATES.PLAYING) {
+                    this.setState(this.STATES.PAUSED);
+                } else if (this.state === this.STATES.PAUSED) {
+                    this.setState(this.STATES.PLAYING);
+                }
+            }
+
+            startGame() {
+                if (this.state !== this.STATES.PLAYING) {
+                    this.reset();
+                    this.setState(this.STATES.PLAYING);
+                    this.addBlock();
+                }
+            }
+            
+            goToMenu() {
+                this.setState(this.STATES.RESETTING);
+                setTimeout(() => {
+                    this.reset();
+                    this.setState(this.STATES.MENU);
+                }, 500);
+            }
+
+            restartGame() {
+                this.setState(this.STATES.RESETTING);
+                const oldBlocks = this.placedBlocks.children;
+                const removeSpeed = 0.2;
+                const delayAmount = 0.02;
+
+                for (let i = 0; i < oldBlocks.length; i++) {
+                    TweenLite.to(oldBlocks[i].scale, removeSpeed, { x: 0, y: 0, z: 0, delay: (oldBlocks.length - i) * delayAmount, ease: Power1.easeIn });
+                }
+                
+                setTimeout(() => {
+                    this.startGame();
+                }, (oldBlocks.length * delayAmount + removeSpeed) * 1000);
+            }
+            
+            reset() {
+                [this.newBlocks, this.placedBlocks, this.choppedBlocks, this.perfectSliceGroup].forEach(group => {
+                    while(group.children.length > 0) group.remove(group.children[0]);
+                });
+                this.blocks = [];
+                this.perfectCombo = 0;
+                this.blocksSinceColorChange = 0;
+                this.addBlock(); 
+                this.stage.setCamera(2, 0);
+                this.ui.score.innerText = '0';
+            }
+
+            placeBlock() {
+                const currentBlock = this.blocks[this.blocks.length - 1];
+                if (!currentBlock || currentBlock.state !== currentBlock.STATES.ACTIVE) return;
+
+                const newBlocks = currentBlock.place();
+                this.newBlocks.remove(currentBlock.mesh);
+
+                if (newBlocks.placed) {
+                    this.placedBlocks.add(newBlocks.placed);
+                    this.blocksSinceColorChange++;
+                    
+                    if(this.blocksSinceColorChange >= 5) {
+                        this.blocksSinceColorChange = 0;
+                        this.bgColors.targetBottom.copy(this.bgColors.targetTop);
+                        this.bgColors.targetTop.copy(this.getPastelColor(currentBlock.color));
+                    }
+
+
+                    if (newBlocks.bonus) {
+                        this.perfectCombo++;
+                        
+                        if (this.perfectCombo >= 6) {
+                            const comboBonus = (this.perfectCombo - 5) * 0.25;
+                            const newWidth = Math.min(this.initialBlockSize.width, currentBlock.originalDimension.width + comboBonus);
+                            const newDepth = Math.min(this.initialBlockSize.depth, currentBlock.originalDimension.depth + comboBonus);
+
+                            currentBlock.dimension.width = newWidth;
+                            currentBlock.dimension.depth = newDepth;
+                            
+                            newBlocks.placed.scale.set(
+                                newWidth / currentBlock.originalDimension.width,
+                                1,
+                                newDepth / currentBlock.originalDimension.depth
+                            );
+                        }
+                        
+                        this.showPerfectPlacementText();
+                        this.triggerVibration();
+                        this.triggerPerfectSlice(newBlocks.placed.position, currentBlock.dimension);
+                    } else {
+                        this.perfectCombo = 0;
+                    }
+                }
+                
+                if (newBlocks.chopped) {
+                    this.choppedBlocks.add(newBlocks.chopped);
+                    const positionParams = { y: '-=30', ease: Power1.easeIn, onComplete: () => this.choppedBlocks.remove(newBlocks.chopped) };
+                    const plane = newBlocks.plane;
+                    if (newBlocks.chopped.position[plane] > newBlocks.placed.position[plane]) {
+                        positionParams[plane] = `+=${40 * Math.abs(newBlocks.direction)}`;
+                    } else {
+                        positionParams[plane] = `-=${40 * Math.abs(newBlocks.direction)}`;
+                    }
+                    TweenLite.to(newBlocks.chopped.position, 1, positionParams);
+                }
+
+                this.addBlock();
+            }
+
+            addBlock() {
+                const lastBlock = this.blocks.length > 0 ? this.blocks[this.blocks.length - 1] : null;
+                if (lastBlock && lastBlock.state === lastBlock.STATES.MISSED) {
+                    return this.endGame();
+                }
+                
+                const score = Math.max(0, this.blocks.length - 1);
+                this.ui.score.innerText = String(score);
+
+                let newDimensions = null;
+                if (this.perfectCombo >= 6 && lastBlock) {
+                    newDimensions = {
+                        width: lastBlock.dimension.width,
+                        depth: lastBlock.dimension.depth
+                    };
+                }
+
+                const newKidOnTheBlock = new Block(lastBlock, newDimensions);
+                this.blocks.push(newKidOnTheBlock);
+                
+                if (newKidOnTheBlock.state === newKidOnTheBlock.STATES.ACTIVE) {
+                    this.newBlocks.add(newKidOnTheBlock.mesh);
+                } else {
+                    this.placedBlocks.add(newKidOnTheBlock.mesh);
+                }
+
+                this.stage.setCamera(this.blocks.length * 2);
+            }
+            
+            showPerfectPlacementText() {
+                const text = this.ui.perfectPlacementText;
+                text.style.transform = 'translateY(20px)';
+                TweenLite.to(text.style, 0.3, { opacity: 1 });
+                TweenLite.to(text, 0.4, { transform: 'translateY(0px)' });
+                TweenLite.to(text.style, 0.3, { opacity: 0, delay: 0.5 });
+            }
+
+            triggerVibration() {
+                if (navigator.vibrate) {
+                    navigator.vibrate(100);
+                }
+            }
+
+            triggerPerfectSlice(position, dimension) {
+                const sliceHeight = 0.1;
+                const padding = 1.5;
+                const sliceGeometry = new THREE.BoxGeometry(dimension.width + padding, sliceHeight, dimension.depth + padding);
+                const sliceMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true });
+                const sliceMesh = new THREE.Mesh(sliceGeometry, sliceMaterial);
+                
+                sliceMesh.position.set(position.x + dimension.width / 2, position.y + (dimension.height/2), position.z + dimension.depth / 2);
+                sliceMesh.scale.set(0, 1, 0);
+                this.perfectSliceGroup.add(sliceMesh);
+                
+                TweenLite.to(sliceMesh.scale, 0.2, { x: 1, z: 1, ease: Power1.easeOut });
+                TweenLite.to(sliceMesh.scale, 0.3, { x: 0, z: 0, ease: Power1.easeIn, delay: 0.2, onComplete: () => {
+                    this.perfectSliceGroup.remove(sliceMesh);
+                }});
+            }
+            
+            addStars() {
+                const starGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+                const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                for(let i = 0; i < 150; i++) {
+                    const star = new THREE.Mesh(starGeometry, starMaterial);
+                    star.position.set(
+                        (Math.random() - 0.5) * 200,
+                        (Math.random() - 0.5) * 200,
+                        (Math.random() - 0.5) * 200
+                    );
+                    this.starsGroup.add(star);
+                }
+            }
+            
+            animateStars() {
+                const cameraY = this.stage.camera.position.y;
+                // Move the entire starfield with the camera
+                this.starsGroup.position.y = cameraY;
+                this.starsGroup.rotation.y += 0.0002;
+
+                // Wrap stars to create an infinite field
+                this.starsGroup.children.forEach(star => {
+                    if (star.position.y + cameraY < cameraY - 100) {
+                        star.position.y += 200;
+                    }
+                     if (star.position.y + cameraY > cameraY + 100) {
+                        star.position.y -= 200;
+                    }
+                });
+            }
+
+            getPastelColor(color) {
+                const tempColor = color.clone();
+                const white = new THREE.Color(0xffffff);
+                tempColor.lerp(white, 0.75); // Mix with 75% white for a milkier look
+                return tempColor;
+            }
+
+            updateBackground() {
+                // Slower lerp for a much smoother transition
+                this.bgColors.top.lerp(this.bgColors.targetTop, 0.005);
+                this.bgColors.bottom.lerp(this.bgColors.targetBottom, 0.005);
+                
+                const topHex = '#' + this.bgColors.top.getHexString();
+                const bottomHex = '#' + this.bgColors.bottom.getHexString();
+                
+                document.documentElement.style.setProperty('--bg-top', topHex);
+                document.documentElement.style.setProperty('--bg-bottom', bottomHex);
+            }
+
+            async endGame() {
+                const score = this.blocks.length - 2;
+                if (score > this.highScore) {
+                    this.highScore = score;
+                    this.ui.highScore.innerText = this.highScore;
+                    const isAuthorized = this.player && this.player.getMode() !== 'lite';
+                    await this.saveHighScore(isAuthorized);
+                }
+                this.ui.finalScore.innerText = score;
+                this.ui.gameOverHighScore.innerText = this.highScore;
+                this.setState(this.STATES.ENDED);
+                
+                if(score > 50) {
+                    this.showInterstitialAd();
+                }
+            }
+
+            tick = () => {
+                this.animateStars();
+
+                if (this.state === this.STATES.PLAYING || this.state === this.STATES.ENDED) {
+                    const topBlock = this.blocks[this.blocks.length - 1];
+                    if (topBlock && topBlock.state === topBlock.STATES.ACTIVE) {
+                        topBlock.tick();
+                    }
+                }
+                this.updateBackground();
+                this.stage.render();
+                requestAnimationFrame(this.tick);
+            }
+        }
+
+        window.onload = () => {
+             YaGames.init().then(ysdk => {
+                console.log('Yandex SDK initialized');
+                window.ysdk = ysdk;
+                window.game = new Game(ysdk);
+            }).catch(console.error);
+        }
+    </script>
+</body>
+</html>
+
+
