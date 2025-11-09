@@ -3,41 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Tile Pop Mania</title>
+    <!-- ИЗМЕНЕНО: Новый заголовок -->
+    <title>Tile Pop!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- ИЗМЕНЕНО: Добавлен шрифт Lobster -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Lobster&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <style>
         :root {
-            --bg-main: #f0f8ff; --bg-secondary: #e6f2ff; --bg-modal: rgba(135, 206, 250, 0.8);
+            --bg-main: #f0f8ff; --bg-secondary: #e6f2ff;
+            /* ИЗМЕНЕНО: Сделал фон модалок более прозрачным */
+            --bg-modal: rgba(255, 255, 255, 0.1); 
             --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6;
-            --border-color: #ff69b4; --font-main: 'Nunito', sans-serif;
+            --border-color: #ff69b4; 
+            --font-main: 'Nunito', sans-serif;
+            --font-title: 'Lobster', cursive; /* <-- Новый шрифт */
             --progress-bar-bg: #e6f2ff; --progress-bar-fill: #ff69b4;
         }
 
+        /* ИЗМЕНЕНО: Блокировка скролла страницы */
+        html {
+            overflow: hidden;
+            height: 100%;
+        }
         body {
             font-family: var(--font-main); background-color: var(--bg-main); color: var(--text-secondary);
-            touch-action: none; overflow: hidden; height: 100vh; -webkit-user-select: none; user-select: none;
+            touch-action: none; overflow: hidden; 
+            /* ИЗМЕНЕНО: 'height: 100vh' заменено на 'height: 100%' и 'position: relative' */
+            height: 100%;
+            position: relative;
+            width: 100%;
             background-size: cover; background-position: center center; background-repeat: no-repeat;
             transition: background-image 0.5s ease;
         }
         
-        body.theme-critters { background-image: url('bg-critters.png'); --bg-main: #f0f8ff; --bg-secondary: #e6f2ff; --bg-modal: rgba(135, 206, 250, 0.8); --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6; --border-color: #ff69b4; }
-        body.theme-sweets { background-image: url('bg-sweets.png'); --bg-main: #f8cdda; --bg-secondary: #fce4ec; --bg-modal: rgba(233, 30, 99, 0.8); --text-primary: #880e4f; --text-secondary: #263238; --accent-color: #f48fb1; --border-color: #c2185b; }
-        body.theme-nature { background-image: url('bg-nature.png'); --bg-main: #2d4c1e; --bg-secondary: #3e6d2b; --bg-modal: rgba(45, 76, 30, 0.9); --text-primary: #f0a500; --text-secondary: #ffffff; --accent-color: #1b3d1a; --border-color: #f0a500; }
-        body.theme-gems { background-image: url('bg-gems.png'); --bg-main: #4a148c; --bg-secondary: #6a1b9a; --bg-modal: rgba(74, 20, 140, 0.9); --text-primary: #ffeb3b; --text-secondary: #ffffff; --accent-color: #38006b; --border-color: #fdd835; }
+        /* ИЗМЕНЕНО: Обновлены RGBA для модалок */
+        body.theme-critters { background-image: url('bg-critters.png'); --bg-main: #f0f8ff; --bg-secondary: #e6f2ff; --bg-modal: rgba(240, 248, 255, 0.2); --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6; --border-color: #ff69b4; }
+        body.theme-sweets { background-image: url('bg-sweets.png'); --bg-main: #f8cdda; --bg-secondary: #fce4ec; --bg-modal: rgba(248, 205, 218, 0.2); --text-primary: #880e4f; --text-secondary: #263238; --accent-color: #f48fb1; --border-color: #c2185b; }
+        body.theme-nature { background-image: url('bg-nature.png'); --bg-main: #2d4c1e; --bg-secondary: #3e6d2b; --bg-modal: rgba(45, 76, 30, 0.2); --text-primary: #f0a500; --text-secondary: #ffffff; --accent-color: #1b3d1a; --border-color: #f0a500; }
+        body.theme-gems { background-image: url('bg-gems.png'); --bg-main: #4a148c; --bg-secondary: #6a1b9a; --bg-modal: rgba(74, 20, 140, 0.2); --text-primary: #ffeb3b; --text-secondary: #ffffff; --accent-color: #38006b; --border-color: #fdd835; }
         
         /* --- ЭКРАН ЗАГРУЗКИ --- */
         #preloader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-main); /* Используем фон темы по умолчанию */
+            background-color: var(--bg-main);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 2000; transition: opacity 0.5s ease;
         }
         #loading-title {
-            font-size: 2.5rem; font-weight: 900; color: var(--text-primary);
+            /* ИЗМЕНЕНО: Новый шрифт */
+            font-family: var(--font-title);
+            font-size: 3.0rem; 
+            font-weight: 900; color: var(--text-primary);
             text-shadow: 2px 2px 0px var(--accent-color);
             margin-bottom: 2rem;
         }
@@ -60,18 +79,27 @@
         /* --- --- */
 
         .main-container { 
-            background-color: transparent; display: none; /* <-- Скрыт по умолчанию */
+            background-color: transparent; display: none;
             justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; 
         }
         .main-menu, .game-screen { width: 100%; max-width: 420px; height: 100%; max-height: 900px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem 1.5rem; box-sizing: border-box; }
-        .game-title { font-size: 3.2rem; font-weight: 900; color: var(--text-primary); text-shadow: 2px 2px 0px var(--accent-color), 4px 4px 0px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        .game-title {
+            /* ИЗМЕНЕНО: Новый шрифт и размер */
+            font-family: var(--font-title);
+            font-size: 3.8rem; 
+            font-weight: 900; color: var(--text-primary); text-shadow: 2px 2px 0px var(--accent-color), 4px 4px 0px rgba(0,0,0,0.1); margin-bottom: 2rem; 
+        }
         .btn { background-color: var(--accent-color); color: var(--text-secondary); border: 2px solid var(--border-color); border-radius: 1rem; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: 700; width: 100%; margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 0 0 var(--border-color); text-transform: uppercase; }
         .btn:hover { background-color: var(--border-color); color: var(--bg-main); transform: translateY(-2px); box-shadow: 0 6px 0 0 var(--border-color); }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 0 var(--border-color); }
+        /* ИЗМЕНЕНО: Стили для "залипания" кнопок */
+        .btn:active, .btn.manual-active { transform: translateY(2px); box-shadow: 0 2px 0 0 var(--border-color); }
+        
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; }
         .icon-btn { background: var(--accent-color); border: 2px solid var(--border-color); border-radius: 50%; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; transition: all 0.2s ease; box-shadow: 0 4px 0 0 var(--border-color);}
         .icon-btn:hover { background-color: var(--border-color); transform: scale(1.05) translateY(-2px); box-shadow: 0 6px 0 0 var(--border-color);}
-        .icon-btn:active { transform: scale(1) translateY(2px); box-shadow: 0 2px 0 0 var(--border-color);}
+        /* ИЗМЕНЕНО: Стили для "залипания" кнопок */
+        .icon-btn:active, .icon-btn.manual-active { transform: scale(1) translateY(2px); box-shadow: 0 2px 0 0 var(--border-color);}
+        
         .icon-btn svg { width: 32px; height: 32px; transition: fill 0.2s ease; }
         .icon-btn .primary-path { fill: var(--text-secondary); }
         .icon-btn .secondary-path { fill: var(--text-primary); }
@@ -79,7 +107,19 @@
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-modal); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
         .modal.active { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--bg-secondary); padding: 2rem; border-radius: 1.5rem; border: 2px solid var(--border-color); width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); transform: scale(0.9); transition: transform 0.3s ease; max-height: 80vh; overflow-y: auto;}
+        .modal-content { 
+            background: var(--bg-secondary); padding: 2rem; border-radius: 1.5rem; border: 2px solid var(--border-color); 
+            width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
+            transform: scale(0.9); transition: transform 0.3s ease; max-height: 80vh; overflow-y: auto;
+            /* ИЗМЕНЕНО: Скрываем скроллбар */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        /* ИЗМЕНЕНО: Скрываем скроллбар */
+        .modal-content::-webkit-scrollbar {
+            display: none;
+        }
+
         .modal.active .modal-content { transform: scale(1); }
         .modal-title { font-size: 2rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1.5rem; text-align: center; }
         .game-header { width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center; margin-bottom: 1rem; padding: 0.5rem; background: var(--accent-color); border-radius: 1rem; }
@@ -88,9 +128,8 @@
         .header-item span { font-size: 1.1rem; font-weight: 700; color: var(--text-secondary); }
         .pause-btn-container { justify-self: center; background: none; padding: 0; box-shadow: none; border: none;}
         .moves-container { justify-self: end; }
-        #rise-progress-bar-container, #time-bar-container { grid-column: 1 / -1; height: 10px; background-color: var(--progress-bar-bg); border-radius: 5px; overflow: hidden; margin: 0.25rem 0.5rem 0.5rem; border: 2px solid var(--accent-color); }
-        #rise-progress-bar, #time-bar { width: 100%; height: 100%; background-color: var(--progress-bar-fill); transition: width 0.3s ease-in-out; border-radius: 2px;}
-        #time-bar { transition: width 0.1s linear; }
+        #time-bar-container { grid-column: 1 / -1; height: 10px; background-color: var(--progress-bar-bg); border-radius: 5px; overflow: hidden; margin: 0.25rem 0.5rem 0.5rem; border: 2px solid var(--accent-color); }
+        #time-bar { width: 100%; height: 100%; background-color: var(--progress-bar-fill); transition: width 0.1s linear; }
         
         #goals-container { grid-column: 1 / -1; background: var(--bg-main); border-radius: 0.75rem; padding: 0.5rem; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; overflow: hidden; }
         #goals-header { font-size: 0.9rem; font-weight: 700; color: var(--text-secondary); text-align: left; margin-right: 0.5rem; flex-shrink: 0; }
@@ -100,7 +139,8 @@
         .goal-tile-container { width: 20px; height: 20px; display: inline-flex; justify-content: center; align-items: center; margin-right: 4px; vertical-align: middle; }
         .goal-tile-container .tile-inner { width: 100%; height: 100%; box-shadow: none; background-size: contain; background-repeat: no-repeat; background-position: center; }
         
-        #game-board { position: relative; aspect-ratio: 7 / 10; width: 100%; overflow: hidden; background-color: var(--accent-color); border-radius: 1rem; box-sizing: border-box; }
+        /* ИЗМЕНЕНО: Фон поля прозрачный */
+        #game-board { position: relative; aspect-ratio: 7 / 10; width: 100%; overflow: hidden; background-color: transparent; border-radius: 1rem; box-sizing: border-box; }
         .tile { aspect-ratio: 1 / 1; position: absolute; transition: top 0.3s ease, left 0.3s ease, transform 0.3s ease; will-change: top, left, transform; display: flex; justify-content: center; align-items: center; -webkit-user-drag: none; user-drag: none; }
         
         .tile-inner {
@@ -119,14 +159,24 @@
         .tile.bomb .tile-inner { background-image: url('tile-bomb.png'); }
         .tile.rocket .tile-inner { background-image: url('tile-rocket.png'); }
         .tile.unmovable .tile-inner { background-image: url('tile-unmovable.png'); }
-        
-        /* goal-unmovable.png больше не нужен, используется tile-unmovable.png */
 
         .tile.match { animation: match 0.4s ease-in forwards; }
         @keyframes match { 0% { transform: scale(1.1); } 100% { transform: scale(0); opacity: 0; } }
         
-        .tile.bonus-create .tile-inner { animation: bonus-create-anim 0.4s ease-out; }
-        @keyframes bonus-create-anim { 0% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        /* ИЗМЕНЕНО: Анимация появления бонуса */
+        .tile.bonus-create {
+            /* Этот класс-пустышка нужен для JS, сама анимация на .tile-inner */
+            z-index: 10;
+        }
+        .tile.bonus-create .tile-inner {
+            /* Анимация "пульсации" при создании */
+            animation: bonus-create-anim 0.4s ease-out;
+        }
+        @keyframes bonus-create-anim { 
+            0% { transform: scale(0.5); opacity: 0.5; } 
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
         .hidden { display: none !important; }
         
@@ -161,7 +211,7 @@
     
     <!-- --- ЭКРАН ЗАГРУЗКИ --- -->
     <div id="preloader">
-        <h1 id="loading-title">Tile Pop Mania</h1>
+        <h1 id="loading-title">Tile Pop!</h1>
         <div id="loading-bar-container">
             <div id="loading-bar-fill"></div>
         </div>
@@ -174,7 +224,7 @@
     <div class="main-container">
         <!-- Main Menu -->
         <div id="main-menu-screen" class="main-menu">
-            <h1 class="game-title">Tile Pop Mania</h1>
+            <h1 class="game-title">Tile Pop!</h1>
             <div class="w-full" style="margin-bottom: 2rem;">
                 <button data-mode="levels" id="levels-mode-btn" class="btn mode-btn">Уровень 1</button>
                 <button data-mode="goals" class="btn mode-btn">Бесконечные цели</button>
@@ -267,16 +317,10 @@
         'tile-bomb.png', 'tile-rocket.png', 'tile-unmovable.png'
     ];
 
-    // Гарантированный запуск аудиоконтекста при первом касании
-    document.body.addEventListener('pointerdown', async () => {
-        if (Tone.context.state !== 'running') {
-            await Tone.start();
-            console.log("Audio ready.");
-            playMusic();
-        }
-    }, { once: true });
+    // ИЗМЕНЕНО: Глобальный listener удален. Он будет добавлен в initGameLogic.
 
     document.addEventListener('DOMContentLoaded', () => {
+        // --- Ссылки на DOM ---
         const preloader = document.getElementById('preloader');
         const loadingBarFill = document.getElementById('loading-bar-fill');
         const loadingStatus = document.getElementById('loading-status');
@@ -297,11 +341,11 @@
         const muteMusicToggle = document.getElementById('mute-music-toggle');
         const bgMusic = document.getElementById('bg-music');
         
+        // --- Константы ---
         const ROWS = 10; const COLS = 7; const GAP = 4;
         const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
         
-        function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
-
+        // --- Состояние игры ---
         let board = [], score = 0, movesCount = 0, totalMoves = 0, level = 1, currentLevel = 1;
         let gameMode = 'levels', isPaused = false, isProcessing = false;
         
@@ -315,7 +359,7 @@
         let goals = {}, movesLimit = 0;
         let timerInterval = null, timeLeft = 0, totalTime = 60000, timerStartTime = 0, pausedTimeLeft = 0;
 
-        // --- Настройка Звуков ---
+        // --- Настройка Звуков (Объявление) ---
         let audioReady = Tone.context.state === 'running';
         let isMuted = localStorage.getItem('tilepop_muted') === 'true';
         let isMusicMuted = localStorage.getItem('tilepop_music_muted') === 'true';
@@ -331,67 +375,7 @@
         synths.bomb.volume.value = -10;
         synths.rocket.volume.value = -15;
 
-        function updateMuteButton() { muteToggle.checked = !isMuted; }
-        updateMuteButton();
-
-        function toggleMute() {
-            isMuted = !muteToggle.checked;
-            localStorage.setItem('tilepop_muted', isMuted);
-            playSound('tap');
-        }
-        muteToggle.addEventListener('change', toggleMute);
         
-        function updateMusicMuteButton() { muteMusicToggle.checked = !isMusicMuted; }
-        updateMusicMuteButton();
-        
-        function toggleMusicMute() {
-            isMusicMuted = !muteMusicToggle.checked;
-            localStorage.setItem('tilepop_music_muted', isMusicMuted);
-            if (isMusicMuted) { stopMusic(); } else { playMusic(); }
-        }
-        muteMusicToggle.addEventListener('change', toggleMusicMute);
-
-        async function playMusic() {
-            if (isMusicMuted || !audioReady) return;
-            try { if (bgMusic.paused) { await bgMusic.play(); } } 
-            catch (e) { console.error("Music play failed:", e); }
-        }
-        function stopMusic() { bgMusic.pause(); bgMusic.currentTime = 0; }
-
-        async function initAudio() {
-             if (audioReady) return;
-             try {
-                await Tone.start();
-                audioReady = true;
-                console.log("Audio ready.");
-                playMusic();
-             } catch (e) { console.error("Audio context failed to start:", e); }
-        }
-
-        function playSound(sound, time = Tone.now(), ...args) {
-            if (!audioReady) initAudio();
-            if (isMuted || !audioReady) return;
-            try {
-                if (sound === 'tap') synths.tap.triggerAttackRelease('C5', '8n', time);
-                else if (sound === 'match') synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', time);
-                else if (sound === 'bomb') synths.bomb.triggerAttackRelease('2n', time);
-                else if (sound === 'rocket') synths.rocket.triggerAttackRelease('8n', time);
-                else if (sound === 'win') {
-                    const now = Tone.now();
-                    synths.win.triggerAttackRelease('C4', '8n', now);
-                    synths.win.triggerAttackRelease('E4', '8n', now + 0.1);
-                    synths.win.triggerAttackRelease('G4', '8n', now + 0.2);
-                    synths.win.triggerAttackRelease('C5', '8n', now + 0.3);
-                }
-                else if (sound === 'lose') synths.lose.triggerAttackRelease(['G4', 'E4', 'C4'], '2n', time);
-            } catch (e) { console.error("Sound play error:", e); }
-        }
-
-        document.querySelectorAll('.btn, .icon-btn, .theme-selection button').forEach(btn => {
-            btn.addEventListener('pointerdown', () => playSound('tap'));
-        });
-        // --- Конец Настройки Звуков ---
-
         // --- ЛОГИКА ПРЕДЗАГРУЗКИ ---
         function preloadAssets() {
             let assetsLoaded = 0;
@@ -446,7 +430,85 @@
         preloadAssets();
         
         // --- initGameLogic содержит всю остальную логику игры ---
+        // Эта функция вызывается ОДИН РАЗ после загрузки ассетов
         function initGameLogic() {
+            
+            // --- Инициализация Аудио (теперь внутри init) ---
+            function updateMuteButton() { muteToggle.checked = !isMuted; }
+            updateMuteButton();
+
+            function toggleMute() {
+                isMuted = !muteToggle.checked;
+                localStorage.setItem('tilepop_muted', isMuted);
+                playSound('tap');
+            }
+            muteToggle.addEventListener('change', toggleMute);
+            
+            function updateMusicMuteButton() { muteMusicToggle.checked = !isMusicMuted; }
+            updateMusicMuteButton();
+            
+            function toggleMusicMute() {
+                isMusicMuted = !muteMusicToggle.checked;
+                localStorage.setItem('tilepop_music_muted', isMusicMuted);
+                if (isMusicMuted) { stopMusic(); } else { playMusic(); }
+            }
+            muteMusicToggle.addEventListener('change', toggleMusicMute);
+
+            async function playMusic() {
+                if (isMusicMuted || !audioReady) return;
+                try { if (bgMusic.paused) { await bgMusic.play(); } } 
+                catch (e) { console.error("Music play failed:", e); }
+            }
+            function stopMusic() { bgMusic.pause(); bgMusic.currentTime = 0; }
+
+            async function initAudio() {
+                if (audioReady) return;
+                try {
+                    await Tone.start();
+                    audioReady = true;
+                    console.log("Audio ready.");
+                    playMusic(); // Пытаемся включить музыку после инициализации
+                } catch (e) { console.error("Audio context failed to start:", e); }
+            }
+
+            function playSound(sound, time = Tone.now(), ...args) {
+                if (!audioReady) initAudio(); // Попытка инициализации
+                if (isMuted || !audioReady) return; // Повторная проверка
+                try {
+                    if (sound === 'tap') synths.tap.triggerAttackRelease('C5', '8n', time);
+                    else if (sound === 'match') synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', time);
+                    else if (sound === 'bomb') synths.bomb.triggerAttackRelease('2n', time);
+                    else if (sound === 'rocket') synths.rocket.triggerAttackRelease('8n', time);
+                    else if (sound === 'win') {
+                        const now = Tone.now();
+                        synths.win.triggerAttackRelease('C4', '8n', now);
+                        synths.win.triggerAttackRelease('E4', '8n', now + 0.1);
+                        synths.win.triggerAttackRelease('G4', '8n', now + 0.2);
+                        synths.win.triggerAttackRelease('C5', '8n', now + 0.3);
+                    }
+                    else if (sound === 'lose') synths.lose.triggerAttackRelease(['G4', 'E4', 'C4'], '2n', time);
+                } catch (e) { console.error("Sound play error:", e); }
+            }
+            
+            // ИЗМЕНЕНО: Глобальный listener теперь здесь, в правильном scope
+            document.body.addEventListener('pointerdown', async () => {
+                if (Tone.context.state !== 'running') {
+                    await initAudio(); // Используем полную функцию инициализации
+                }
+            }, { once: true });
+            
+            // --- Логика "Залипания" Кнопок ---
+            document.querySelectorAll('.btn, .icon-btn').forEach(btn => {
+                btn.addEventListener('pointerdown', () => {
+                    playSound('tap');
+                    btn.classList.add('manual-active'); // Add a manual class
+                });
+                const removeActive = () => btn.classList.remove('manual-active');
+                btn.addEventListener('pointerup', removeActive);
+                btn.addEventListener('pointerleave', removeActive);
+            });
+            // --- Конец ---
+
             updateLevelsButton(maxReachedLevel);
             // Восстанавливаем сохраненную тему
             (() => { 
@@ -456,7 +518,10 @@
                 if(btn) btn.classList.add('active'); 
             })();
             
-            // Все остальные функции и слушатели
+            // --- Остальные функции и слушатели ---
+            
+            function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
+
             function updateLevelsButton(levelToShow) {
                 levelsModeBtn.textContent = `Уровень ${levelToShow}`;
             }
@@ -480,7 +545,6 @@
                 mainMenuScreen.classList.add('hidden');
                 gameScreen.classList.remove('hidden');
 
-                document.getElementById('rise-progress-bar-container').classList.add('hidden');
                 document.getElementById('time-bar-container').classList.toggle('hidden', gameMode !== 'speed');
                 document.getElementById('goals-container').classList.toggle('hidden', gameMode !== 'goals' && gameMode !== 'levels');
                 document.querySelector('.moves-container').classList.toggle('hidden', gameMode === 'speed');
@@ -546,7 +610,7 @@
             
             function resizeBoard() {
                 const boardWidth = boardElement.clientWidth;
-                if (boardWidth === 0) return; // Не выполнять, если доска скрыта
+                if (boardWidth === 0) return;
                 TILE_SIZE = (boardWidth - (COLS + 1) * GAP) / COLS;
                 boardElement.querySelectorAll('.tile').forEach(tileEl => {
                     const r = parseInt(tileEl.dataset.r), c = parseInt(tileEl.dataset.c);
@@ -556,7 +620,7 @@
                 });
             }
             window.addEventListener('resize', resizeBoard);
-            // Также вызываем resize, когда игра начинается
+            
             const gameScreenObserver = new MutationObserver(() => {
                 if (gameScreen.classList.contains('hidden')) return;
                 resizeBoard();
@@ -767,26 +831,29 @@
                     unmovableToDestroy.forEach(t => tilesToDestroy.add(t));
                     updateGameStats(tilesToDestroy);
                     
-                    bonusesToCreate.forEach(bonus => {
-                        const tile = board[bonus.r]?.[bonus.c];
-                        if(tile) tilesToDestroy.delete(tile);
-                    });
-                    
-                    await animateMatches(tilesToDestroy);
-
+                    // --- ИЗМЕНЕНО: Логика Анимации Бонусов ---
+                    // 1. Анимируем создание бонусов
                     bonusesToCreate.forEach(bonus => {
                         const tile = board[bonus.r]?.[bonus.c];
                         if(tile && tile.type === 'gem' && !tile.bonus) {
-                            tile.bonus = bonus.type;
-                            tile.element.classList.remove(`tile-${tile.color}`);
-                            tile.color = null;
-                            tile.element.classList.add(bonus.type);
+                            tilesToDestroy.delete(tile); // Не удаляем эту фишку
                             
                             tile.element.classList.add('bonus-create');
-                            setTimeout(() => tile.element.classList.remove('bonus-create'), 400);
+                            // Меняем класс фишки *после* анимации
+                            setTimeout(() => {
+                                tile.bonus = bonus.type;
+                                tile.element.classList.remove(`tile-${tile.color}`);
+                                tile.color = null;
+                                tile.element.classList.add(bonus.type);
+                                tile.element.classList.remove('bonus-create');
+                            }, 400); // Синхронизируем с `animateMatches`
                         }
                     });
-            
+                    
+                    // 2. Анимируем уничтожение остальных
+                    await animateMatches(tilesToDestroy);
+                    
+                    // 3. Заполняем поле
                     await dropAndRefill();
                 }
             }
@@ -1065,7 +1132,6 @@
                 goalsListWrapper.innerHTML = Object.entries(goals).map(([type, count]) => {
                     let tileContent = '';
                     if (type === 'unmovable') {
-                        // --- ИСПРАВЛЕНО: Используем tile-unmovable.png ---
                         tileContent = `<div class="tile-inner" style="background-image: url('tile-unmovable.png');"></div>`;
                     } else {
                         tileContent = `<div class="tile-inner" style="background-image: url('tile-${type}.png');"></div>`;
