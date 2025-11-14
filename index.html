@@ -451,15 +451,18 @@
 
         let synths = {
             tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
-            // ИЗМЕНЕНО: Новый звук для смены
             swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.1 } }).toDestination(),
             match: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination(),
-            bomb: new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination(),
+            // ИЗМЕНЕНО: Новый, более громкий звук бомбы
+            bomb: new Tone.MembraneSynth({ pitchDecay: 0.1, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
             rocket: new Tone.NoiseSynth({ noise: { type: 'white' }, filter: { Q: 1, type: 'bandpass', frequency: 1500 }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination(),
             win: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination(),
-            lose: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.2 } }).toDestination()
+            lose: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.2 } }).toDestination(),
+            // ИЗМЕНЕНО: Новый звук для обновления цели
+            goal: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.2 } }).toDestination()
         };
-        synths.bomb.volume.value = -10;
+        // ИЗМЕНЕНО: Громкость бомбы
+        synths.bomb.volume.value = -5; 
         synths.rocket.volume.value = -15;
         synths.swap.volume.value = -6;
 
@@ -543,14 +546,16 @@
                 try { 
                     if (bgMusic.paused) { 
                         bgMusic.volume = 0.3; 
-                        await bgMusic.play(); 
+                        // ИЗМЕНЕНО: Убран await и добавлена обработка ошибки
+                        bgMusic.play().catch(e => { console.error("Music play failed:", e); }); 
                     } 
                 } 
-                catch (e) { console.error("Music play failed:", e); }
+                catch (e) { console.error("Music play failed (outer):", e); }
             }
             function stopMusic() { 
                 bgMusic.pause(); 
-                bgMusic.currentTime = 0; 
+                // ИЗМЕНЕНО: Убран сброс времени, как в примере
+                // bgMusic.currentTime = 0; 
             }
 
             async function initAudio() {
@@ -563,7 +568,14 @@
                         if(synth.triggerAttackRelease) {
                             synth.volume.value = -Infinity;
                             synth.triggerAttackRelease('C4', '32n', Tone.now() + 0.01);
-                            synth.volume.value = (synth === synths.bomb || synth === synths.rocket) ? (synth === synths.bomb ? -10 : -15) : (synth === synths.swap ? -6 : 0);
+                            // ИЗМЕНЕНО: Корректная установка громкости
+                            let vol = 0;
+                            if (synth === synths.bomb) vol = -5;
+                            else if (synth === synths.rocket) vol = -15;
+                            else if (synth === synths.swap) vol = -6;
+                            else if (synth === synths.tap) vol = 0;
+                            else if (synth === synths.goal) vol = 0;
+                            synth.volume.value = vol;
                         }
                     });
                     console.log("Audio ready.");
@@ -581,7 +593,8 @@
                     if (sound === 'tap') synths.tap.triggerAttackRelease('C5', '8n', time);
                     else if (sound === 'swap') synths.swap.triggerAttackRelease('E5', '16n', time);
                     else if (sound === 'match') synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', time);
-                    else if (sound === 'bomb') synths.bomb.triggerAttackRelease('2n', time);
+                    // ИЗМЕНЕНО: Новый вызов звука бомбы
+                    else if (sound === 'bomb') synths.bomb.triggerAttackRelease('C2', '8n', time);
                     else if (sound === 'rocket') synths.rocket.triggerAttackRelease('8n', time);
                     else if (sound === 'win') {
                         const now = Tone.now();
@@ -591,6 +604,8 @@
                         synths.win.triggerAttackRelease('C5', '8n', now + 0.3);
                     }
                     else if (sound === 'lose') synths.lose.triggerAttackRelease(['G4', 'E4', 'C4'], '2n', time);
+                    // ИЗМЕНЕНО: Вызов звука цели
+                    else if (sound === 'goal') synths.goal.triggerAttackRelease('G5', '8n', time);
                 } catch (e) { console.error("Sound play error:", e); }
             }
             
@@ -713,19 +728,19 @@
                 }).catch(e => console.error("Banner Ad error", e));
             }
 
-            function showInterstitialAd(callback) {
-                isPaused = true;
+            // ИЗМЕНЕНО: Рекламная функция (больше не блокирует)
+            function showInterstitialAd() {
+                // Эта функция просто *пытается* показать рекламу, не блокируя поток
                 let musicWasPlaying = !bgMusic.paused;
                 if(musicWasPlaying) stopMusic();
                 
                 vkBridge.send('VKWebAppShowInterstitialAd')
                     .catch(e => console.error("Interstitial Ad error", e))
                     .finally(() => {
-                        // isPaused = false; // Не снимаем паузу, это сделает модальное окно
+                        // Реклама закончилась, возвращаем музыку если она играла
                         if (musicWasPlaying && !isMusicMuted) {
                             playMusic();
                         }
-                        if (callback) callback();
                     });
             }
 
@@ -1095,6 +1110,8 @@
                         levelComplete();
                     } else if (gameMode === 'goals') {
                         level++;
+                        // ИЗМЕНЕНО: Звук новой цели
+                        playSound('goal');
                         setupGoalsLevel();
                         if (!checkForPossibleMoves()) {
                             setTimeout(() => gameOver("Нет ходов"), 500);
@@ -1249,13 +1266,17 @@
                 }
                 
                 levelsSinceAd++;
-                saveGameData(); // Сохраняем прогресс *перед* рекламой
+                saveGameData(); // Сохраняем прогресс
                 
+                // ИЗМЕНЕНО: СНАЧАЛА ПОКАЗЫВАЕМ МОДАЛКУ
+                showLevelCompleteModal(); 
+
+                // ПОТОМ ПЫТАЕМСЯ ПОКАЗАТЬ РЕКЛАМУ (поверх модалки)
                 if (levelsSinceAd >= 3) {
                     levelsSinceAd = 0;
-                    showInterstitialAd(showLevelCompleteModal); // Показать модалку ПОСЛЕ рекламы
-                } else {
-                    showLevelCompleteModal(); // Показать модалку сразу
+                    saveGameData(); // Сохраняем сброс счетчика
+                    // Небольшая задержка, чтобы модалка успела появиться
+                    setTimeout(showInterstitialAd, 500); 
                 }
             }
 
@@ -1287,10 +1308,13 @@
                     openModal(modal);
                 }
 
+                // ИЗМЕНЕНО: СНАЧАЛА ПОКАЗЫВАЕМ МОДАЛКУ
+                showModal();
+
+                // ПОТОМ ПЫТАЕМСЯ ПОКАЗАТЬ РЕКЛАМУ (поверх модалки)
                 if (gameMode === 'speed' || gameMode === 'goals') {
-                    showInterstitialAd(showModal); // Показать модалку ПОСЛЕ рекламы
-                } else {
-                    showModal(); // Показать модалку сразу
+                    // Небольшая задержка, чтобы модалка успела появиться
+                    setTimeout(showInterstitialAd, 500); 
                 }
             }
 
@@ -1350,9 +1374,11 @@
             }
 
             function setupGoalsLevel() {
-                movesLimit = 20 + Math.floor(level / 5) * 2;
+                // ИЗМЕНЕНО: Баланс ходов
+                movesLimit = 25 + Math.floor(level / 3) * 2; // Было 20, /5
                 const numGoalTypes = Math.min(COLORS.length, 1 + Math.floor(level / 3));
-                const baseAmount = 10 + Math.floor(level / 2) * 2;
+                // ИЗМЕНЕНО: Баланс количества
+                const baseAmount = 10 + Math.floor(level / 3) * 2; // Было /2
                 const colorsToPick = [...COLORS].sort(() => 0.5 - Math.random()).slice(0, numGoalTypes);
                 
                 goals = {};
