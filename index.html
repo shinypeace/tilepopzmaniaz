@@ -35,7 +35,8 @@
         
         /* ИЗМЕНЕНО: Прозрачность фона */
         body.theme-critters { background-image: url('bg-critters.png'); --bg-main: #f0f8ff; --bg-secondary: #e6f2ff; --bg-modal: rgba(240, 248, 255, 0.5); --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6; --border-color: #ff69b4; }
-        body.theme-sweets { background-image: url('bg-sweets.png'); --bg-main: #f8cdda; --bg-secondary: #fce4ec; --bg-modal: rgba(248, 205, 218, 0.5); --text-primary: #880e4f; --text-secondary: #263238; --accent-color: #f48fb1; --border-color: #c2185b; }
+        /* ИЗМЕНЕНО: Цвета темы "Sweets" */
+        body.theme-sweets { background-image: url('bg-sweets.png'); --bg-main: #f8cdda; --bg-secondary: #fce4ec; --bg-modal: rgba(248, 205, 218, 0.5); --text-primary: #d81b60; --text-secondary: #263238; --accent-color: #f48fb1; --border-color: #ad1457; }
         body.theme-nature { background-image: url('bg-nature.png'); --bg-main: #2d4c1e; --bg-secondary: #3e6d2b; --bg-modal: rgba(45, 76, 30, 0.5); --text-primary: #f0a500; --text-secondary: #ffffff; --accent-color: #1b3d1a; --border-color: #f0a500; }
         body.theme-gems { background-image: url('bg-gems.png'); --bg-main: #4a148c; --bg-secondary: #6a1b9a; --bg-modal: rgba(74, 20, 140, 0.5); --text-primary: #ffeb3b; --text-secondary: #ffffff; --accent-color: #38006b; --border-color: #fdd835; }
         
@@ -72,14 +73,70 @@
             background-color: transparent; display: none;
             justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; 
         }
-        .main-menu, .game-screen { width: 100%; max-width: 420px; height: 100%; max-height: 900px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem 1.5rem; box-sizing: border-box; }
+        /* ИЗМЕНЕНО: Адаптация под баннер VK */
+        .main-menu { 
+            width: 100%; max-width: 420px; height: 100%; max-height: 900px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            padding: 1rem 1.5rem 80px 1.5rem; /* Отступ 80px снизу */
+            box-sizing: border-box; 
+        }
+        .game-screen {
+            width: 100%; max-width: 420px; height: 100%; max-height: 900px; 
+            display: flex; flex-direction: column; justify-content: flex-start; /* Изменено на flex-start */
+            padding: 1rem 1.5rem 80px 1.5rem; /* Отступ 80px снизу */
+            box-sizing: border-box; 
+        }
+
         .game-title {
             font-family: var(--font-title); font-size: 3.8rem; 
             font-weight: 900; color: var(--text-primary); text-shadow: 2px 2px 0px var(--accent-color), 4px 4px 0px rgba(0,0,0,0.1); margin-bottom: 2rem; 
         }
-        .btn { background-color: var(--accent-color); color: var(--text-secondary); border: 2px solid var(--border-color); border-radius: 1rem; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: 700; width: 100%; margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 0 0 var(--border-color); text-transform: uppercase; }
-        .btn:hover { background-color: var(--border-color); color: var(--bg-main); transform: translateY(-2px); box-shadow: 0 6px 0 0 var(--border-color); }
-        .btn:active, .btn.manual-active { transform: translateY(2px); box-shadow: 0 2px 0 0 var(--border-color); }
+        
+        /* ИЗМЕНЕНО: Стили кнопок меню */
+        .btn { 
+            background-color: var(--accent-color); color: var(--text-secondary); border: 2px solid var(--border-color); 
+            border-radius: 1rem; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: 700; width: 100%; 
+            margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s ease; 
+            box-shadow: 0 4px 0 0 var(--border-color); text-transform: uppercase; 
+        }
+        .btn:hover { 
+            background-color: var(--border-color); color: var(--bg-main); 
+            transform: translateY(-2px); box-shadow: 0 6px 0 0 var(--border-color); 
+        }
+        .btn:active, .btn.manual-active { 
+            transform: translateY(2px); box-shadow: 0 2px 0 0 var(--border-color); 
+        }
+
+        /* Новая основная кнопка (для Уровней) */
+        .btn-primary {
+            background-color: var(--text-primary);
+            color: white;
+            border-color: var(--text-primary);
+            box-shadow: 0 4px 0 0 var(--border-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--border-color);
+            color: white;
+            border-color: var(--border-color);
+        }
+
+        /* Новые вторичные кнопки (для остальных режимов) */
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 0 0 var(--accent-color);
+        }
+        .btn-secondary:hover {
+            background-color: var(--accent-color);
+            color: var(--text-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 0 var(--accent-color);
+        }
+        .btn-secondary:active, .btn-secondary.manual-active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 0 var(--accent-color);
+        }
         
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; }
         .icon-btn { background: var(--accent-color); border: 2px solid var(--border-color); border-radius: 50%; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; transition: all 0.2s ease; box-shadow: 0 4px 0 0 var(--border-color);}
@@ -103,12 +160,11 @@
         .modal.active .modal-content { transform: scale(1); }
         .modal-title { font-size: 2rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1.5rem; text-align: center; }
         
-        /* ИЗМЕНЕНО: Компактная шапка */
         .game-header { 
             width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
             gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; padding: 0.25rem; 
             background: var(--accent-color); border-radius: 1rem; 
-            flex-shrink: 0; /* Не сжимать шапку */
+            flex-shrink: 0; /* Шапка не сжимается */
         }
         .header-item { 
             display: flex; align-items: center; background-color: var(--bg-main); 
@@ -117,7 +173,7 @@
         .header-item svg { width: 20px; height: 20px; fill: var(--text-primary); margin-right: 0.5rem; }
         .header-item span { font-size: 1rem; font-weight: 700; color: var(--text-secondary); }
         .pause-btn-container { justify-self: center; background: none; padding: 0; box-shadow: none; border: none;}
-        .pause-btn-container .icon-btn { width: 44px; height: 44px; } /* Уменьшена кнопка паузы */
+        .pause-btn-container .icon-btn { width: 44px; height: 44px; }
         .pause-btn-container .icon-btn svg { width: 24px; height: 24px; }
         .moves-container { justify-self: end; }
         
@@ -132,14 +188,14 @@
         .goal-tile-container { width: 20px; height: 20px; display: inline-flex; justify-content: center; align-items: center; margin-right: 4px; vertical-align: middle; }
         .goal-tile-container .tile-inner { width: 100%; height: 100%; box-shadow: none; background-size: contain; background-repeat: no-repeat; background-position: center; }
         
-        /* ИЗМЕНЕНО: Фон поля полупрозрачный и убран aspect-ratio */
+        /* ИЗМЕНЕНО: Адаптация поля */
         #game-board { 
             position: relative; width: 100%; overflow: hidden; 
             background-color: var(--bg-modal);
-            backdrop-filter: blur(8px); /* Усилено размытие */
+            backdrop-filter: blur(2px); /* Размытие фона */
             border-radius: 1rem; box-sizing: border-box;
-            /* aspect-ratio: 7 / 10; <-- УБРАНО */
-            flex-grow: 1; /* Позволяет полю сжиматься, но JS задаст высоту */
+            flex-grow: 1; /* Поле занимает оставшееся место */
+            flex-shrink: 1; /* Поле может сжиматься */
             min-height: 0; /* Важно для flex-shrink */
         }
         .tile { aspect-ratio: 1 / 1; position: absolute; transition: top 0.3s ease, left 0.3s ease, transform 0.3s ease; will-change: top, left, transform; display: flex; justify-content: center; align-items: center; -webkit-user-drag: none; user-drag: none; }
@@ -252,9 +308,10 @@
         <div id="main-menu-screen" class="main-menu">
             <h1 class="game-title">Tile Pop!</h1>
             <div class="w-full" style="margin-bottom: 2rem;">
-                <button data-mode="levels" id="levels-mode-btn" class="btn mode-btn">Уровень 1</button>
-                <button data-mode="goals" class="btn mode-btn">Бесконечные цели</button>
-                <button data-mode="speed" class="btn mode-btn">Скоростной</button>
+                <!-- ИЗМЕНЕНО: Классы кнопок -->
+                <button data-mode="levels" id="levels-mode-btn" class="btn btn-primary mode-btn">Уровень 1</button>
+                <button data-mode="goals" class="btn btn-secondary mode-btn">Бесконечные цели</button>
+                <button data-mode="speed" class="btn btn-secondary mode-btn">Скоростной</button>
             </div>
             <div class="icon-btn-group">
                 <button id="settings-btn" class="icon-btn">
@@ -275,7 +332,7 @@
                     <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
                     <span id="score">0</span>
                 </div>
-                <div class="pause-btn-container"><button id="pause-btn" class="icon-btn" style="width: 44px; height: 44px;"><svg viewBox="0 0 24 24" style="width: 24px; height: 24px;"><path class="primary-path" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></button></div>
+                <div class="pause-btn-container"><button id="pause-btn" class="icon-btn"><svg viewBox="0 0 24 24"><path class="primary-path" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></button></div>
                 <div class="header-item moves-container"><span id="moves-label">Ход: </span><span id="moves-count">0</span></div>
                 <div id="time-bar-container" class="hidden"><div id="time-bar"></div></div>
                 <div id="goals-container" class="hidden">
@@ -394,6 +451,8 @@
 
         let synths = {
             tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
+            // ИЗМЕНЕНО: Новый звук для смены
+            swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.1 } }).toDestination(),
             match: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination(),
             bomb: new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination(),
             rocket: new Tone.NoiseSynth({ noise: { type: 'white' }, filter: { Q: 1, type: 'bandpass', frequency: 1500 }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination(),
@@ -402,6 +461,7 @@
         };
         synths.bomb.volume.value = -10;
         synths.rocket.volume.value = -15;
+        synths.swap.volume.value = -6;
 
         
         // --- ЛОГИКА ПРЕДЗАГРУЗКИ ---
@@ -480,26 +540,46 @@
 
             async function playMusic() {
                 if (isMusicMuted || !audioReady) return;
-                try { if (bgMusic.paused) { bgMusic.volume = 0.3; await bgMusic.play(); } } 
+                try { 
+                    if (bgMusic.paused) { 
+                        bgMusic.volume = 0.3; 
+                        await bgMusic.play(); 
+                    } 
+                } 
                 catch (e) { console.error("Music play failed:", e); }
             }
-            function stopMusic() { bgMusic.pause(); bgMusic.currentTime = 0; }
+            function stopMusic() { 
+                bgMusic.pause(); 
+                bgMusic.currentTime = 0; 
+            }
 
             async function initAudio() {
                 if (audioReady) return;
                 try {
                     await Tone.start();
                     audioReady = true;
+                    // "Прогрев" синтезаторов
+                    Object.values(synths).forEach(synth => {
+                        if(synth.triggerAttackRelease) {
+                            synth.volume.value = -Infinity;
+                            synth.triggerAttackRelease('C4', '32n', Tone.now() + 0.01);
+                            synth.volume.value = (synth === synths.bomb || synth === synths.rocket) ? (synth === synths.bomb ? -10 : -15) : (synth === synths.swap ? -6 : 0);
+                        }
+                    });
                     console.log("Audio ready.");
-                    playMusic();
+                    playMusic(); // Пытаемся запустить музыку сразу
                 } catch (e) { console.error("Audio context failed to start:", e); }
             }
-
+            
+            // Запускаем initAudio при первом же касании
+            document.body.addEventListener('pointerdown', initAudio, { once: true });
+            
             function playSound(sound, time = Tone.now(), ...args) {
-                if (!audioReady) initAudio();
-                if (isMuted || !audioReady) return;
+                if (!audioReady) return; // Не пытаемся запустить, если не готово
+                if (isMuted) return;
                 try {
                     if (sound === 'tap') synths.tap.triggerAttackRelease('C5', '8n', time);
+                    else if (sound === 'swap') synths.swap.triggerAttackRelease('E5', '16n', time);
                     else if (sound === 'match') synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', time);
                     else if (sound === 'bomb') synths.bomb.triggerAttackRelease('2n', time);
                     else if (sound === 'rocket') synths.rocket.triggerAttackRelease('8n', time);
@@ -514,23 +594,25 @@
                 } catch (e) { console.error("Sound play error:", e); }
             }
             
-            document.body.addEventListener('pointerdown', async () => {
-                if (Tone.context.state !== 'running') {
-                    await initAudio();
-                }
-            }, { once: true });
-            
             // --- Логика "Залипания" Кнопок ---
             document.querySelectorAll('.btn, .icon-btn').forEach(btn => {
-                btn.addEventListener('pointerdown', () => {
+                btn.addEventListener('pointerdown', (e) => {
                     playSound('tap');
                     btn.classList.add('manual-active');
+                    e.stopPropagation(); // Предотвращаем "прокликивание"
                 });
-                const removeActive = () => btn.classList.remove('manual-active');
+                const removeActive = (e) => {
+                    btn.classList.remove('manual-active');
+                    e.stopPropagation();
+                };
                 btn.addEventListener('pointerup', removeActive);
                 btn.addEventListener('pointerleave', removeActive);
                 btn.addEventListener('pointercancel', removeActive);
-                btn.addEventListener('pointerout', removeActive); // Добавлено
+                btn.addEventListener('pointerout', removeActive);
+            });
+            // Глобальный отпускатель
+            document.addEventListener('pointerup', () => {
+                document.querySelectorAll('.btn.manual-active, .icon-btn.manual-active').forEach(btn => btn.classList.remove('manual-active'));
             });
             
             // --- VK Инициализация и Загрузка Данных ---
@@ -562,7 +644,7 @@
                 
                 await loadGameData();
                 showBannerAd();
-                await initAudio(); // Аудио запускается после загрузки данных
+                // Аудио будет запущено по первому клику
             }
 
             async function saveGameData() {
@@ -631,21 +713,18 @@
                 }).catch(e => console.error("Banner Ad error", e));
             }
 
-            function showInterstitialAd(callback = null) {
+            function showInterstitialAd(callback) {
                 isPaused = true;
-                if (!bgMusic.paused) {
-                    wasMusicPlaying = true;
-                    stopMusic();
-                }
+                let musicWasPlaying = !bgMusic.paused;
+                if(musicWasPlaying) stopMusic();
                 
                 vkBridge.send('VKWebAppShowInterstitialAd')
                     .catch(e => console.error("Interstitial Ad error", e))
                     .finally(() => {
-                        isPaused = false;
-                        if (wasMusicPlaying && !isMusicMuted) {
+                        // isPaused = false; // Не снимаем паузу, это сделает модальное окно
+                        if (musicWasPlaying && !isMusicMuted) {
                             playMusic();
                         }
-                        wasMusicPlaying = false;
                         if (callback) callback();
                     });
             }
@@ -658,7 +737,7 @@
             }
 
             function startGame(mode, levelOverride = null) {
-                playMusic(); // Добавлено для запуска музыки при старте
+                playMusic();
                 showBannerAd();
                 gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; isProcessing = false;
                 clearInterval(timerInterval); pausedTimeLeft = 0;
@@ -751,6 +830,9 @@
                 // Динамически задаем высоту поля
                 const boardHeight = (ROWS * (TILE_SIZE + GAP)) + GAP;
                 boardElement.style.height = `${boardHeight}px`;
+                // Сбрасываем flex-grow/shrink, чтобы высота была фиксированной
+                boardElement.style.flexGrow = '0';
+                boardElement.style.flexShrink = '0';
 
                 // Теперь позиционируем плитки
                 boardElement.querySelectorAll('.tile').forEach(tileEl => {
@@ -796,17 +878,16 @@
             function positionTile(tileData, r, c) {
                 tileData.r = r; tileData.c = c;
                 tileData.element.dataset.r = r; tileData.element.dataset.c = c;
-                // Размеры задаются в resizeBoard
                 tileData.element.style.width = `${TILE_SIZE}px`; tileData.element.style.height = `${TILE_SIZE}px`;
                 tileData.element.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
-                tileData.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
+                tileData.element.style.top = `${GAP + r * (TILE_VALUE + GAP)}px`;
             }
 
             boardElement.addEventListener('pointerdown', e => { 
                 if (isProcessing || isPaused) return; 
                 const tileElement = e.target.closest('.tile'); 
                 if (!tileElement) return;
-                playSound('tap');
+                // ИЗМЕНЕНО: Звук 'tap' убран отсюда
                 const r = parseInt(tileElement.dataset.r), c = parseInt(tileElement.dataset.c);
                 const tile = board[r]?.[c];
                 if (tile && tile.type === 'gem') dragStart = { r, c, x: e.clientX, y: e.clientY, moved: false };
@@ -818,6 +899,7 @@
                 if (!dragStart.moved && (Math.abs(dx) > TILE_SIZE * 0.3 || Math.abs(dy) > TILE_SIZE * 0.3)) { 
                     dragStart.moved = true; 
                     let dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'); 
+                    playSound('swap'); // ИЗМЕНЕНО: Звук 'swap' при свайпе
                     handleSwipe(dragStart.r, dragStart.c, dir); 
                     dragStart = null; 
                 } 
@@ -1137,6 +1219,16 @@
                 }
             }
             
+            // ИЗМЕНЕНО: Новая функция для показа модалки
+            function showLevelCompleteModal() {
+                isPaused = true; // Убеждаемся, что игра на паузе
+                isProcessing = true;
+                const modal = document.getElementById('level-complete-modal');
+                modal.querySelector('#level-complete-score-value').textContent = score;
+                openModal(modal);
+            }
+
+            // ИЗМЕНЕНО: Логика показа рекламы
             function levelComplete() {
                 if (isPaused) return;
                 isPaused = true;
@@ -1149,27 +1241,25 @@
                 }
                 
                 levelsSinceAd++;
+                saveGameData(); // Сохраняем прогресс *перед* рекламой
+                
                 if (levelsSinceAd >= 3) {
-                    showInterstitialAd(() => {
-                        const modal = document.getElementById('level-complete-modal');
-                        modal.querySelector('#level-complete-score-value').textContent = score;
-                        openModal(modal);
-                    });
                     levelsSinceAd = 0;
+                    showInterstitialAd(showLevelCompleteModal); // Показать модалку ПОСЛЕ рекламы
                 } else {
-                    const modal = document.getElementById('level-complete-modal');
-                    modal.querySelector('#level-complete-score-value').textContent = score;
-                    openModal(modal);
+                    showLevelCompleteModal(); // Показать модалку сразу
                 }
-                saveGameData();
             }
 
             function gameOver(reason) {
                 if (isPaused) return;
                 isPaused = true; clearInterval(timerInterval);
                 playSound('lose');
+                saveGameData(); // Сохраняем статистику
                 
                 const showModal = () => {
+                    isPaused = true; // Убеждаемся, что игра на паузе
+                    isProcessing = true;
                     const modal = document.getElementById('game-over-modal');
                     modal.querySelector('#final-score-value').textContent = score;
                     modal.querySelector('#final-moves-value').textContent = totalMoves;
@@ -1186,14 +1276,13 @@
                     } else {
                         modal.querySelector('.modal-title').textContent = "Игра окончена!";
                     }
-                    saveGameData();
                     openModal(modal);
                 }
 
                 if (gameMode === 'speed' || gameMode === 'goals') {
-                    showInterstitialAd(showModal);
+                    showInterstitialAd(showModal); // Показать модалку ПОСЛЕ рекламы
                 } else {
-                    showModal();
+                    showModal(); // Показать модалку сразу
                 }
             }
 
@@ -1241,12 +1330,14 @@
 
             function updateGameStats(tilesToDestroy){
                 if (gameMode === 'goals' || gameMode === 'levels') updateGoals(tilesToDestroy);
+                // ИЗМЕНЕНО: Баланс Скоростного режима
                 if (gameMode === 'speed' && tilesToDestroy.size > 0) {
-                    const timeToAdd = tilesToDestroy.size * 500;
+                    const timeToAdd = tilesToDestroy.size * 350; // Было 500
                     timeLeft = Math.min(totalTime, timeLeft + timeToAdd);
                     timerStartTime = Date.now() - (totalTime - timeLeft);
                 }
-                score += tilesToDestroy.size * 10; 
+                // ИЗМЕНЕНО: Баланс очков
+                score += tilesToDestroy.size * 5; // Было 10
                 updateScore(score);
             }
 
