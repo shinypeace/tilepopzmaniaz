@@ -122,20 +122,20 @@
 
         /* Новые вторичные кнопки (для остальных режимов) */
         .btn-secondary {
-            background-color: transparent;
-            color: var(--text-secondary);
-            border-color: var(--accent-color);
-            box-shadow: 0 4px 0 0 var(--accent-color);
-        }
-        .btn-secondary:hover {
             background-color: var(--accent-color);
             color: var(--text-secondary);
+            border-color: var(--border-color);
+            box-shadow: 0 4px 0 0 var(--border-color);
+        }
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            color: var(--bg-main);
             transform: translateY(-2px);
-            box-shadow: 0 6px 0 0 var(--accent-color);
+            box-shadow: 0 6px 0 0 var(--border-color);
         }
         .btn-secondary:active, .btn-secondary.manual-active {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 0 var(--accent-color);
+            box-shadow: 0 2px 0 0 var(--border-color);
         }
         
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; }
@@ -880,7 +880,15 @@
                 tileData.element.dataset.r = r; tileData.element.dataset.c = c;
                 tileData.element.style.width = `${TILE_SIZE}px`; tileData.element.style.height = `${TILE_SIZE}px`;
                 tileData.element.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
-                tileData.element.style.top = `${GAP + r * (TILE_VALUE + GAP)}px`;
+                tileData.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
+            }
+            window.addEventListener('resize', resizeBoard);
+            function positionTile(tileData, r, c) {
+                tileData.r = r; tileData.c = c;
+                tileData.element.dataset.r = r; tileData.element.dataset.c = c;
+                tileData.element.style.width = `${TILE_SIZE}px`; tileData.element.style.height = `${TILE_SIZE}px`;
+                tileData.element.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
+                tileData.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
             }
 
             boardElement.addEventListener('pointerdown', e => { 
