@@ -453,24 +453,7 @@
         let isMuted = true;
         let isMusicMuted = true;
 
-        let synths = {
-            tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
-            swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.1 } }).toDestination(),
-            match: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination(),
-            // ИЗМЕНЕНО: Громкость бомбы
-            bomb: new Tone.MembraneSynth({ pitchDecay: 0.1, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
-            // ИЗМЕНЕНО: Новый звук ракеты
-            rocket: new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0 } }).toDestination(),
-            win: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination(),
-            lose: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.2 } }).toDestination(),
-            // ИЗМЕНЕНО: Новый звук цели
-            goal: new Tone.PluckSynth({ attackNoise: 1, dampening: 4000, resonance: 0.7 }).toDestination()
-        };
-        // ИЗМЕНЕНО: Громкость бомбы и ракеты
-        synths.bomb.volume.value = 5; 
-        synths.rocket.volume.value = -10;
-        synths.swap.volume.value = -6;
-        synths.goal.volume.value = -3;
+        let synths = {}; // ИЗМЕНЕНО: Инициализируем как пустой объект
 
         
         // --- ЛОГИКА ПРЕДЗАГРУЗКИ ---
@@ -566,6 +549,24 @@
                 try {
                     await Tone.start();
                     audioReady = true;
+
+                    // ИЗМЕНЕНО: Инициализация synths ПЕРЕМЕЩЕНА сюда
+                    synths = {
+                        tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
+                        swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.1 } }).toDestination(),
+                        match: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination(),
+                        bomb: new Tone.MembraneSynth({ pitchDecay: 0.1, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
+                        rocket: new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0 } }).toDestination(),
+                        win: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination(),
+                        lose: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.2 } }).toDestination(),
+                        goal: new Tone.PluckSynth({ attackNoise: 1, dampening: 4000, resonance: 0.7 }).toDestination()
+                    };
+
+                    synths.bomb.volume.value = 5; 
+                    synths.rocket.volume.value = -10;
+                    synths.swap.volume.value = -6;
+                    synths.goal.volume.value = -3;
+                    
                     // "Прогрев" синтезаторов
                     Object.values(synths).forEach(synth => {
                         if(synth.triggerAttackRelease) {
@@ -591,6 +592,8 @@
             function playSound(sound, time = Tone.now(), ...args) {
                 if (!audioReady) return; // Не пытаемся запустить, если не готово
                 if (isMuted) return;
+                // ИЗМЕНЕНО: Проверка, что synths уже инициализирован
+                if (Object.keys(synths).length === 0) return; 
                 try {
                     if (sound === 'tap') synths.tap.triggerAttackRelease('C5', '8n', time);
                     else if (sound === 'swap') synths.swap.triggerAttackRelease('E5', '16n', time);
