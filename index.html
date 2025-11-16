@@ -131,6 +131,16 @@
             box-shadow: 0 2px 0 0 var(--border-color);
         }
         
+        /* НОВАЯ Анимация для главной кнопки */
+        @keyframes pulse-primary {
+            0%, 100% { box-shadow: 0 4px 0 0 var(--border-color), 0 0 10px rgba(255,105,180,0); }
+            50% { box-shadow: 0 4px 0 0 var(--border-color), 0 0 20px var(--text-primary); }
+        }
+        #levels-mode-btn.btn-secondary {
+            /* Применяем анимацию */
+            animation: pulse-primary 2.5s infinite ease-in-out;
+        }
+
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; }
         .icon-btn { background: var(--accent-color); border: 2px solid var(--border-color); border-radius: 50%; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; transition: all 0.2s ease; box-shadow: 0 4px 0 0 var(--border-color);}
         .icon-btn:hover { background-color: var(--border-color); transform: scale(1.05) translateY(-2px); box-shadow: 0 6px 0 0 var(--border-color);}
@@ -299,7 +309,8 @@
         <div id="main-menu-screen" class="main-menu">
             <h1 class="game-title">Tile Pop!</h1>
             <div class="w-full" style="margin-bottom: 2rem;">
-                <button data-mode="levels" id="levels-mode-btn" class="btn btn-primary mode-btn">Уровень 1</button>
+                <!-- ИЗМЕНЕНО: Стиль кнопки уровня -->
+                <button data-mode="levels" id="levels-mode-btn" class="btn btn-secondary mode-btn">Уровень 1</button>
                 <button data-mode="goals" class="btn btn-secondary mode-btn">Бесконечные цели</button>
                 <button data-mode="speed" class="btn btn-secondary mode-btn">Скоростной</button>
             </div>
@@ -435,8 +446,9 @@
 
         // --- Настройка Звуков (Объявление) ---
         let audioReady = Tone.context.state === 'running';
-        let isMuted = true;
-        let isMusicMuted = true;
+        // ИЗМЕНЕНО: Звуки включены по умолчанию
+        let isMuted = false;
+        let isMusicMuted = false;
 
         let synths = {}; // Инициализируем как пустой объект
 
@@ -480,15 +492,24 @@
         }
 
         function showMainMenu() {
+            // ИЗМЕНЕНО: Эта функция больше не показывает preloader, 
+            // она вызывается ПОСЛЕ загрузки данных
             preloader.style.opacity = '0';
             setTimeout(() => {
                 preloader.style.display = 'none';
                 mainContainer.style.display = 'flex';
-                initGameLogic();
+                // Музыка запускается здесь, ПОСЛЕ загрузки настроек
+                playMusic();
             }, 500); 
         }
 
+        // ИЗМЕНЕНО: Логика запуска
+        // 1. Загружаем ассеты
         preloadAssets();
+        // 2. initGameLogic запускается, когда ассеты готовы
+        // 3. initGameLogic запускает initVK
+        // 4. initVK загружает данные, обновляет UI
+        // 5. В КОНЦЕ initVK вызывается showMainMenu, которая показывает готовый UI
         
         async function initGameLogic() {
             
@@ -543,30 +564,35 @@
                         bomb: new Tone.MembraneSynth({ pitchDecay: 0.1, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
                         rocket: new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0 } }).toDestination(),
                         win: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination(),
-                        lose: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.2 } }).toDestination(),
+                        // ИЗМЕНЕНО: Новый звук поражения
+                        lose: new Tone.FMSynth({ harmonicity: 0.5, modulationIndex: 1.2, envelope: { attack: 0.01, decay: 1, sustain: 0.1, release: 0.2 } }).toDestination(),
                         goal: new Tone.PluckSynth({ attackNoise: 1, dampening: 4000, resonance: 0.7 }).toDestination()
                     };
 
-                    synths.bomb.volume.value = 5; 
-                    synths.rocket.volume.value = -10;
+                    // ИЗМЕНЕНО: Громкость
+                    synths.bomb.volume.value = 10; 
+                    synths.rocket.volume.value = -3;
                     synths.swap.volume.value = -6;
                     synths.goal.volume.value = -3;
+                    synths.lose.volume.value = -5;
                     
                     // "Прогрев" синтезаторов
                     Object.values(synths).forEach(synth => {
                         if(synth.triggerAttackRelease) {
                             synth.volume.value = -Infinity;
                             synth.triggerAttackRelease('C4', '32n', Tone.now() + 0.01);
+                            // ИЗМЕНЕНО: Корректный возврат громкости
                             let vol = 0;
-                            if (synth === synths.bomb) vol = 5;
-                            else if (synth === synths.rocket) vol = -10;
+                            if (synth === synths.bomb) vol = 10;
+                            else if (synth === synths.rocket) vol = -3;
                             else if (synth === synths.swap) vol = -6;
                             else if (synth === synths.goal) vol = -3;
+                            else if (synth === synths.lose) vol = -5;
                             synth.volume.value = vol;
                         }
                     });
                     console.log("Audio ready.");
-                    playMusic(); // Пытаемся запустить музыку сразу
+                    // playMusic(); // Музыка запускается из showMainMenu
                 } catch (e) { console.error("Audio context failed to start:", e); }
             }
             
@@ -595,7 +621,7 @@
                         synths.win.triggerAttackRelease('G4', '8n', now + 0.2);
                         synths.win.triggerAttackRelease('C5', '8n', now + 0.3);
                     }
-                    else if (sound === 'lose') synths.lose.triggerAttackRelease(['G4', 'E4', 'C4'], '2n', time);
+                    else if (sound === 'lose') synths.lose.triggerAttackRelease('G3', '1n', time);
                     else if (sound === 'goal') synths.goal.triggerAttackRelease('G5', '8n', time);
                 } catch (e) { console.error("Sound play error:", e); }
             }
@@ -650,6 +676,8 @@
                 
                 await loadGameData();
                 showBannerAd();
+                // ИЗМЕНЕНО: Показываем меню ПОСЛЕ загрузки данных
+                showMainMenu();
             }
 
             async function saveGameData() {
@@ -692,6 +720,7 @@
                     levelsSinceAd = loadedData.levelsSinceAd || 0;
                     currentTheme = loadedData.theme || 'critters';
                 } else {
+                    // ИЗМЕНЕНО: Новые пользователи - звук ВКЛ
                     isMuted = false;
                     isMusicMuted = false;
                     currentTheme = 'critters';
@@ -974,7 +1003,11 @@
                         }
                     }
                     
-                    await collectTilesFromBonuses(tilesToDestroy, tilesToDestroy);
+                    // ИЗМЕНЕНО: Передаем флаг isCombo
+                    await collectTilesFromBonuses(tilesToDestroy, tilesToDestroy, true);
+                    // ИЗМЕНЕНО: Добавлена проверка блоков для комбо
+                    const unmovableToDestroy = findAdjacentUnmovables(tilesToDestroy);
+                    unmovableToDestroy.forEach(t => tilesToDestroy.add(t));
                     updateGameStats(tilesToDestroy);
                     await animateMatches(tilesToDestroy);
                     await dropAndRefill();
@@ -1161,7 +1194,8 @@
                 await new Promise(resolve => setTimeout(() => { rowEffect.remove(); colEffect.remove(); resolve(); }, 300));
             }
 
-            async function collectTilesFromBonuses(initialActivators, masterDestroySet) {
+            // ИЗМЕНЕНО: Добавлен флаг isComboMove
+            async function collectTilesFromBonuses(initialActivators, masterDestroySet, isComboMove = false) {
                 const queue = [...initialActivators].filter(t => t.bonus);
                 const processed = new Set(queue);
                 let rocketAnimations = [];
@@ -1180,7 +1214,10 @@
                             }
                         }
                     } else if (tile.bonus === 'rocket') {
-                        rocketAnimations.push(animateRocket(tile.r, tile.c));
+                        // ИЗМЕНЕНО: Не проигрываем анимацию ракеты, если это часть комбо
+                        if (!isComboMove) {
+                            rocketAnimations.push(animateRocket(tile.r, tile.c));
+                        }
                         for (let c = 0; c < COLS; c++) { const n = board[tile.r][c]; if (n && !masterDestroySet.has(n)) { masterDestroySet.add(n); if (n.bonus && !processed.has(n)) { processed.add(n); queue.push(n); }}}
                         for (let r = 0; r < ROWS; r++) { const n = board[r][tile.c]; if (n && !masterDestroySet.has(n)) { masterDestroySet.add(n); if (n.bonus && !processed.has(n)) { processed.add(n); queue.push(n); }}}
                     }
@@ -1329,6 +1366,7 @@
             async function handleBonusActivation(bonuses) {
                 const tilesToDestroy = new Set(bonuses);
                 await collectTilesFromBonuses(bonuses, tilesToDestroy);
+                // ИЗМЕНЕНО: Добавлена проверка блоков для бонусов
                 const unmovableToDestroy = findAdjacentUnmovables(tilesToDestroy);
                 unmovableToDestroy.forEach(t => tilesToDestroy.add(t));
                 updateGameStats(tilesToDestroy);
@@ -1464,8 +1502,8 @@
                 saveGameData();
             });
             
-            // Запускаем VK и загрузку данных
-            initVK();
+            // ИЗМЕНЕНО: Запускаем VK в самом конце
+            // initVK(); // Перенесено в showMainMenu -> initGameLogic
 
         } // --- Конец initGameLogic ---
         
