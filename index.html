@@ -15,7 +15,6 @@
     <style>
         :root {
             --bg-main: #f0f8ff; --bg-secondary: #e6f2ff;
-            /* ИЗМЕНЕНО: Прозрачность фона модалок */
             --bg-modal: rgba(255, 255, 255, 0.3); 
             --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6;
             --border-color: #ff69b4; 
@@ -33,9 +32,7 @@
             transition: background-image 0.5s ease;
         }
         
-        /* ИЗМЕНЕНО: Прозрачность фона */
         body.theme-critters { background-image: url('bg-critters.png'); --bg-main: #f0f8ff; --bg-secondary: #e6f2ff; --bg-modal: rgba(240, 248, 255, 0.5); --text-primary: #ff69b4; --text-secondary: #333333; --accent-color: #add8e6; --border-color: #ff69b4; }
-        /* ИЗМЕНЕНО: Цвета темы "Sweets" */
         body.theme-sweets { background-image: url('bg-sweets.png'); --bg-main: #f8cdda; --bg-secondary: #fce4ec; --bg-modal: rgba(248, 205, 218, 0.5); --text-primary: #d81b60; --text-secondary: #263238; --accent-color: #f48fb1; --border-color: #ad1457; }
         body.theme-nature { background-image: url('bg-nature.png'); --bg-main: #2d4c1e; --bg-secondary: #3e6d2b; --bg-modal: rgba(45, 76, 30, 0.5); --text-primary: #f0a500; --text-secondary: #ffffff; --accent-color: #1b3d1a; --border-color: #f0a500; }
         body.theme-gems { background-image: url('bg-gems.png'); --bg-main: #4a148c; --bg-secondary: #6a1b9a; --bg-modal: rgba(74, 20, 140, 0.5); --text-primary: #ffeb3b; --text-secondary: #ffffff; --accent-color: #38006b; --border-color: #fdd835; }
@@ -73,7 +70,6 @@
             background-color: transparent; display: none;
             justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; 
         }
-        /* ИЗМЕНЕНО: Адаптация под баннер VK */
         .main-menu { 
             width: 100%; max-width: 420px; height: 100%; max-height: 900px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
@@ -92,7 +88,6 @@
             font-weight: 900; color: var(--text-primary); text-shadow: 2px 2px 0px var(--accent-color), 4px 4px 0px rgba(0,0,0,0.1); margin-bottom: 2rem; 
         }
         
-        /* ИЗМЕНЕНО: Стили кнопок меню */
         .btn { 
             background-color: var(--accent-color); color: var(--text-secondary); border: 2px solid var(--border-color); 
             border-radius: 1rem; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: 700; width: 100%; 
@@ -107,7 +102,6 @@
             transform: translateY(2px); box-shadow: 0 2px 0 0 var(--border-color); 
         }
 
-        /* Новая основная кнопка (для Уровней) */
         .btn-primary {
             background-color: var(--text-primary);
             color: white;
@@ -120,7 +114,6 @@
             border-color: var(--border-color);
         }
 
-        /* Новые вторичные кнопки (для остальных режимов) */
         .btn-secondary {
             background-color: var(--accent-color);
             color: var(--text-secondary);
@@ -188,7 +181,6 @@
         .goal-tile-container { width: 20px; height: 20px; display: inline-flex; justify-content: center; align-items: center; margin-right: 4px; vertical-align: middle; }
         .goal-tile-container .tile-inner { width: 100%; height: 100%; box-shadow: none; background-size: contain; background-repeat: no-repeat; background-position: center; }
         
-        /* ИЗМЕНЕНО: Адаптация поля */
         #game-board { 
             position: relative; width: 100%; overflow: hidden; 
             background-color: var(--bg-modal);
@@ -256,7 +248,6 @@
         .stats-row-label { font-size: 1rem; font-weight: 600; opacity: 0.9; }
         .stats-row-value { font-size: 1.2rem; font-weight: 900; color: var(--text-primary); }
         
-        /* ИЗМЕНЕНО: Новый CSS для слайдеров */
         .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -281,7 +272,6 @@
         .slider.round { border-radius: 34px; }
         .slider.round:before { border-radius: 50%; }
         
-        /* VK Ads */
         #vk_ads_banner {
             position: fixed;
             bottom: 0;
@@ -301,14 +291,14 @@
         <div id="loading-status">Загрузка...</div>
     </div>
 
-    <audio id="bg-music" src="background-music.mp3" loop preload="auto"></audio>
+    <!-- ИСПРАВЛЕНО: Имя файла 'music.mp3' -->
+    <audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
 
     <div class="main-container">
         <!-- Main Menu -->
         <div id="main-menu-screen" class="main-menu">
             <h1 class="game-title">Tile Pop!</h1>
             <div class="w-full" style="margin-bottom: 2rem;">
-                <!-- ИЗМЕНЕНО: Классы кнопок -->
                 <button data-mode="levels" id="levels-mode-btn" class="btn btn-primary mode-btn">Уровень 1</button>
                 <button data-mode="goals" class="btn btn-secondary mode-btn">Бесконечные цели</button>
                 <button data-mode="speed" class="btn btn-secondary mode-btn">Скоростной</button>
@@ -344,10 +334,6 @@
         </div>
     </div>
 
-    <!-- ИЗМЕНЕНО: Имя файла музыки -->
-    <audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
-
-    <div class="main-container">
     <!-- Modals -->
     <div id="pause-modal" class="modal"><div class="modal-content"><h2 class="modal-title">Пауза</h2><button id="resume-btn" class="btn">Продолжить</button><button id="restart-game-btn" class="btn">Начать заново</button><button id="main-menu-btn-pause" class="btn">Главное меню</button></div></div>
     <div id="game-over-modal" class="modal"><div class="modal-content"><h2 class="modal-title">Игра окончена!</h2><p id="final-score-line" class="text-center text-lg mb-4">Ваш результат: <span id="final-score-value">0</span></p><p id="final-moves-line" class="text-center text-lg mb-6">Ходов сделано: <span id="final-moves-value">0</span></p><p id="final-level-line" class="text-center text-lg mb-6 hidden">Достигнут уровень: <span id="final-level-value">0</span></p><button id="restart-game-over-btn" class="btn">Играть еще раз</button><button id="main-menu-btn-over" class="btn">Главное меню</button></div></div>
@@ -363,7 +349,6 @@
                 <button id="theme-nature" data-theme="nature"></button>
                 <button id="theme-gems" data-theme="gems"></button>
             </div>
-            <!-- ИЗМЕНЕНО: Новая HTML-структура для слайдеров -->
             <div class="flex justify-between items-center w-full mt-8">
                 <h3 class="text-xl text-left font-semibold" style="color: var(--text-secondary);">Звуки</h3>
                 <label class="switch">
@@ -384,18 +369,18 @@
     <div id="rules-modal" class="modal"><div class="modal-content" style="text-align: left;"><h2 class="modal-title">Правила Игры</h2><div class="rules-section"><h3>Общее</h3><p>Меняйте элементы свайпом, чтобы собрать ряд из 3+ одинаковых. 4 в ряд = <strong>Бомба</strong>. 5 в ряд, а также L/T формы = <strong>Ракета</strong>. Бонусы можно активировать нажатием или свайпом.</p></div><div class="rules-section"><h3>Комбо</h3><p>Поменяйте местами <strong>Ракету</strong> и <strong>Бомбу</strong>, чтобы активировать комбо, уничтожающее 3 ряда и 3 столбца.</p></div><div class="rules-section"><h3>Уровни</h3><p>Выполняйте задания (например, "собрать 20 красных") за ограниченное число ходов, чтобы перейти на следующий уровень.</p></div><div class="rules-section"><h3>Бесконечные цели</h3><p>То же, что и "Уровни", но игра не прекращается. Выполняйте цели и продвигайтесь как можно дальше!</p></div><div class="rules-section"><h3>Скоростной</h3><p>Наберите максимум очков, пока не истекло время. Комбинации добавляют секунды на таймер.</p></div><button id="close-rules-btn" class="btn mt-6">Понятно</button></div></div>
     <div id="stats-modal" class="modal"><div class="modal-content"><h2 class="modal-title">Статистика</h2><div id="stats-content-container" class="stats-content"></div><button id="close-stats-btn" class="btn mt-6">Закрыть</button></div></div>
     
-    <!-- VK Ads Container -->
     <div id="vk_ads_banner"></div>
 
     <script>
     /* --- СПИСОК АССЕТОВ ДЛЯ ЗАГРУЗКИ (14 ФАЙЛОВ) ---
-      - background-music.mp3
+      - music.mp3
       - bg-critters.png, bg-sweets.png, bg-nature.png, bg-gems.png
       - tile-red.png, tile-blue.png, tile-green.png, tile-yellow.png, tile-purple.png, tile-orange.png
       - tile-bomb.png, tile-rocket.png, tile-unmovable.png
     */
+    // ИСПРАВЛЕНО: Имя файла 'music.mp3'
     const ASSET_LIST = [
-        'background-music.mp3',
+        'music.mp3',
         'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png',
         'tile-red.png', 'tile-blue.png', 'tile-green.png', 'tile-yellow.png', 'tile-purple.png', 'tile-orange.png',
         'tile-bomb.png', 'tile-rocket.png', 'tile-unmovable.png'
@@ -453,20 +438,22 @@
         let isMuted = true;
         let isMusicMuted = true;
 
-        let synths = {}; // ИЗМЕНЕНО: Инициализируем как пустой объект
+        let synths = {}; // Инициализируем как пустой объект
 
         
         // --- ЛОГИКА ПРЕДЗАГРУЗКИ ---
-    /* --- СПИСОК АССЕТОВ ДЛЯ ЗАГРУЗКИ (14 ФАЙЛОВ) ---
-      - music.mp3
-      - bg-critters.png, bg-sweets.png, bg-nature.png, bg-gems.png
-      - tile-red.png, tile-blue.png, tile-green.png, tile-yellow.png, tile-purple.png, tile-orange.png
-      - tile-bomb.png, tile-rocket.png, tile-unmovable.png
-    */
-    // ИЗМЕНЕНО: Имя файла музыки
-    const ASSET_LIST = [
-        'music.mp3',
-        'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png',
+        function preloadAssets() {
+            let assetsLoaded = 0;
+            const totalAssets = ASSET_LIST.length;
+            loadingStatus.textContent = `Загружено 0 из ${totalAssets}`;
+
+            if (totalAssets === 0) {
+                showMainMenu();
+                return;
+            }
+
+            const assetLoaded = (assetName) => {
+                assetsLoaded++;
                 const percent = (assetsLoaded / totalAssets) * 100;
                 loadingBarFill.style.width = `${percent}%`;
                 loadingStatus.textContent = `Загружено ${assetsLoaded} из ${totalAssets}`;
@@ -540,8 +527,6 @@
             }
             function stopMusic() { 
                 bgMusic.pause(); 
-                // ИЗМЕНЕНО: Убран сброс времени (как в примере)
-                // bgMusic.currentTime = 0; 
             }
 
             async function initAudio() {
@@ -550,7 +535,7 @@
                     await Tone.start();
                     audioReady = true;
 
-                    // ИЗМЕНЕНО: Инициализация synths ПЕРЕМЕЩЕНА сюда
+                    // Инициализация synths ПЕРЕМЕЩЕНА сюда
                     synths = {
                         tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
                         swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.1 } }).toDestination(),
@@ -572,7 +557,6 @@
                         if(synth.triggerAttackRelease) {
                             synth.volume.value = -Infinity;
                             synth.triggerAttackRelease('C4', '32n', Tone.now() + 0.01);
-                            // ИЗМЕНЕНО: Корректная установка громкости
                             let vol = 0;
                             if (synth === synths.bomb) vol = 5;
                             else if (synth === synths.rocket) vol = -10;
@@ -586,24 +570,23 @@
                 } catch (e) { console.error("Audio context failed to start:", e); }
             }
             
-            // Запускаем initAudio при первом же касании
             document.body.addEventListener('pointerdown', initAudio, { once: true });
             
             function playSound(sound, time = Tone.now(), ...args) {
-                if (!audioReady) return; // Не пытаемся запустить, если не готово
+                if (!audioReady) return; 
                 if (isMuted) return;
-                // ИЗМЕНЕНО: Проверка, что synths уже инициализирован
                 if (Object.keys(synths).length === 0) return; 
                 try {
                     if (sound === 'tap') synths.tap.triggerAttackRelease('C5', '8n', time);
                     else if (sound === 'swap') synths.swap.triggerAttackRelease('E5', '16n', time);
                     else if (sound === 'match') synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', time);
                     else if (sound === 'bomb') synths.bomb.triggerAttackRelease('C2', '8n', time);
-                    // ИЗМЕНЕНО: Новый вызов звука ракеты
                     else if (sound === 'rocket') {
                         synths.rocket.triggerAttackRelease('0.3n', time);
-                        synths.rocket.filter.frequency.setValueAtTime(1000, time);
-                        synths.rocket.filter.frequency.rampTo(5000, time + 0.3);
+                        if (synths.rocket.filter) { // Проверка, что filter существует (он есть у NoiseSynth)
+                            synths.rocket.filter.frequency.setValueAtTime(1000, time);
+                            synths.rocket.filter.frequency.rampTo(5000, time + 0.3);
+                        }
                     }
                     else if (sound === 'win') {
                         const now = Tone.now();
@@ -613,7 +596,6 @@
                         synths.win.triggerAttackRelease('C5', '8n', now + 0.3);
                     }
                     else if (sound === 'lose') synths.lose.triggerAttackRelease(['G4', 'E4', 'C4'], '2n', time);
-                    // ИЗМЕНЕНО: Вызов звука цели
                     else if (sound === 'goal') synths.goal.triggerAttackRelease('G5', '8n', time);
                 } catch (e) { console.error("Sound play error:", e); }
             }
@@ -623,18 +605,18 @@
                 btn.addEventListener('pointerdown', (e) => {
                     playSound('tap');
                     btn.classList.add('manual-active');
-                    e.stopPropagation(); // Предотвращаем "прокликивание"
+                    e.stopPropagation(); 
                 });
                 const removeActive = (e) => {
                     btn.classList.remove('manual-active');
                     e.stopPropagation();
                 };
+                // ИСПРАВЛЕНО: Добавлен 'pointerout' для более надежного "отжатия"
                 btn.addEventListener('pointerup', removeActive);
                 btn.addEventListener('pointerleave', removeActive);
                 btn.addEventListener('pointercancel', removeActive);
                 btn.addEventListener('pointerout', removeActive);
             });
-            // Глобальный отпускатель
             document.addEventListener('pointerup', () => {
                 document.querySelectorAll('.btn.manual-active, .icon-btn.manual-active').forEach(btn => btn.classList.remove('manual-active'));
             });
@@ -668,7 +650,6 @@
                 
                 await loadGameData();
                 showBannerAd();
-                // Аудио будет запущено по первому клику
             }
 
             async function saveGameData() {
@@ -737,7 +718,6 @@
                 }).catch(e => console.error("Banner Ad error", e));
             }
 
-            // ИЗМЕНЕНО: Рекламная функция (теперь блокирующая, с callback)
             function showInterstitialAd(callback) {
                 let musicWasPlaying = !bgMusic.paused;
                 if(musicWasPlaying) stopMusic();
@@ -745,14 +725,11 @@
                 vkBridge.send('VKWebAppShowInterstitialAd')
                     .catch(e => {
                         console.error("Interstitial Ad error", e);
-                        // Ошибка или нет - неважно, все равно продолжаем
                     })
                     .finally(() => {
-                        // Реклама закончилась, возвращаем музыку
                         if (musicWasPlaying && !isMusicMuted) {
                             playMusic();
                         }
-                        // ВЫЗЫВАЕМ КОЛЛБЭК (показ модалки)
                         if (callback) callback();
                     });
             }
@@ -802,8 +779,9 @@
                 resizeBoard(); // Вызов resizeBoard до создания плиток
                 
                 let unmovableToPlace = 0;
-                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 20) {
-                    unmovableToPlace = Math.min(10, Math.floor((level - 20) / 3) + 2);
+                // ИСПРАВЛЕНО: Баланс блоков
+                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 15) {
+                    unmovableToPlace = Math.min(10, Math.floor((level - 15) / 2.5) + 1);
                 }
 
                 for (let r = 0; r < ROWS; r++) {
@@ -814,7 +792,6 @@
 
                 let placed = 0;
                 while (placed < unmovableToPlace) {
-                    // ИЗМЕНЕНО: Блоки не появляются в верхнем ряду
                     const r = Math.floor(Math.random() * (ROWS - 1)) + 1; 
                     const c = Math.floor(Math.random() * COLS);
                     if (board[r][c] && board[r][c].type === 'gem') {
@@ -849,24 +826,21 @@
                 }
             }
             
-            // ИЗМЕНЕНО: Функция ResizeBoard
             function resizeBoard() {
                 const boardWidth = boardElement.clientWidth;
                 if (boardWidth === 0) return;
                 
                 TILE_SIZE = (boardWidth - (COLS + 1) * GAP) / COLS;
                 
-                // Динамически задаем высоту поля
                 const boardHeight = (ROWS * (TILE_SIZE + GAP)) + GAP;
                 boardElement.style.height = `${boardHeight}px`;
-                // Сбрасываем flex-grow/shrink, чтобы высота была фиксированной
                 boardElement.style.flexGrow = '0';
                 boardElement.style.flexShrink = '0';
 
-                // Теперь позиционируем плитки
                 boardElement.querySelectorAll('.tile').forEach(tileEl => {
                     const r = parseInt(tileEl.dataset.r), c = parseInt(tileEl.dataset.c);
-                    tileEl.style.width = `${TILE_SIZE}px`; tileEl.style.height = `${TILE_SIZE}px`;
+                    tileEl.style.width = `${TILE_SIZE}px`;
+                    tileEl.style.height = `${TILE_SIZE}px`;
                     tileEl.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
                     tileEl.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
                 });
@@ -899,7 +873,10 @@
                     tileElement.classList.add('unmovable');
                 }
 
-                positionTile(tileData, r, c);
+                // ИСПРАВЛЕНО: Убеждаемся, что TILE_SIZE имеет значение
+                if (TILE_SIZE > 0) {
+                    positionTile(tileData, r, c);
+                }
                 boardElement.appendChild(tileElement);
                 return tileData;
             }
@@ -907,24 +884,19 @@
             function positionTile(tileData, r, c) {
                 tileData.r = r; tileData.c = c;
                 tileData.element.dataset.r = r; tileData.element.dataset.c = c;
-                tileData.element.style.width = `${TILE_SIZE}px`; tileData.element.style.height = `${TILE_SIZE}px`;
-                tileData.element.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
-                tileData.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
-            }
-            window.addEventListener('resize', resizeBoard);
-            function positionTile(tileData, r, c) {
-                tileData.r = r; tileData.c = c;
-                tileData.element.dataset.r = r; tileData.element.dataset.c = c;
-                tileData.element.style.width = `${TILE_SIZE}px`; tileData.element.style.height = `${TILE_SIZE}px`;
-                tileData.element.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
-                tileData.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
+                // ИСПРАВЛЕНО: Добавлена проверка TILE_SIZE
+                if (TILE_SIZE > 0) {
+                    tileData.element.style.width = `${TILE_SIZE}px`;
+                    tileData.element.style.height = `${TILE_SIZE}px`;
+                    tileData.element.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
+                    tileData.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
+                }
             }
 
             boardElement.addEventListener('pointerdown', e => { 
                 if (isProcessing || isPaused) return; 
                 const tileElement = e.target.closest('.tile'); 
                 if (!tileElement) return;
-                // ИЗМЕНЕНО: Звук 'tap' убран отсюда
                 const r = parseInt(tileElement.dataset.r), c = parseInt(tileElement.dataset.c);
                 const tile = board[r]?.[c];
                 if (tile && tile.type === 'gem') dragStart = { r, c, x: e.clientX, y: e.clientY, moved: false };
@@ -936,7 +908,7 @@
                 if (!dragStart.moved && (Math.abs(dx) > TILE_SIZE * 0.3 || Math.abs(dy) > TILE_SIZE * 0.3)) { 
                     dragStart.moved = true; 
                     let dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'); 
-                    playSound('swap'); // ИЗМЕНЕНО: Звук 'swap' при свайпе
+                    playSound('swap');
                     handleSwipe(dragStart.r, dragStart.c, dir); 
                     dragStart = null; 
                 } 
@@ -1124,7 +1096,6 @@
                         levelComplete();
                     } else if (gameMode === 'goals') {
                         level++;
-                        // ИЗМЕНЕНО: Звук новой цели
                         playSound('goal');
                         setupGoalsLevel();
                         if (!checkForPossibleMoves()) {
@@ -1258,16 +1229,14 @@
                 }
             }
             
-            // ИЗМЕНЕНО: Новая функция для показа модалки
             function showLevelCompleteModal() {
-                isPaused = true; // Убеждаемся, что игра на паузе
+                isPaused = true; 
                 isProcessing = true;
                 const modal = document.getElementById('level-complete-modal');
                 modal.querySelector('#level-complete-score-value').textContent = score;
                 openModal(modal);
             }
 
-            // ИЗМЕНЕНО: Логика показа рекламы
             function levelComplete() {
                 if (isPaused) return;
                 isPaused = true;
@@ -1280,15 +1249,13 @@
                 }
                 
                 levelsSinceAd++;
-                saveGameData(); // Сохраняем прогресс
+                saveGameData(); 
                 
                 if (levelsSinceAd >= 3) {
                     levelsSinceAd = 0;
-                    saveGameData(); // Сохраняем сброс счетчика
-                    // ИЗМЕНЕНО: Показываем рекламу, А ПОТОМ модалку
+                    saveGameData(); 
                     showInterstitialAd(showLevelCompleteModal); 
                 } else {
-                    // Рекламы нет, просто показываем модалку
                     showLevelCompleteModal(); 
                 }
             }
@@ -1297,10 +1264,10 @@
                 if (isPaused) return;
                 isPaused = true; clearInterval(timerInterval);
                 playSound('lose');
-                saveGameData(); // Сохраняем статистику
+                saveGameData(); 
                 
                 const showModal = () => {
-                    isPaused = true; // Убеждаемся, что игра на паузе
+                    isPaused = true; 
                     isProcessing = true;
                     const modal = document.getElementById('game-over-modal');
                     modal.querySelector('#final-score-value').textContent = score;
@@ -1321,11 +1288,9 @@
                     openModal(modal);
                 }
 
-                // ИЗМЕНЕНО: Показываем рекламу, А ПОТОМ модалку
                 if (gameMode === 'speed' || gameMode === 'goals') {
                     showInterstitialAd(showModal);
                 } else {
-                    // В режиме "Уровни" реклама не нужна (она при победе)
                     showModal(); 
                 }
             }
@@ -1374,19 +1339,16 @@
 
             function updateGameStats(tilesToDestroy){
                 if (gameMode === 'goals' || gameMode === 'levels') updateGoals(tilesToDestroy);
-                // ИЗМЕНЕНО: Баланс Скоростного режима
                 if (gameMode === 'speed' && tilesToDestroy.size > 0) {
-                    const timeToAdd = tilesToDestroy.size * 350; // Было 500
+                    const timeToAdd = tilesToDestroy.size * 350; 
                     timeLeft = Math.min(totalTime, timeLeft + timeToAdd);
                     timerStartTime = Date.now() - (totalTime - timeLeft);
                 }
-                // ИЗМЕНЕНО: Баланс очков
-                score += tilesToDestroy.size * 5; // Было 10
+                score += tilesToDestroy.size * 5; 
                 updateScore(score);
             }
 
             function setupGoalsLevel() {
-                // ИЗМЕНЕНО: НОВЫЙ БАЛАНС
                 movesLimit = 30 + Math.floor(level / 4) * 2 - Math.floor(level / 10) * 3;
                 const numGoalTypes = Math.min(COLORS.length, 1 + Math.floor(level / 4) + (level > 30 ? 1 : 0));
                 const baseAmount = 12 + Math.floor(level / 2.5) * 2 + Math.floor(level / 8) * 3;
@@ -1395,7 +1357,6 @@
                 goals = {};
                 colorsToPick.forEach(color => goals[color] = baseAmount + Math.floor(Math.random() * 5));
                 
-                // ИЗМЕНЕНО: Блоки появляются с 15 уровня
                 if (level >= 15) {
                     goals['unmovable'] = 3 + Math.floor((level - 15) / 2.5);
                 }
