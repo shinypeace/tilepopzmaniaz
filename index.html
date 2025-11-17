@@ -93,6 +93,7 @@
             border-radius: 1rem; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: 700; width: 100%; 
             margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s ease; 
             box-shadow: 0 4px 0 0 var(--border-color); text-transform: uppercase; 
+            position: relative; /* Для плашки AD */
         }
         .btn:hover { 
             background-color: var(--border-color); color: var(--bg-main); 
@@ -102,16 +103,18 @@
             transform: translateY(2px); box-shadow: 0 2px 0 0 var(--border-color); 
         }
 
+        /* ИСПРАВЛЕНО: Добавлен внутренний отблеск для "приятности" */
         .btn-primary {
             background-color: var(--text-primary);
             color: white;
             border-color: var(--text-primary);
-            box-shadow: 0 4px 0 0 var(--border-color);
+            box-shadow: 0 4px 0 0 var(--border-color), inset 0 2px 4px 0 rgba(255,255,255,0.2);
         }
         .btn-primary:hover {
             background-color: var(--border-color);
             color: white;
             border-color: var(--border-color);
+            box-shadow: 0 6px 0 0 var(--border-color), inset 0 2px 4px 0 rgba(255,255,255,0.2);
         }
 
         .btn-secondary {
@@ -129,6 +132,21 @@
         .btn-secondary:active, .btn-secondary.manual-active {
             transform: translateY(2px);
             box-shadow: 0 2px 0 0 var(--border-color);
+        }
+
+        /* НОВЫЙ СТИЛЬ: Плашка "AD" для кнопки */
+        .btn .ad-label {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ef4444; /* red-600 */
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            border: 2px solid white;
+            line-height: 1;
         }
         
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; }
@@ -291,7 +309,6 @@
         <div id="loading-status">Загрузка...</div>
     </div>
 
-    <!-- ИСПРАВЛЕНО: Имя файла 'music.mp3' -->
     <audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
 
     <div class="main-container">
@@ -336,7 +353,26 @@
 
     <!-- Modals -->
     <div id="pause-modal" class="modal"><div class="modal-content"><h2 class="modal-title">Пауза</h2><button id="resume-btn" class="btn">Продолжить</button><button id="restart-game-btn" class="btn">Начать заново</button><button id="main-menu-btn-pause" class="btn">Главное меню</button></div></div>
-    <div id="game-over-modal" class="modal"><div class="modal-content"><h2 class="modal-title">Игра окончена!</h2><p id="final-score-line" class="text-center text-lg mb-4">Ваш результат: <span id="final-score-value">0</span></p><p id="final-moves-line" class="text-center text-lg mb-6">Ходов сделано: <span id="final-moves-value">0</span></p><p id="final-level-line" class="text-center text-lg mb-6 hidden">Достигнут уровень: <span id="final-level-value">0</span></p><button id="restart-game-over-btn" class="btn">Играть еще раз</button><button id="main-menu-btn-over" class="btn">Главное меню</button></div></div>
+    
+    <!-- ИСПРАВЛЕНО: Модальное окно поражения -->
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Игра окончена!</h2>
+            <p id="final-score-line" class="text-center text-lg mb-4">Ваш результат: <span id="final-score-value">0</span></p>
+            <p id="final-moves-line" class="text-center text-lg mb-6">Ходов сделано: <span id="final-moves-value">0</span></p>
+            <p id="final-level-line" class="text-center text-lg mb-6 hidden">Достигнут уровень: <span id="final-level-value">0</span></p>
+            
+            <!-- НОВАЯ КНОПКА: +5 ходов за рекламу -->
+            <button id="add-moves-ad-btn" class="btn btn-primary mb-2 hidden">
+                + 5 Ходов
+                <span class="ad-label">AD</span>
+            </button>
+            
+            <button id="restart-game-over-btn" class="btn">Играть еще раз</button>
+            <button id="main-menu-btn-over" class="btn">Главное меню</button>
+        </div>
+    </div>
+    
     <div id="level-complete-modal" class="modal"><div class="modal-content"><h2 class="modal-title">Уровень пройден!</h2><p id="level-complete-score" class="text-center text-lg mb-6">Ваш счет: <span id="level-complete-score-value">0</span></p><button id="next-level-btn" class="btn">Следующий уровень</button><button id="main-menu-btn-complete" class="btn">Главное меню</button></div></div>
     
     <div id="settings-modal" class="modal">
@@ -378,7 +414,6 @@
       - tile-red.png, tile-blue.png, tile-green.png, tile-yellow.png, tile-purple.png, tile-orange.png
       - tile-bomb.png, tile-rocket.png, tile-unmovable.png
     */
-    // ИСПРАВЛЕНО: Имя файла 'music.mp3'
     const ASSET_LIST = [
         'music.mp3',
         'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png',
@@ -422,6 +457,7 @@
         let wasMusicPlaying = false;
         let levelsSinceAd = 0;
         let currentTheme = 'critters';
+        let extraMovesUsedThisLevel = false; // НОВАЯ ПЕРЕМЕННАЯ
         
         let maxReachedLevel = 1;
         let stats = {
@@ -540,28 +576,41 @@
                         tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
                         swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.1 } }).toDestination(),
                         match: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination(),
-                        bomb: new Tone.MembraneSynth({ pitchDecay: 0.1, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
-                        rocket: new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0 } }).toDestination(),
+                        
+                        // ИСПРАВЛЕНО: Звук бомбы громче и насыщеннее
+                        bomb: new Tone.MembraneSynth({ pitchDecay: 0.1, octaves: 4, envelope: { attack: 0.001, decay: 0.4, sustain: 0.01 } }).toDestination(),
+                        
+                        // ИСПРАВЛЕНО: Звук ракеты громче и тип 'pink'
+                        rocket: new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0 } }).toDestination(),
+                        
                         win: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination(),
-                        lose: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.2 } }).toDestination(),
+                        
+                        // ИСПРАВЛЕНО: Звук поражения (короткий минорный арпеджио)
+                        lose: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination(),
+                        
                         goal: new Tone.PluckSynth({ attackNoise: 1, dampening: 4000, resonance: 0.7 }).toDestination()
                     };
 
-                    synths.bomb.volume.value = 5; 
-                    synths.rocket.volume.value = -10;
+                    // ИСПРАВЛЕНО: Громкость
+                    synths.bomb.volume.value = 10; 
+                    synths.rocket.volume.value = -3;
                     synths.swap.volume.value = -6;
                     synths.goal.volume.value = -3;
+                    synths.lose.volume.value = -3;
                     
                     // "Прогрев" синтезаторов
                     Object.values(synths).forEach(synth => {
                         if(synth.triggerAttackRelease) {
                             synth.volume.value = -Infinity;
                             synth.triggerAttackRelease('C4', '32n', Tone.now() + 0.01);
+                            
+                            // ИСПРАВЛЕНО: Установка правильной громкости после "прогрева"
                             let vol = 0;
-                            if (synth === synths.bomb) vol = 5;
-                            else if (synth === synths.rocket) vol = -10;
+                            if (synth === synths.bomb) vol = 10;
+                            else if (synth === synths.rocket) vol = -3;
                             else if (synth === synths.swap) vol = -6;
                             else if (synth === synths.goal) vol = -3;
+                            else if (synth === synths.lose) vol = -3;
                             synth.volume.value = vol;
                         }
                     });
@@ -583,7 +632,7 @@
                     else if (sound === 'bomb') synths.bomb.triggerAttackRelease('C2', '8n', time);
                     else if (sound === 'rocket') {
                         synths.rocket.triggerAttackRelease('0.3n', time);
-                        if (synths.rocket.filter) { // Проверка, что filter существует (он есть у NoiseSynth)
+                        if (synths.rocket.filter) {
                             synths.rocket.filter.frequency.setValueAtTime(1000, time);
                             synths.rocket.filter.frequency.rampTo(5000, time + 0.3);
                         }
@@ -595,7 +644,13 @@
                         synths.win.triggerAttackRelease('G4', '8n', now + 0.2);
                         synths.win.triggerAttackRelease('C5', '8n', now + 0.3);
                     }
-                    else if (sound === 'lose') synths.lose.triggerAttackRelease(['G4', 'E4', 'C4'], '2n', time);
+                    // ИСПРАВЛЕНО: Новый звук поражения
+                    else if (sound === 'lose') {
+                        const now = Tone.now();
+                        synths.lose.triggerAttackRelease('G4', '8n', now);
+                        synths.lose.triggerAttackRelease('Eb4', '8n', now + 0.1);
+                        synths.lose.triggerAttackRelease('C4', '8n', now + 0.2);
+                    }
                     else if (sound === 'goal') synths.goal.triggerAttackRelease('G5', '8n', time);
                 } catch (e) { console.error("Sound play error:", e); }
             }
@@ -611,7 +666,6 @@
                     btn.classList.remove('manual-active');
                     e.stopPropagation();
                 };
-                // ИСПРАВЛЕНО: Добавлен 'pointerout' для более надежного "отжатия"
                 btn.addEventListener('pointerup', removeActive);
                 btn.addEventListener('pointerleave', removeActive);
                 btn.addEventListener('pointercancel', removeActive);
@@ -718,20 +772,53 @@
                 }).catch(e => console.error("Banner Ad error", e));
             }
 
-            function showInterstitialAd(callback) {
+            // ИСПРАВЛЕНО: Функция Interstitial Ad
+            async function showInterstitialAd(callback) {
+                let musicWasPlaying = !bgMusic.paused;
+                if (musicWasPlaying) stopMusic();
+
+                try {
+                    const adData = await vkBridge.send('VKWebAppShowInterstitialAd');
+                    if (adData.result) {
+                        console.log("Interstitial ad shown");
+                    } else {
+                        console.log("Interstitial ad not shown", adData);
+                    }
+                } catch (e) {
+                    console.error("Interstitial Ad error:", e);
+                } finally {
+                    if (musicWasPlaying && !isMusicMuted) {
+                        playMusic();
+                    }
+                    if (callback) {
+                        callback();
+                    }
+                }
+            }
+            
+            // НОВАЯ ФУНКЦИЯ: Rewarded Ad
+            async function showRewardedAd() {
                 let musicWasPlaying = !bgMusic.paused;
                 if(musicWasPlaying) stopMusic();
                 
-                vkBridge.send('VKWebAppShowInterstitialAd')
-                    .catch(e => {
-                        console.error("Interstitial Ad error", e);
-                    })
-                    .finally(() => {
-                        if (musicWasPlaying && !isMusicMuted) {
-                            playMusic();
-                        }
-                        if (callback) callback();
-                    });
+                let adResult = false;
+                try {
+                    // Используем 'VKWebAppShowNativeAds' из примера
+                    const adData = await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
+                    if (adData.result === true) {
+                        adResult = true;
+                        console.log("Rewarded ad shown");
+                    } else {
+                        console.log("Rewarded ad not shown", adData);
+                    }
+                } catch (e) {
+                    console.error("Rewarded ad error:", e);
+                } finally {
+                    if (musicWasPlaying && !isMusicMuted) {
+                        playMusic();
+                    }
+                }
+                return adResult; // Возвращаем результат
             }
 
             // --- Остальные функции и слушатели ---
@@ -745,6 +832,7 @@
                 playMusic();
                 showBannerAd();
                 gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; isProcessing = false;
+                extraMovesUsedThisLevel = false; // Сброс флага
                 clearInterval(timerInterval); pausedTimeLeft = 0;
                 updateScore(0);
                 
@@ -779,9 +867,11 @@
                 resizeBoard(); // Вызов resizeBoard до создания плиток
                 
                 let unmovableToPlace = 0;
-                // ИСПРАВЛЕНО: Баланс блоков
+                // ИСПРАВЛЕНО: Формула совпадает с целями
                 if ((gameMode === 'levels' || gameMode === 'goals') && level >= 15) {
-                    unmovableToPlace = Math.min(10, Math.floor((level - 15) / 2.5) + 1);
+                    unmovableToPlace = 3 + Math.floor((level - 15) / 2.5);
+                    // Ограничение, чтобы не за_полнить_ все поле
+                    unmovableToPlace = Math.min(unmovableToPlace, Math.floor(ROWS * COLS / 3)); 
                 }
 
                 for (let r = 0; r < ROWS; r++) {
@@ -792,7 +882,7 @@
 
                 let placed = 0;
                 while (placed < unmovableToPlace) {
-                    const r = Math.floor(Math.random() * (ROWS - 1)) + 1; 
+                    const r = Math.floor(Math.random() * (ROWS - 1)) + 1; // Не размещать в верхнем ряду
                     const c = Math.floor(Math.random() * COLS);
                     if (board[r][c] && board[r][c].type === 'gem') {
                         board[r][c].element.remove();
@@ -873,7 +963,6 @@
                     tileElement.classList.add('unmovable');
                 }
 
-                // ИСПРАВЛЕНО: Убеждаемся, что TILE_SIZE имеет значение
                 if (TILE_SIZE > 0) {
                     positionTile(tileData, r, c);
                 }
@@ -884,7 +973,6 @@
             function positionTile(tileData, r, c) {
                 tileData.r = r; tileData.c = c;
                 tileData.element.dataset.r = r; tileData.element.dataset.c = c;
-                // ИСПРАВЛЕНО: Добавлена проверка TILE_SIZE
                 if (TILE_SIZE > 0) {
                     tileData.element.style.width = `${TILE_SIZE}px`;
                     tileData.element.style.height = `${TILE_SIZE}px`;
@@ -1278,8 +1366,17 @@
                     modal.querySelector('#final-moves-line').classList.toggle('hidden', gameMode === 'goals' || gameMode === 'levels');
                     modal.querySelector('#final-level-line').classList.toggle('hidden', gameMode !== 'goals');
                     
+                    // НОВАЯ ЛОГИКА: Показ кнопки +5 ходов
+                    const addMovesBtn = document.getElementById('add-moves-ad-btn');
+                    if (gameMode === 'levels' && reason === "Ходы закончились" && !extraMovesUsedThisLevel) {
+                        addMovesBtn.classList.remove('hidden');
+                    } else {
+                        addMovesBtn.classList.add('hidden');
+                    }
+                    
                     if (gameMode === 'levels') {
-                        modal.querySelector('.modal-title').textContent = "Попробуй еще раз!";
+                        // ИСПРАВЛЕНО: Заголовок
+                        modal.querySelector('.modal-title').textContent = (reason === "Ходы закончились") ? "Ходы закончились" : "Попробуй еще раз!";
                         modal.querySelector('#final-level-line').classList.add('hidden');
                         modal.querySelector('#final-moves-line').classList.add('hidden');
                     } else {
@@ -1357,6 +1454,7 @@
                 goals = {};
                 colorsToPick.forEach(color => goals[color] = baseAmount + Math.floor(Math.random() * 5));
                 
+                // ИСПРАВЛЕНО: Формула целей
                 if (level >= 15) {
                     goals['unmovable'] = 3 + Math.floor((level - 15) / 2.5);
                 }
@@ -1423,6 +1521,29 @@
             document.getElementById('restart-game-over-btn').addEventListener('click', () => { closeModal(document.getElementById('game-over-modal')); startGame(gameMode, gameMode === 'levels' ? currentLevel : null); });
             document.getElementById('main-menu-btn-over').addEventListener('click', goToMainMenu);
             
+            // НОВЫЙ СЛУШАТЕЛЬ: Кнопка +5 ходов
+            document.getElementById('add-moves-ad-btn').addEventListener('click', async () => {
+                if (isProcessing) return;
+                isProcessing = true;
+                
+                const adShown = await showRewardedAd();
+                
+                if (adShown) {
+                    extraMovesUsedThisLevel = true;
+                    movesLimit += 5; // Добавляем 5 ходов
+                    closeModal(document.getElementById('game-over-modal'));
+                    isPaused = false;
+                    isProcessing = false;
+                    updateMovesDisplay();
+                    checkGameStatus(); // Перепроверяем, вдруг 5 ходов хватило
+                } else {
+                    // Реклама не была показана
+                    isProcessing = false;
+                    // Здесь можно_ показать_ какое-то_ сообщение_ пользователю,
+                    // но пока просто разблокируем кнопку.
+                }
+            });
+
             document.getElementById('next-level-btn').addEventListener('click', () => { closeModal(document.getElementById('level-complete-modal')); startGame('levels', currentLevel + 1); });
             document.getElementById('main-menu-btn-complete').addEventListener('click', goToMainMenu);
 
