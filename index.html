@@ -329,7 +329,6 @@
                 </button>
                 <button id="stats-btn" class="icon-btn">
                     <svg viewBox="0 0 24 24"><path class="primary-path" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-5h2v5zm4 0h-2V7h2v10zm4 0h-2v-3h2v3z"/></svg>
-
                 </button>
             </div>
         </div>
@@ -534,49 +533,31 @@
                 muteToggle.checked = !isMuted; 
             }
 
-            // ИСПРАВЛЕНО: Рефакторинг для приема forceState
-            function toggleMute(forceState) {
-                const newState = (typeof forceState === 'boolean') ? forceState : !muteToggle.checked;
-                isMuted = newState;
-                muteToggle.checked = !isMuted; // Синхронизация чекбокса
-                
-                if (typeof forceState === 'undefined') {
-                    // Только при ручном переключении
-                    playSound('tap');
-                    saveGameData();
-                }
+            function toggleMute() {
+                isMuted = !muteToggle.checked;
+                playSound('tap');
+                saveGameData();
             }
-            muteToggle.addEventListener('change', () => toggleMute()); // Упрощенный слушатель
+            muteToggle.addEventListener('change', toggleMute);
             
             function updateMusicMuteButton() { 
                 muteMusicToggle.checked = !isMusicMuted;
             }
             
-            // ИСПРАВЛЕНО: Рефакторинг для приема forceState
-            function toggleMusicMute(forceState) {
-                const newState = (typeof forceState === 'boolean') ? forceState : !muteMusicToggle.checked;
-                isMusicMuted = newState;
-                muteMusicToggle.checked = !isMusicMuted; // Синхронизация чекбокса
-
-                if (isMusicMuted) {
-                    stopMusic();
-                } else {
-                    playMusic(); // playMusic() сама проверит audioReady
-                }
-
-                if (typeof forceState === 'undefined') {
-                    // Только при ручном переключении
-                    saveGameData();
-                }
+            function toggleMusicMute() {
+                isMusicMuted = !muteMusicToggle.checked;
+                if (isMusicMuted) { stopMusic(); } else { playMusic(); }
+                saveGameData();
             }
-            muteMusicToggle.addEventListener('change', () => toggleMusicMute()); // Упрощенный слушатель
+            muteMusicToggle.addEventListener('change', toggleMusicMute);
 
             async function playMusic() {
-                // ИСПРАВЛЕНО: Убрана проверка audioReady, т.к. <audio> не зависит от Tone.js
-                if (isMusicMuted) return;
+                if (isMusicMuted || !audioReady) return;
                 try { 
                     if (bgMusic.paused) { 
                         bgMusic.volume = 0.3; 
+                        // ИСПРАВЛЕНО: Добавлена проверка на audioReady, чтобы Tone.start() не мешал
+                        // Но для <audio> элемента это не так критично.
                         bgMusic.play().catch(e => { console.error("Music play failed:", e); }); 
                     } 
                 } 
@@ -584,6 +565,13 @@
             }
             function stopMusic() { 
                 bgMusic.pause(); 
+            }
+
+            // НОВАЯ ФУНКЦИЯ: Запускает музыку сразу при загрузке
+            function initMusic() {
+                if (!isMusicMuted) {
+                    playMusic();
+                }
             }
 
             async function initAudio() {
@@ -636,12 +624,7 @@
                         }
                     });
                     console.log("Audio ready.");
-                    
-                    // ИСПРАВЛЕНО: Музыка уже должна была запуститься, но если нет,
-                    // эта проверка запустит ее после первого клика.
-                    if (!isMusicMuted) {
-                        playMusic();
-                    }
+                    // ИСПРАВЛЕНО: playMusic() убрано отсюда, т.к. вызывается в initMusic()
                 } catch (e) { console.error("Audio context failed to start:", e); }
             }
             
@@ -729,11 +712,7 @@
                 }
                 
                 await loadGameData();
-                
-                // ИСПРАВЛЕНО: Применяем загруженные настройки
-                toggleMute(isMuted);
-                toggleMusicMute(isMusicMuted); // Этот вызов запустит музыку, если isMusicMuted = false
-
+                initMusic(); // <--- НОВЫЙ ВЫЗОВ ДЛЯ ЗАПУСКА МУЗЫКИ
                 showBannerAd();
             }
 
@@ -772,18 +751,18 @@
                 if (loadedData) {
                     maxReachedLevel = loadedData.maxReachedLevel || 1;
                     stats = loadedData.stats || stats;
-                    // ИСПРАВЛЕНО: Загрузка с учетом false
-                    isMuted = loadedData.isMuted === false ? false : (loadedData.isMuted || false);
-                    isMusicMuted = loadedData.isMusicMuted === false ? false : (loadedData.isMusicMuted || false);
+                    isMuted = loadedData.isMuted || false;
+                    isMusicMuted = loadedData.isMusicMuted || false;
                     levelsSinceAd = loadedData.levelsSinceAd || 0;
                     currentTheme = loadedData.theme || 'critters';
                 } else {
-                    // ИСПРАВЛЕНО: Устанавливаем значения по умолчанию, если нет сохранения
                     isMuted = false;
                     isMusicMuted = false;
                     currentTheme = 'critters';
                 }
 
+                updateMuteButton();
+                updateMusicMuteButton();
                 updateLevelsButton(maxReachedLevel);
                 updateStatsDisplay();
                 
@@ -799,35 +778,28 @@
             function showBannerAd() {
                 vkBridge.send('VKWebAppShowBannerAd', {
                     banner_location: 'bottom',
-                    layout_type: 'resize'
-                }).catch(e => console.warn("Banner Ad error", e)); // Изменено на warn
-            }
-
-            // ИСПРАВЛЕНО: Функция Interstitial Ad (стиль fire-and-forget)
+            // ИСПРАВЛЕНО: Функция Interstitial Ad (убран await)
             async function showInterstitialAd(callback) {
                 let musicWasPlaying = !bgMusic.paused;
                 if (musicWasPlaying) stopMusic();
 
-                // Запускаем рекламу и не ждем ее
+                // Убран try/catch и await, чтобы сделать fire-and-forget
                 vkBridge.send('VKWebAppShowInterstitialAd')
                     .then(adData => {
-                        // ИСПРАВЛЕНО: Лог для отладки
                         if (adData.result) {
-                            console.log("Interstitial ad shown successfully.");
+                            console.log("Interstitial ad shown");
                         } else {
-                            console.warn("Interstitial ad result was not successful.", adData);
+                            console.log("Interstitial ad not shown", adData);
                         }
                     })
                     .catch(e => {
-                        // ИСПРАВЛЕНО: Лог для отладки
                         console.error("Interstitial Ad error:", e);
                     })
                     .finally(() => {
-                        // Музыка возобновляется в любом случае
+                        // finally выполнится в любом случае
                         if (musicWasPlaying && !isMusicMuted) {
                             playMusic();
                         }
-                        // Вызываем callback (если он есть)
                         if (callback) {
                             callback();
                         }
@@ -843,18 +815,14 @@
                 try {
                     // Используем 'VKWebAppShowNativeAds' из примера
                     const adData = await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
-                    // ИСПРАВЛЕНО: Лог для отладки
                     if (adData.result === true) {
                         adResult = true;
-                        console.log("Rewarded ad shown successfully.");
+                        console.log("Rewarded ad shown");
                     } else {
-                        console.warn("Rewarded ad result was not successful.", adData);
-                        adResult = false;
+                        console.log("Rewarded ad not shown", adData);
                     }
                 } catch (e) {
-                    // ИСПРАВЛЕНО: Лог для отладки
                     console.error("Rewarded ad error:", e);
-                    adResult = false;
                 } finally {
                     if (musicWasPlaying && !isMusicMuted) {
                         playMusic();
@@ -1390,7 +1358,6 @@
                 if (levelsSinceAd >= 3) {
                     levelsSinceAd = 0;
                     saveGameData(); 
-                    // ИСПРАВЛЕНО: Вызываем рекламу и передаем показ модалки как callback
                     showInterstitialAd(showLevelCompleteModal); 
                 } else {
                     showLevelCompleteModal(); 
@@ -1435,7 +1402,6 @@
                 }
 
                 if (gameMode === 'speed' || gameMode === 'goals') {
-                    // ИСПРАВЛЕНО: Вызываем рекламу и передаем показ модалки как callback
                     showInterstitialAd(showModal);
                 } else {
                     showModal(); 
@@ -1592,8 +1558,6 @@
                 } else {
                     // Реклама не была показана
                     isProcessing = false;
-                    // ИСПРАВЛЕНО: Лог для отладки
-                    console.warn("Rewarded ad was not shown. No moves added.");
                     // Здесь можно_ показать_ какое-то_ сообщение_ пользователю,
                     // но пока просто разблокируем кнопку.
                 }
