@@ -37,7 +37,6 @@
         body.theme-critters { background-image: url('bg-critters.png'); --bg-modal: rgba(255, 255, 255, 0.95); }
         body.theme-sweets { background-image: url('bg-sweets.png'); --text-primary: #d81b60; --border-color: #ad1457; --accent-color: #f8bbd0; }
         body.theme-nature { background-image: url('bg-nature.png'); --text-primary: #f57f17; --border-color: #f57f17; --accent-color: #c5e1a5; --text-secondary: #1b5e20; }
-        /* Исправлена тема самоцветов для идеального контраста */
         body.theme-gems { background-image: url('bg-gems.png'); --text-primary: #ffd740; --border-color: #ffd600; --accent-color: #7e57c2; --text-secondary: #ffffff; --bg-modal: rgba(40, 10, 70, 0.95); }
         
         /* Утилиты */
@@ -145,7 +144,6 @@
             transform: rotate(10deg);
         }
         
-        /* Круглые кнопки (переписаны под адаптацию тем) */
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem;}
         .icon-btn { 
             background: var(--bg-modal); border: 2px solid var(--border-color); border-radius: 50%; 
@@ -451,7 +449,7 @@
         let maxReachedLevel = 1;
         let stats = { goals: { games: 0, hiScore: 0 }, speed: { games: 0, hiScore: 0 } };
         let dragStart = null, TILE_SIZE = 0, lastTap = 0;
-        let activeSwapT1 = null, activeSwapT2 = null; // Для умного спавна бонусов
+        let activeSwapT1 = null, activeSwapT2 = null; 
         let goals = {}, movesLimit = 0;
         let timerInterval = null, timeLeft = 0, totalTime = 60000;
         
@@ -511,7 +509,8 @@
                         match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
                         bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 5, envelope: { attack: 0.001, decay: 0.5, sustain: 0.01 } }).toDestination(),
                         rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
-                        combo: new Tone.PolySynth(Tone.Synth, { volume: 5, oscillator: { type: 'square' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 1 } }).toDestination(),
+                        // Обновленный мягкий звук для комбо
+                        combo: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'triangle' }, envelope: { attack: 0.1, decay: 0.3, sustain: 0.4, release: 0.8 } }).toDestination(),
                         win: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
                         lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
                         goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
@@ -527,6 +526,18 @@
             document.body.addEventListener('click', initAudioContext, { once: true });
             document.body.addEventListener('touchstart', initAudioContext, { once: true });
             
+            // Модерация ВК: Остановка аудио при сворачивании игры
+            function handleVisibilityChange() {
+                if (document.hidden) {
+                    bgMusic.pause();
+                    if (audioContextInitialized) Tone.getDestination().mute = true;
+                } else {
+                    if (!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
+                    if (audioContextInitialized && !isMuted) Tone.getDestination().mute = false;
+                }
+            }
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            
             function playSound(name, time = Tone.now()) {
                 if (isMuted || !audioContextInitialized || !synths[name]) return;
                 try {
@@ -536,7 +547,7 @@
                         case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n', time); break;
                         case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n', time); break;
                         case 'rocket': synths.rocket.triggerAttackRelease('4n', time); break;
-                        case 'combo': synths.combo.triggerAttackRelease(['C3', 'E3', 'G3', 'C4'], '4n', time); break;
+                        case 'combo': synths.combo.triggerAttackRelease(['C4', 'E4', 'G4', 'B4'], '2n', time); break;
                         case 'win': synths.win.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', time); break;
                         case 'lose': synths.lose.triggerAttackRelease(['G3', 'Eb3', 'C3'], '4n', time); break;
                         case 'goal': synths.goal.triggerAttackRelease('G5', '16n', time); break;
@@ -546,6 +557,7 @@
             
             muteToggle.addEventListener('change', () => {
                 isMuted = !muteToggle.checked;
+                if(audioContextInitialized) Tone.getDestination().mute = isMuted;
                 saveGameData();
             });
             
@@ -561,6 +573,17 @@
                     await vkBridge.send('VKWebAppInit');
                     const user = await vkBridge.send('VKWebAppGetUserInfo');
                     vkUserId = user.id;
+                    
+                    // Модерация ВК: Остановка аудио при скрытии окна VK
+                    vkBridge.subscribe((e) => {
+                        if (e.detail.type === 'VKWebAppViewHide') {
+                            bgMusic.pause();
+                            if (audioContextInitialized) Tone.getDestination().mute = true;
+                        } else if (e.detail.type === 'VKWebAppViewRestore') {
+                            if (!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
+                            if (audioContextInitialized && !isMuted) Tone.getDestination().mute = false;
+                        }
+                    });
                 } catch (e) { vkUserId = 'local_user'; }
                 loadGameData();
                 showBannerAd();
@@ -593,7 +616,6 @@
                     isMusicMuted = !!data.isMusicMuted;
                     levelsSinceAd = data.levelsSinceAd || 0;
                     
-                    // Обновляем структуру статистики, если она старая (hiLevel -> hiScore)
                     if (stats.goals && stats.goals.hiLevel !== undefined) {
                         stats.goals.hiScore = 0;
                         delete stats.goals.hiLevel;
@@ -608,6 +630,7 @@
                 
                 muteToggle.checked = !isMuted;
                 muteMusicToggle.checked = !isMusicMuted;
+                if(audioContextInitialized) Tone.getDestination().mute = isMuted;
                 if(!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
             }
 
@@ -671,18 +694,26 @@
                 requestAnimationFrame(() => {
                     resizeBoard();
                     initBoard();
+                    // Двойной вызов адаптации для фикса обрезания нижней грани после отрисовки интерфейса
+                    setTimeout(resizeBoard, 150);
                 });
                 updateMovesDisplay();
             }
 
-            // ИСПРАВЛЕНИЕ 1: Идеальное построение сетки поля
+            // Идеальное построение сетки поля без обрезаний
             function resizeBoard() {
                 const container = document.getElementById('game-screen');
                 const header = document.querySelector('.game-header');
+                const goalsCont = document.getElementById('goals-container');
                 
-                // Доступная зона без шапки. Отнимаем 20px на отступы контейнера и 8px на бордеры игрового поля
+                let goalsHeight = 0;
+                if (gameMode !== 'speed' && !goalsCont.classList.contains('hidden')) {
+                    goalsHeight = goalsCont.clientHeight + 10;
+                }
+                
+                // Доступная зона: отнимаем паддинги экрана и высоту шапки с целями
                 const availableWidth = container.clientWidth - 20 - 8; 
-                const availableHeight = container.clientHeight - header.clientHeight - 10 - 8; 
+                const availableHeight = container.clientHeight - header.clientHeight - goalsHeight - 10 - 8; 
                 
                 if (availableWidth <= 0 || availableHeight <= 0) return;
 
@@ -691,7 +722,7 @@
                 
                 TILE_SIZE = Math.floor(Math.min(sizeByWidth, sizeByHeight));
                 
-                // Добавляем 8 пикселей, чтобы компенсировать CSS: border: 4px solid
+                // 8 пикселей - компенсация border-а
                 const boardWidth = (TILE_SIZE * COLS) + (GAP * (COLS + 1)) + 8;
                 const boardHeight = (TILE_SIZE * ROWS) + (GAP * (ROWS + 1)) + 8;
                 
@@ -829,7 +860,9 @@
                         if (t?.bonus) {
                             isProcessing = true; incrementMoves();
                             await handleBonusExplosion(new Set([t]));
-                            isProcessing = false; checkGameStatus();
+                            
+                            const isEnded = checkGameStatus();
+                            if (!isEnded) isProcessing = false;
                         }
                     }
                     lastTap = now;
@@ -847,7 +880,6 @@
                 if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') return;
                 isProcessing = true;
                 
-                // ИСПРАВЛЕНИЕ 2: Запоминаем текущие фишки, чтобы спавнить бонусы в них
                 activeSwapT1 = t1;
                 activeSwapT2 = t2;
                 
@@ -873,11 +905,14 @@
                     await handleBonusExplosion(new Set([t1.bonus ? t1 : t2]));
                 }
                 
-                isProcessing = false;
                 activeSwapT1 = null; 
                 activeSwapT2 = null;
                 
-                checkGameStatus();
+                // Проверка победы ДО снятия блокировки поля (фикс лишнего хода)
+                const isEnded = checkGameStatus();
+                if (!isEnded) {
+                    isProcessing = false;
+                }
             }
             
             async function animateSwap(t1, t2) {
@@ -965,7 +1000,6 @@
                     bonusInfo.forEach(info => {
                         let target = info.tiles[Math.floor(info.tiles.length/2)]; 
                         
-                        // ИСПРАВЛЕНИЕ 2: Если игрок поменял фишку, и она в ряду — спавним бонус именно в ней
                         if (activeSwapT1 && info.tiles.includes(activeSwapT1)) target = activeSwapT1;
                         else if (activeSwapT2 && info.tiles.includes(activeSwapT2)) target = activeSwapT2;
 
@@ -1033,20 +1067,46 @@
                 await processMatches(); 
             }
             
+            // Новая система комбо
             async function handleCombo(t1, t2) {
                 const allToDestroy = new Set([t1, t2]);
                 showVisualEffect(t1.r, t1.c, 'combo');
                 playSound('combo');
                 
+                const type1 = t1.bonus;
+                const type2 = t2.bonus;
                 const cR = t1.r, cC = t1.c;
-                for(let r = cR-1; r <= cR+1; r++) {
-                    if(r>=0 && r<ROWS) {
-                        for(let c=0; c<COLS; c++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
+                
+                if (type1 === 'bomb' && type2 === 'bomb') {
+                    // Бомба + Бомба = Взрыв 5х5 вокруг цели
+                    for(let r = cR-2; r <= cR+2; r++) {
+                        if(r>=0 && r<ROWS) {
+                            for(let c=cC-2; c<=cC+2; c++) {
+                                if(c>=0 && c<COLS && board[r][c]) allToDestroy.add(board[r][c]);
+                            }
+                        }
                     }
-                }
-                for(let c = cC-1; c <= cC+1; c++) {
-                    if(c>=0 && c<COLS) {
-                         for(let r=0; r<ROWS; r++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
+                } else if (type1 === 'rocket' && type2 === 'rocket') {
+                    // Ракета + Ракета = Очистка 2 рядов и 2 колонок (в которых лежат сами ракеты)
+                    for(let c=0; c<COLS; c++) {
+                        if(board[t1.r][c]) allToDestroy.add(board[t1.r][c]);
+                        if(board[t2.r][c]) allToDestroy.add(board[t2.r][c]);
+                    }
+                    for(let r=0; r<ROWS; r++) {
+                        if(board[r][t1.c]) allToDestroy.add(board[r][t1.c]);
+                        if(board[r][t2.c]) allToDestroy.add(board[r][t2.c]);
+                    }
+                } else {
+                    // Ракета + Бомба = Крест 3х3 (по 3 ряда и 3 столбца)
+                    for (let r = cR - 1; r <= cR + 1; r++) {
+                        if (r >= 0 && r < ROWS) {
+                            for(let c=0; c<COLS; c++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
+                        }
+                    }
+                    for (let c = cC - 1; c <= cC + 1; c++) {
+                        if (c >= 0 && c < COLS) {
+                            for(let r=0; r<ROWS; r++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
+                        }
                     }
                 }
                 
@@ -1148,12 +1208,16 @@
                 
                 if (goalsDone) {
                     levelSuccess();
+                    return true;
                 } else if (gameMode !== 'speed' && movesLimit <= 0) {
                     gameOver("Ходы закончились");
+                    return true;
                 }
+                return false;
             }
             
             function levelSuccess() {
+                isPaused = true; // Блокируем новые нажатия
                 playSound('win');
                 if (gameMode === 'levels') {
                     if (currentLevel === maxReachedLevel) {
@@ -1175,10 +1239,10 @@
                         openModal('level-complete-modal');
                     }
                 } else {
-                    // ИСПРАВЛЕНИЕ 3: Бесконечный режим. Доску не сбрасываем, бонусы сохраняются.
                     level++;
                     playSound('goal');
                     setupGoalsLevel(); 
+                    isPaused = false; // Возвращаем управление для бесконечного режима
                 }
             }
 
@@ -1186,7 +1250,6 @@
                 isPaused = true; clearInterval(timerInterval);
                 playSound('lose');
                 
-                // ИСПРАВЛЕНИЕ 6: Записываем рекорд по очкам, если проиграли или вышли
                 if (gameMode === 'goals') {
                     stats.goals.hiScore = Math.max(stats.goals.hiScore || 0, score);
                 } else if (gameMode === 'speed') {
@@ -1218,7 +1281,6 @@
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 40);
                 
-                // В бесконечном режиме просто добавляем ходы за каждый пройденный этап
                 if (gameMode === 'goals' && level > 1) {
                     movesLimit += Math.max(10, 20 - Math.floor(diffLevel / 3));
                 } else {
@@ -1232,12 +1294,12 @@
                 const shuffled = [...COLORS].sort(()=>Math.random()-0.5);
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 
-                // В бесконечном режиме камни генерируются только 1 раз в самом начале
                 if (gameMode === 'levels' && level >= 5) {
                     goals['unmovable'] = 99; 
                 }
                 updateGoalsUI();
                 updateMovesDisplay();
+                setTimeout(resizeBoard, 50); // Легкий ресайз для обновления высоты шапки
             }
 
             function updateScore(s) { scoreElement.textContent = s; }
@@ -1306,7 +1368,6 @@
             document.getElementById('rules-btn').addEventListener('click', () => openModal('rules-modal'));
             document.getElementById('close-rules-btn').addEventListener('click', () => closeModal('rules-modal'));
             
-            // ИСПРАВЛЕНИЕ 6: Статистика показывает Очки
             document.getElementById('stats-btn').addEventListener('click', () => {
                 const c = document.getElementById('stats-content-container');
                 c.innerHTML = `
