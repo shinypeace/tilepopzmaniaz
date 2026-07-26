@@ -218,7 +218,7 @@
             border: 4px solid rgba(255,255,255,0.8);
             border-radius: 1.5rem; box-sizing: border-box;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-            transform: translateZ(0); /* Аппаратное ускорение */
+            transform: translateZ(0);
         }
         
         .tile { 
@@ -237,7 +237,6 @@
             filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15));
         }
         
-        /* ПУЛЬСАЦИЯ БОМБ И РАКЕТ (сохранена) */
         @keyframes bonus-pulse {
             0% { transform: scale(1); filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15)); }
             50% { transform: scale(1.12); filter: drop-shadow(0 8px 6px rgba(0,0,0,0.35)); }
@@ -285,7 +284,6 @@
         .stats-row-value { font-weight: 900; color: var(--text-primary); }
         .stats-row span { color: var(--text-secondary); }
         
-        /* ПРЕМИАЛЬНЫЕ ПРАВИЛА (CSS) */
         .rules-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .rule-item {
             display: flex; align-items: center; 
@@ -430,7 +428,6 @@
         </div>
     </div>
     
-    <!-- ПРЕМИАЛЬНОЕ ОКНО ПРАВИЛ -->
     <div id="rules-modal" class="modal">
         <div class="modal-content text-left" style="padding: 1.5rem; max-width: 450px;">
             <h2 class="modal-title text-center">Как играть</h2>
@@ -511,7 +508,6 @@
         let goals = {}, movesLimit = 0;
         let timerInterval = null, timeLeft = 0, totalTime = 60000;
         
-        // Аудио переменные
         let audioContextInitialized = false;
         let isMuted = false;
         let isMusicMuted = false;
@@ -556,39 +552,41 @@
         
         async function initGameLogic() {
             
-            // Надежная инициализация аудио (возврат к стабильной версии)
-            async function initAudioContext() {
-                if (audioContextInitialized) return;
+            // Надежная инициализация аудио (Возврат к самой стабильной версии)
+            function initSynths() {
+                synths = {
+                    tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
+                    swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
+                    match: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
+                    bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 4, envelope: { attack: 0.001, decay: 0.4, sustain: 0.01 } }).toDestination(),
+                    rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0 } }).toDestination(),
+                    win: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
+                    lose: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
+                    goal: new Tone.PluckSynth({ volume: 0 }).toDestination()
+                };
+            }
+
+            async function initAudio() {
+                if (audioContextInitialized) {
+                    if (Tone.context.state !== 'running') {
+                        Tone.context.resume().catch(()=>{});
+                    }
+                    return;
+                }
                 try {
                     await Tone.start();
-                    Tone.context.resume();
-                    
-                    synths = {
-                        tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                        swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -5 }).toDestination(),
-                        match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
-                        bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 4, envelope: { attack: 0.001, decay: 0.4, sustain: 0.01 } }).toDestination(),
-                        rocket: new Tone.NoiseSynth({ volume: -2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0 } }).toDestination(),
-                        win: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
-                        lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
-                        goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
-                    };
-                    
+                    initSynths();
                     audioContextInitialized = true;
                     if (!isMusicMuted && bgMusic.paused) {
-                        bgMusic.play().catch(e => {});
+                        bgMusic.play().catch(()=>{});
                     }
-                } catch (e) {}
-            }
-            
-            // Инициализация при первом тапе (и пробуждение при последующих)
-            document.addEventListener('pointerdown', () => {
-                if (!audioContextInitialized) {
-                    initAudioContext();
-                } else if (Tone.context.state !== 'running') {
-                    Tone.context.resume().catch(()=>{});
+                } catch (e) {
+                    console.error("Audio init error:", e);
                 }
-            });
+            }
+
+            // Стандартные слушатели для разблокировки звука
+            document.addEventListener('pointerdown', initAudio);
             
             document.querySelectorAll('button, .icon-btn').forEach(btn => {
                 btn.addEventListener('pointerdown', () => playSound('tap'));
@@ -599,7 +597,7 @@
                     bgMusic.pause();
                     dragStart = null; 
                 } else {
-                    if (audioContextInitialized) Tone.context.resume();
+                    if (audioContextInitialized) Tone.context.resume().catch(()=>{});
                     if (!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
                 }
             }
@@ -607,6 +605,7 @@
             
             function playSound(name, time = Tone.now()) {
                 if (isMuted || !audioContextInitialized || !synths[name]) return;
+                if (Tone.context.state !== 'running') Tone.context.resume().catch(()=>{});
                 try {
                     switch(name) {
                         case 'tap': synths.tap.triggerAttackRelease('C5', '32n', time); break;
@@ -1261,11 +1260,12 @@
                 }
             }
 
+            // ИСПРАВЛЕНИЕ КАМНЕЙ: Убран transform: scale(0), который ломал позицию
             async function animateDestruction(tiles) {
                 tiles.forEach(t => {
                     if(t.element) {
                         t.element.classList.add('match');
-                        if (t.type === 'unmovable') t.element.style.transform = "scale(0)"; 
+                        // Раньше тут был баг с t.element.style.transform = "scale(0)"
                     }
                     board[t.r][t.c] = null;
                 });
