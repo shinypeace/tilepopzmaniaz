@@ -221,7 +221,6 @@
             transform: translateZ(0);
         }
         
-        /* Z-index для фишек, чтобы овалы комбо были всегда ПОД ними */
         .tile { 
             position: absolute; 
             top: 0; left: 0;
@@ -238,7 +237,6 @@
             filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15));
         }
         
-        /* ПУЛЬСАЦИЯ БОМБ И РАКЕТ */
         @keyframes bonus-pulse {
             0% { transform: scale(1); filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15)); }
             50% { transform: scale(1.12); filter: drop-shadow(0 8px 6px rgba(0,0,0,0.35)); }
@@ -247,7 +245,6 @@
         .tile.bomb .tile-inner, .tile.rocket .tile-inner {
             animation: bonus-pulse 1.5s infinite ease-in-out;
         }
-        /* При матче анимация заменяется на взрыв, чтобы фишка корректно исчезала */
         .tile.match .tile-inner { animation: match 0.3s ease-in forwards !important; }
 
         .tile-red .tile-inner { background-image: url('tile-red.png'); }
@@ -262,7 +259,6 @@
         
         @keyframes match { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
         
-        /* ОВАЛ СОЕДИНЕНИЯ БОНУСОВ */
         .combo-link {
             position: absolute;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(150, 200, 255, 0.3));
@@ -302,7 +298,6 @@
         .stats-row-value { font-weight: 900; color: var(--text-primary); }
         .stats-row span { color: var(--text-secondary); }
         
-        /* ПРЕМИАЛЬНЫЕ ПРАВИЛА (CSS) */
         .rules-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .rule-item {
             display: flex; align-items: center; 
@@ -447,7 +442,6 @@
         </div>
     </div>
     
-    <!-- ПРЕМИАЛЬНОЕ ОКНО ПРАВИЛ -->
     <div id="rules-modal" class="modal">
         <div class="modal-content text-left" style="padding: 1.5rem; max-width: 450px;">
             <h2 class="modal-title text-center">Как играть</h2>
@@ -574,20 +568,17 @@
             
             function initSynths() {
                 synths = {
-                    // ИСПРАВЛЕНИЕ: Мягкий звук тапа по кнопке
                     tap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -8 }).toDestination(),
                     swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -5 }).toDestination(),
                     match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
-                    // ИСПРАВЛЕНИЕ: Старая басистая мембранная бомба
-                    bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 5, envelope: { attack: 0.001, decay: 0.5, sustain: 0.01 } }).toDestination(),
-                    rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
+                    bomb: new Tone.MembraneSynth({ volume: 2, pitchDecay: 0.1, octaves: 4, envelope: { attack: 0.01, decay: 0.4, sustain: 0.01 } }).toDestination(),
+                    rocket: new Tone.NoiseSynth({ volume: 0, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0 } }).toDestination(),
                     win: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
                     lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
                     goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
                 };
             }
 
-            // ИСПРАВЛЕНИЕ: Гарантированное восстановление звука после рекламы
             function unlockAudio() {
                 if (!audioContextInitialized) {
                     Tone.start().then(() => {
@@ -599,11 +590,10 @@
                     if (Tone.context.state !== 'running') {
                         Tone.context.resume().catch(()=>{});
                     }
-                    Tone.getDestination().mute = isMuted; // Принудительный фикс мьюта
+                    Tone.getDestination().mute = isMuted; 
                 }
             }
 
-            // Анлокер на все касания (Спасает звук на iOS после рекламы)
             ['touchstart', 'touchend', 'pointerdown', 'mousedown'].forEach(evt => {
                 document.addEventListener(evt, unlockAudio);
             });
@@ -761,7 +751,6 @@
                         lastAdTime = Date.now(); 
                         saveGameData();
                         
-                        // ИСПРАВЛЕНИЕ: Форсированный возврат звука после просмотра рекламы
                         if (audioContextInitialized) {
                             Tone.getDestination().mute = isMuted;
                             Tone.context.resume().catch(()=>{});
@@ -793,14 +782,12 @@
             function updateLevelsButton(lvl) { levelsModeBtn.textContent = `Уровень ${lvl}`; }
             function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
             
-            // ИСПРАВЛЕНИЕ: Центральный контроллер блокировки поля и связей комбо
             function setProcessing(val) {
                 isProcessing = val;
                 if (!val) updateComboLinks();
                 else document.querySelectorAll('.combo-link').forEach(el => el.remove());
             }
             
-            // ИСПРАВЛЕНИЕ: Отрисовка овалов под комбо-бонусами
             function updateComboLinks() {
                 document.querySelectorAll('.combo-link').forEach(el => el.remove());
                 if (isProcessing) return;
@@ -809,11 +796,9 @@
                     for (let c = 0; c < COLS; c++) {
                         const t1 = board[r][c];
                         if (t1 && t1.bonus) {
-                            // Проверка соседа справа
                             if (c + 1 < COLS && board[r][c+1] && board[r][c+1].bonus) {
                                 createLink(r, c, 'h');
                             }
-                            // Проверка соседа снизу
                             if (r + 1 < ROWS && board[r+1][c] && board[r+1][c].bonus) {
                                 createLink(r, c, 'v');
                             }
@@ -827,7 +812,6 @@
                 link.className = 'combo-link';
                 let width, height, left, top;
                 
-                // Делаем овал чуть тоньше самой фишки (0.8 от TILE_SIZE)
                 if (dir === 'h') {
                     width = TILE_SIZE * 2 + GAP;
                     height = TILE_SIZE * 0.85; 
@@ -905,7 +889,7 @@
                     updateTilePosition(el, r, c);
                 });
                 
-                updateComboLinks(); // Обновляем размер овалов при ресайзе
+                updateComboLinks(); 
             }
             window.addEventListener('resize', resizeBoard);
 
@@ -1292,7 +1276,6 @@
                 const type2 = t2.bonus;
                 const cR = t1.r, cC = t1.c;
                 
-                // ИСПРАВЛЕНИЕ: Звуки на комбо (Бомба+Бомба = Бомба, остальное = Ракета)
                 if (type1 === 'bomb' && type2 === 'bomb') {
                     playSound('bomb');
                     for(let r = cR-2; r <= cR+2; r++) {
