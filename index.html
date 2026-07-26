@@ -8,14 +8,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Lobster&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <!-- VK Bridge -->
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     
     <style>
         :root {
             --bg-main: #f0f8ff; 
             --bg-secondary: #e6f2ff;
-            --bg-modal: rgba(255, 255, 255, 0.9);
+            --bg-modal: rgba(255, 255, 255, 0.95);
             --text-primary: #ff4081; 
             --text-secondary: #2c3e50; 
             --accent-color: #81d4fa;
@@ -38,9 +37,10 @@
         body.theme-critters { background-image: url('bg-critters.png'); --bg-modal: rgba(255, 255, 255, 0.95); }
         body.theme-sweets { background-image: url('bg-sweets.png'); --text-primary: #d81b60; --border-color: #ad1457; --accent-color: #f8bbd0; }
         body.theme-nature { background-image: url('bg-nature.png'); --text-primary: #f57f17; --border-color: #f57f17; --accent-color: #c5e1a5; --text-secondary: #1b5e20; }
-        body.theme-gems { background-image: url('bg-gems.png'); --text-primary: #ffd740; --border-color: #ffd600; --accent-color: #7e57c2; --text-secondary: #ffffff; --bg-modal: rgba(50, 20, 100, 0.95); }
+        /* Исправлена тема самоцветов для идеального контраста */
+        body.theme-gems { background-image: url('bg-gems.png'); --text-primary: #ffd740; --border-color: #ffd600; --accent-color: #7e57c2; --text-secondary: #ffffff; --bg-modal: rgba(40, 10, 70, 0.95); }
         
-        /* Утилиты на замену Tailwind CSS (для быстрой загрузки) */
+        /* Утилиты */
         .w-full { width: 100%; }
         .h-full { height: 100%; }
         .flex { display: flex; }
@@ -58,7 +58,6 @@
         .font-bold { font-weight: 700; }
         .text-pink-500 { color: var(--text-primary); }
         .text-gray-700 { color: var(--text-secondary); }
-        .bg-white-50 { background-color: rgba(255,255,255,0.6); }
         .rounded-lg { border-radius: 0.5rem; }
         .rounded-full { border-radius: 9999px; }
         .overflow-hidden { overflow: hidden; }
@@ -110,7 +109,7 @@
         .game-screen {
             width: 100%; max-width: 480px; height: 100%;
             display: flex; flex-direction: column; justify-content: flex-start;
-            padding: 10px; /* ИСПРАВЛЕНИЕ: Убрали гигантский отступ снизу */
+            padding: 10px;
         }
         .game-title {
             font-family: var(--font-title); font-size: 4.5rem; line-height: 1.1;
@@ -146,10 +145,10 @@
             transform: rotate(10deg);
         }
         
-        /* Круглые кнопки меню */
+        /* Круглые кнопки (переписаны под адаптацию тем) */
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem;}
         .icon-btn { 
-            background: #fff; border: 2px solid var(--border-color); border-radius: 50%; 
+            background: var(--bg-modal); border: 2px solid var(--border-color); border-radius: 50%; 
             width: 64px; height: 64px; 
             display: flex; justify-content: center; align-items: center; 
             transition: all 0.2s ease; 
@@ -157,7 +156,7 @@
         }
         .icon-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 0 var(--border-color);}
         .icon-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 0 var(--border-color);}
-        .icon-btn svg { width: 32px; height: 32px; fill: var(--text-secondary); }
+        .icon-btn svg { width: 32px; height: 32px; fill: var(--text-primary); }
         
         /* Модальные окна */
         .modal { 
@@ -183,13 +182,13 @@
         .game-header { 
             width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
             gap: 0.5rem; align-items: center; margin-bottom: 10px; padding: 8px; 
-            background: rgba(255,255,255,0.8); border-radius: 1rem; 
+            background: var(--bg-modal); border-radius: 1rem; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            flex-shrink: 0; 
+            flex-shrink: 0; border: 2px solid var(--accent-color);
         }
         .header-item { 
             display: flex; align-items: center; justify-content: center;
-            background-color: rgba(255,255,255,0.5); 
+            background-color: var(--bg-modal); 
             padding: 0.4rem 0.8rem; border-radius: 0.75rem; border: 2px solid var(--border-color);
         }
         .header-item svg { width: 22px; height: 22px; fill: var(--text-primary); margin-right: 0.4rem; }
@@ -198,8 +197,8 @@
         .pause-btn-container .icon-btn { width: 48px; height: 48px; border-width: 2px; }
         
         #goals-container { 
-            grid-column: 1 / -1; background: rgba(255,255,255,0.5); border-radius: 0.75rem; 
-            padding: 0.5rem; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; 
+            grid-column: 1 / -1; background: var(--bg-modal); border-radius: 0.75rem; 
+            padding: 0.5rem; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; border: 1px solid var(--border-color);
         }
         #goals-header { font-weight: 800; margin-right: 10px; color: var(--text-secondary); }
         #goals-list-wrapper { display: flex; flex-wrap: wrap; justify-content: center; overflow-x: auto; max-width: 100%; }
@@ -233,17 +232,33 @@
         .tile.match .tile-inner { animation: match 0.3s ease-in forwards; }
         @keyframes match { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
         
+        /* Эффекты взрывов */
+        .explosion-effect {
+            position: absolute; border-radius: 50%; pointer-events: none;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 100;
+            animation: explodeAnim 0.4s ease-out forwards;
+        }
+        .bomb-effect { background: radial-gradient(circle, rgba(255,80,0,0.8) 0%, rgba(255,0,0,0) 70%); }
+        .rocket-effect { background: rgba(0, 255, 255, 0.4); border: 3px solid #0ff; }
+        .combo-effect { background: radial-gradient(circle, rgba(255,0,255,0.8) 0%, rgba(100,0,255,0) 70%); }
+        @keyframes explodeAnim {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+        }
+
         /* Таймер */
         #time-bar-container { background-color: #bbdefb; border: 1px solid #90caf9; height: 12px; }
         #time-bar { background-color: var(--text-primary); transition: width 0.1s linear; }
         
         /* Статистика */
         .stats-content { display: flex; flex-direction: column; gap: 1rem; }
-        .stats-group { background: rgba(255,255,255,0.6); border-radius: 1rem; padding: 1rem; border: 2px solid var(--accent-color); }
+        .stats-group { background: var(--bg-modal); border-radius: 1rem; padding: 1rem; border: 2px solid var(--accent-color); }
         .stats-group-title { font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; text-transform: uppercase; }
         .stats-row { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(0,0,0,0.1); padding: 5px 0; }
         .stats-row:last-child { border-bottom: none; }
-        .stats-row-value { font-weight: 900; color: var(--text-secondary); }
+        .stats-row-value { font-weight: 900; color: var(--text-primary); }
+        .stats-row span { color: var(--text-secondary); }
         
         .hidden { display: none !important; }
         
@@ -357,14 +372,14 @@
                 <button id="theme-nature" data-theme="nature" title="Природа"></button>
                 <button id="theme-gems" data-theme="gems" title="Самоцветы"></button>
             </div>
-            <div class="flex justify-between items-center w-full mt-4 px-4 bg-white-50 rounded-lg py-2">
+            <div class="flex justify-between items-center w-full mt-4 px-4 rounded-lg py-2" style="background: rgba(255,255,255,0.2);">
                 <h3 class="text-lg font-bold">Звуки</h3>
                 <label class="switch">
                     <input type="checkbox" id="mute-toggle">
                     <span class="slider round"></span>
                 </label>
             </div>
-            <div class="flex justify-between items-center w-full mt-2 px-4 bg-white-50 rounded-lg py-2">
+            <div class="flex justify-between items-center w-full mt-2 px-4 rounded-lg py-2" style="background: rgba(255,255,255,0.2);">
                 <h3 class="text-lg font-bold">Музыка</h3>
                 <label class="switch">
                     <input type="checkbox" id="mute-music-toggle">
@@ -379,11 +394,11 @@
         <div class="modal-content text-left">
             <h2 class="modal-title text-center">Как играть</h2>
             <div class="space-y-4 text-sm font-bold text-gray-700">
-                <p>🔄 <strong>Свайп:</strong> Меняй фишки, собери 3 в ряд.</p>
-                <p>💣 <strong>Бомба (4 в ряд):</strong> Взрывает всё вокруг.</p>
-                <p>🚀 <strong>Ракета (5 или T/L):</strong> Чистит ряды.</p>
-                <p>🧱 <strong>Камень:</strong> Ломай, собирая ряды рядом с ним!</p>
-                <p>✨ <strong>Комбо:</strong> Смешай бонусы для супер-эффекта.</p>
+                <p style="color: var(--text-secondary);">🔄 <strong>Свайп:</strong> Меняй фишки, собери 3 в ряд.</p>
+                <p style="color: var(--text-secondary);">💣 <strong>Бомба (4 в ряд):</strong> Взрывает всё вокруг.</p>
+                <p style="color: var(--text-secondary);">🚀 <strong>Ракета (5 или T/L):</strong> Чистит ряды.</p>
+                <p style="color: var(--text-secondary);">🧱 <strong>Камень:</strong> Ломай, собирая ряды рядом с ним!</p>
+                <p style="color: var(--text-secondary);">✨ <strong>Комбо:</strong> Смешай бонусы для супер-эффекта.</p>
             </div>
             <button id="close-rules-btn" class="btn btn-secondary mt-6">Понятно</button>
         </div>
@@ -410,7 +425,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const preloader = document.getElementById('preloader');
         const loadingBarFill = document.getElementById('loading-bar-fill');
-        const loadingStatus = document.getElementById('loading-status');
         const mainContainer = document.querySelector('.main-container');
         const bgMusic = document.getElementById('bg-music');
         
@@ -419,7 +433,6 @@
         const boardElement = document.getElementById('game-board');
         const scoreElement = document.getElementById('score');
         const movesCountElement = document.getElementById('moves-count');
-        const movesLabelElement = document.getElementById('moves-label');
         const timeBar = document.getElementById('time-bar');
         const goalsContainer = document.getElementById('goals-container');
         const goalsHeader = document.getElementById('goals-header');
@@ -433,13 +446,14 @@
         
         let board = [], score = 0, movesCount = 0, totalMoves = 0, level = 1, currentLevel = 1;
         let gameMode = 'levels', isPaused = false, isProcessing = false;
-        let vkUserId = null, wasMusicPlaying = false, levelsSinceAd = 0, currentTheme = 'critters';
+        let vkUserId = null, levelsSinceAd = 0, currentTheme = 'critters';
         let extraMovesUsedThisLevel = false;
         let maxReachedLevel = 1;
-        let stats = { goals: { games: 0, hiLevel: 0 }, speed: { games: 0, hiScore: 0 } };
+        let stats = { goals: { games: 0, hiScore: 0 }, speed: { games: 0, hiScore: 0 } };
         let dragStart = null, TILE_SIZE = 0, lastTap = 0;
+        let activeSwapT1 = null, activeSwapT2 = null; // Для умного спавна бонусов
         let goals = {}, movesLimit = 0;
-        let timerInterval = null, timeLeft = 0, totalTime = 60000, timerStartTime = 0;
+        let timerInterval = null, timeLeft = 0, totalTime = 60000;
         
         let audioContextInitialized = false;
         let isMuted = false;
@@ -578,6 +592,12 @@
                     isMuted = !!data.isMuted;
                     isMusicMuted = !!data.isMusicMuted;
                     levelsSinceAd = data.levelsSinceAd || 0;
+                    
+                    // Обновляем структуру статистики, если она старая (hiLevel -> hiScore)
+                    if (stats.goals && stats.goals.hiLevel !== undefined) {
+                        stats.goals.hiScore = 0;
+                        delete stats.goals.hiLevel;
+                    }
                 }
                 
                 updateLevelsButton(maxReachedLevel);
@@ -655,25 +675,25 @@
                 updateMovesDisplay();
             }
 
-            // ИСПРАВЛЕНИЕ: Математическое вычисление идеального размера поля под любой экран
+            // ИСПРАВЛЕНИЕ 1: Идеальное построение сетки поля
             function resizeBoard() {
                 const container = document.getElementById('game-screen');
                 const header = document.querySelector('.game-header');
                 
-                // Доступная зона без шапки и с запасом 10px снизу
-                const availableWidth = container.clientWidth - 20; 
-                const availableHeight = container.clientHeight - header.clientHeight - 10; 
+                // Доступная зона без шапки. Отнимаем 20px на отступы контейнера и 8px на бордеры игрового поля
+                const availableWidth = container.clientWidth - 20 - 8; 
+                const availableHeight = container.clientHeight - header.clientHeight - 10 - 8; 
                 
                 if (availableWidth <= 0 || availableHeight <= 0) return;
 
-                // Считаем размер клетки, чтобы влезло и по ширине, и по высоте
                 const sizeByWidth = (availableWidth - (COLS + 1) * GAP) / COLS;
                 const sizeByHeight = (availableHeight - (ROWS + 1) * GAP) / ROWS;
                 
                 TILE_SIZE = Math.floor(Math.min(sizeByWidth, sizeByHeight));
                 
-                const boardWidth = (TILE_SIZE * COLS) + (GAP * (COLS + 1));
-                const boardHeight = (TILE_SIZE * ROWS) + (GAP * (ROWS + 1));
+                // Добавляем 8 пикселей, чтобы компенсировать CSS: border: 4px solid
+                const boardWidth = (TILE_SIZE * COLS) + (GAP * (COLS + 1)) + 8;
+                const boardHeight = (TILE_SIZE * ROWS) + (GAP * (ROWS + 1)) + 8;
                 
                 boardElement.style.width = `${boardWidth}px`;
                 boardElement.style.height = `${boardHeight}px`;
@@ -746,7 +766,6 @@
                 el.classList.add('tile');
                 el.dataset.r = r; el.dataset.c = c;
                 
-                // Ставим базовый транзишен, чтобы не было телепортаций при свайпах
                 el.style.transition = 'top 0.3s ease-in-out, left 0.3s ease-in-out, transform 0.2s';
                 
                 const inner = document.createElement('div');
@@ -766,6 +785,19 @@
                 }
                 boardElement.appendChild(el);
                 return tileData;
+            }
+
+            // Анимация взрывов (VFX)
+            function showVisualEffect(r, c, type) {
+                const effect = document.createElement('div');
+                effect.className = `explosion-effect ${type}-effect`;
+                const size = (type === 'bomb' || type === 'combo') ? TILE_SIZE * 3.5 : TILE_SIZE * 2;
+                effect.style.width = `${size}px`;
+                effect.style.height = `${size}px`;
+                effect.style.left = `${GAP + c * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
+                effect.style.top = `${GAP + r * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
+                boardElement.appendChild(effect);
+                setTimeout(() => effect.remove(), 400);
             }
 
             boardElement.addEventListener('pointerdown', e => {
@@ -788,7 +820,6 @@
                 }
             });
             
-            // ИСПРАВЛЕНИЕ: Защита от спама кликами по бонусам
             boardElement.addEventListener('pointerup', async () => {
                 if (dragStart && !dragStart.moved) {
                     if (isProcessing || isPaused) { dragStart = null; return; }
@@ -815,6 +846,11 @@
                 
                 if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') return;
                 isProcessing = true;
+                
+                // ИСПРАВЛЕНИЕ 2: Запоминаем текущие фишки, чтобы спавнить бонусы в них
+                activeSwapT1 = t1;
+                activeSwapT2 = t2;
+                
                 await animateSwap(t1, t2);
                 
                 const isCombo = (t1.bonus && t2.bonus);
@@ -838,6 +874,9 @@
                 }
                 
                 isProcessing = false;
+                activeSwapT1 = null; 
+                activeSwapT2 = null;
+                
                 checkGameStatus();
             }
             
@@ -857,7 +896,6 @@
                 await new Promise(r => setTimeout(r, 250));
             }
 
-            // ИСПРАВЛЕНИЕ: Мульти-спавн бонусов из-за дублей. Теперь проверяем обработанные ряды.
             function findMatches() {
                 const matches = new Set();
                 const bonusInfo = [];
@@ -925,7 +963,12 @@
                     playSound('match');
                     const createdBonuses = new Set();
                     bonusInfo.forEach(info => {
-                        const target = info.tiles[Math.floor(info.tiles.length/2)]; 
+                        let target = info.tiles[Math.floor(info.tiles.length/2)]; 
+                        
+                        // ИСПРАВЛЕНИЕ 2: Если игрок поменял фишку, и она в ряду — спавним бонус именно в ней
+                        if (activeSwapT1 && info.tiles.includes(activeSwapT1)) target = activeSwapT1;
+                        else if (activeSwapT2 && info.tiles.includes(activeSwapT2)) target = activeSwapT2;
+
                         if (!createdBonuses.has(target)) {
                             matches.delete(target);
                             target.color = null; 
@@ -959,6 +1002,7 @@
                     allToDestroy.add(t);
                     
                     if (t.bonus === 'bomb') {
+                        showVisualEffect(t.r, t.c, 'bomb');
                         if(!playedBomb) { playSound('bomb'); playedBomb = true; }
                         for(let r=t.r-1; r<=t.r+1; r++) {
                             for(let c=t.c-1; c<=t.c+1; c++) {
@@ -970,6 +1014,7 @@
                             }
                         }
                     } else if (t.bonus === 'rocket') {
+                        showVisualEffect(t.r, t.c, 'rocket');
                         if(!playedRocket) { playSound('rocket'); playedRocket = true; }
                         for(let i=0; i<COLS; i++) {
                              const n = board[t.r][i];
@@ -990,6 +1035,7 @@
             
             async function handleCombo(t1, t2) {
                 const allToDestroy = new Set([t1, t2]);
+                showVisualEffect(t1.r, t1.c, 'combo');
                 playSound('combo');
                 
                 const cR = t1.r, cC = t1.c;
@@ -1046,7 +1092,6 @@
                 tiles.forEach(t => t.element.remove());
             }
 
-            // ИСПРАВЛЕНИЕ: Обтекание камней. Камни остаются на месте, фишки проваливаются под них
             async function dropTiles() {
                 for (let c = 0; c < COLS; c++) {
                     for (let r = ROWS - 1; r >= 0; r--) {
@@ -1059,7 +1104,6 @@
                                 board[r][c] = t; board[k][c] = null;
                                 t.r = r;
                                 
-                                // Фикс телепортации: возвращаем нормальный CSS класс для сдвига
                                 t.element.style.transition = 'top 0.3s ease-in-out, left 0.3s ease-in-out, transform 0.2s';
                                 t.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
                                 t.element.dataset.r = r;
@@ -1077,12 +1121,11 @@
                             t.element.style.transition = 'none'; 
                             t.element.style.top = `-${TILE_SIZE + 50}px`;
                             
-                            void t.element.offsetWidth; // Reflow
+                            void t.element.offsetWidth; 
                             
                             t.element.style.transition = 'top 0.4s ease-out';
                             t.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
                             
-                            // Возвращаем базовый транзишен после приземления
                             setTimeout(() => {
                                 if (t.element) t.element.style.transition = 'top 0.3s ease-in-out, left 0.3s ease-in-out, transform 0.2s';
                             }, 400);
@@ -1110,7 +1153,6 @@
                 }
             }
             
-            // ИСПРАВЛЕНИЕ: Защита от спама рекламой (раз в 2-3 уровня)
             function levelSuccess() {
                 playSound('win');
                 if (gameMode === 'levels') {
@@ -1133,16 +1175,23 @@
                         openModal('level-complete-modal');
                     }
                 } else {
+                    // ИСПРАВЛЕНИЕ 3: Бесконечный режим. Доску не сбрасываем, бонусы сохраняются.
                     level++;
                     playSound('goal');
                     setupGoalsLevel(); 
-                    initBoard(); 
                 }
             }
 
             function gameOver(reason) {
                 isPaused = true; clearInterval(timerInterval);
                 playSound('lose');
+                
+                // ИСПРАВЛЕНИЕ 6: Записываем рекорд по очкам, если проиграли или вышли
+                if (gameMode === 'goals') {
+                    stats.goals.hiScore = Math.max(stats.goals.hiScore || 0, score);
+                } else if (gameMode === 'speed') {
+                    stats.speed.hiScore = Math.max(stats.speed.hiScore || 0, score);
+                }
                 
                 const modal = document.getElementById('game-over-modal');
                 document.getElementById('final-score-value').textContent = score;
@@ -1161,24 +1210,31 @@
                     saveGameData();
                     showInterstitialAd(() => openModal('game-over-modal'));
                 } else {
+                    saveGameData();
                     openModal('game-over-modal');
                 }
             }
 
-            // ИСПРАВЛЕНИЕ: Плавный рост сложности, ограниченный потолком
             function setupGoalsLevel() {
-                const diffLevel = Math.min(level, 40); // Максимум сложности достигается на 40 уровне
-                movesLimit = Math.max(15, 30 - Math.floor(diffLevel / 3)); // Ходы убывают до 15
+                const diffLevel = Math.min(level, 40);
                 
-                const typesCount = Math.min(COLORS.length, 3 + Math.floor(diffLevel / 10)); // До 6 цветов на поле
-                const countPerType = Math.min(25, 5 + Math.floor(diffLevel / 1.5)); // До 25 каждого цвета
+                // В бесконечном режиме просто добавляем ходы за каждый пройденный этап
+                if (gameMode === 'goals' && level > 1) {
+                    movesLimit += Math.max(10, 20 - Math.floor(diffLevel / 3));
+                } else {
+                    movesLimit = Math.max(15, 30 - Math.floor(diffLevel / 3)); 
+                }
+                
+                const typesCount = Math.min(COLORS.length, 3 + Math.floor(diffLevel / 10)); 
+                const countPerType = Math.min(25, 5 + Math.floor(diffLevel / 1.5)); 
                 
                 goals = {};
                 const shuffled = [...COLORS].sort(()=>Math.random()-0.5);
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 
-                if (level >= 5) {
-                    goals['unmovable'] = 99; // Значение скорректируется при создании поля
+                // В бесконечном режиме камни генерируются только 1 раз в самом начале
+                if (gameMode === 'levels' && level >= 5) {
+                    goals['unmovable'] = 99; 
                 }
                 updateGoalsUI();
                 updateMovesDisplay();
@@ -1250,25 +1306,25 @@
             document.getElementById('rules-btn').addEventListener('click', () => openModal('rules-modal'));
             document.getElementById('close-rules-btn').addEventListener('click', () => closeModal('rules-modal'));
             
+            // ИСПРАВЛЕНИЕ 6: Статистика показывает Очки
             document.getElementById('stats-btn').addEventListener('click', () => {
                 const c = document.getElementById('stats-content-container');
                 c.innerHTML = `
                     <div class="stats-group">
                         <h3 class="stats-group-title">На время</h3>
                         <div class="stats-row"><span>Игр:</span><span class="stats-row-value">${stats.speed.games}</span></div>
-                        <div class="stats-row"><span>Рекорд:</span><span class="stats-row-value">${stats.speed.hiScore}</span></div>
+                        <div class="stats-row"><span>Рекорд (Очки):</span><span class="stats-row-value">${stats.speed.hiScore || 0}</span></div>
                     </div>
                     <div class="stats-group">
                         <h3 class="stats-group-title">Бесконечность</h3>
                         <div class="stats-row"><span>Игр:</span><span class="stats-row-value">${stats.goals.games}</span></div>
-                        <div class="stats-row"><span>Уровень:</span><span class="stats-row-value">${stats.goals.hiLevel}</span></div>
+                        <div class="stats-row"><span>Рекорд (Очки):</span><span class="stats-row-value">${stats.goals.hiScore || 0}</span></div>
                     </div>
                 `;
                 openModal('stats-modal');
             });
             document.getElementById('close-stats-btn').addEventListener('click', () => closeModal('stats-modal'));
             
-            // ИСПРАВЛЕНИЕ: Мгновенное переключение тем без багов
             document.querySelector('.theme-selection').addEventListener('click', e => {
                 if(e.target.tagName === 'BUTTON') {
                     currentTheme = e.target.dataset.theme;
