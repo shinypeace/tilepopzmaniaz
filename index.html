@@ -201,11 +201,10 @@
         
         .pause-btn-container .icon-btn { width: 48px; height: 48px; border-width: 2px; }
         
-        /* ИСПРАВЛЕНИЕ 1: Жесткая высота для плашки целей, чтобы ничего не прыгало */
         #goals-container { 
             grid-column: 1 / -1; background: var(--bg-modal); border-radius: 0.75rem; 
             padding: 0 0.5rem; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; border: 1px solid var(--border-color);
-            height: 60px; /* Фиксированная высота */
+            height: 60px; 
         }
         #goals-header { font-weight: 800; margin-right: 10px; color: var(--text-secondary); flex-shrink: 0; }
         #goals-list-wrapper { 
@@ -213,14 +212,22 @@
             height: 100%; max-width: 100%; 
         }
         
+        /* ИСПРАВЛЕНИЕ: Оптимизация производительности, аппаратное ускорение для анимаций */
         #game-board { 
             position: relative; overflow: hidden; 
             background-color: rgba(255, 255, 255, 0.5);
             border: 4px solid rgba(255,255,255,0.8);
             border-radius: 1.5rem; box-sizing: border-box;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+            transform: translateZ(0); /* Force GPU */
         }
-        .tile { position: absolute; transition: top 0.3s ease-in-out, left 0.3s ease-in-out, transform 0.2s; will-change: top, left; display: flex; justify-content: center; align-items: center; }
+        .tile { 
+            position: absolute; 
+            top: 0; left: 0; /* Всегда 0, позиционируем через transform */
+            transition: transform 0.3s ease-in-out; 
+            will-change: transform; 
+            display: flex; justify-content: center; align-items: center; 
+        }
         
         .tile-inner {
             width: 90%; height: 90%; 
@@ -417,8 +424,6 @@
             <button id="close-stats-btn" class="btn btn-secondary mt-6">Закрыть</button>
         </div>
     </div>
-    
-    <div id="vk_ads_banner"></div>
 
     <script>
     const ASSET_LIST = [
@@ -460,7 +465,7 @@
         let dragStart = null, TILE_SIZE = 0, lastTap = 0;
         let activeSwapT1 = null, activeSwapT2 = null; 
         let goals = {}, movesLimit = 0;
-        let timerInterval = null, timeLeft = 0, totalTime = 60000; // На время: старт с 60 сек
+        let timerInterval = null, timeLeft = 0, totalTime = 60000;
         
         let audioContextInitialized = false;
         let isMuted = false;
@@ -506,42 +511,33 @@
         
         async function initGameLogic() {
             
-            // Надежная инициализация звука (пробиваем блокировки браузеров)
+            // ИСПРАВЛЕНИЕ: Звуки (Tone.js) инициализируются 1 раз и надежно работают
             async function initAudioContext() {
-                if (audioContextInitialized && Tone.context.state === 'running') return;
+                if (audioContextInitialized) return;
                 try {
                     await Tone.start();
-                    Tone.context.resume();
-                    
-                    if (!audioContextInitialized) {
-                        synths = {
-                            tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                            swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                            match: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
-                            bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 5, envelope: { attack: 0.001, decay: 0.5, sustain: 0.01 } }).toDestination(),
-                            rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
-                            combo: new Tone.PolySynth(Tone.Synth, { volume: -5, oscillator: { type: 'sine' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 2 } }).toDestination(),
-                            win: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
-                            lose: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
-                            goal: new Tone.PluckSynth({ volume: 0 }).toDestination()
-                        };
-                        audioContextInitialized = true;
-                    }
-                    
-                    if (!isMusicMuted && bgMusic.paused) {
-                        bgMusic.play().catch(e => {});
-                    }
+                    synths = {
+                        tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
+                        swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
+                        match: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
+                        bomb: new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0, release: 0.4 }, volume: 5 }).toDestination(),
+                        rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
+                        combo: new Tone.PolySynth(Tone.Synth, { volume: -5, oscillator: { type: 'sine' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 2 } }).toDestination(),
+                        win: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
+                        lose: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
+                        goal: new Tone.PluckSynth({ volume: 0 }).toDestination()
+                    };
+                    audioContextInitialized = true;
+                    if (!isMusicMuted && bgMusic.paused) bgMusic.play().catch(e => {});
                 } catch (e) {}
             }
             
-            // Возобновляем звук при любом тапе (особенно важно для iOS)
+            // Включаем звук по первому клику, пробуждаем контекст по остальным
             document.addEventListener('pointerdown', () => {
-                if (!audioContextInitialized || Tone.context.state !== 'running') {
-                    initAudioContext();
-                }
+                if (!audioContextInitialized) initAudioContext();
+                else if (Tone.context.state !== 'running') Tone.context.resume().catch(()=>{});
             });
             
-            // Озвучка всех кнопок
             document.querySelectorAll('button, .icon-btn').forEach(btn => {
                 btn.addEventListener('pointerdown', () => playSound('tap'));
             });
@@ -561,14 +557,12 @@
             
             function playSound(name, time = Tone.now()) {
                 if (isMuted || !audioContextInitialized || !synths[name]) return;
-                // Страховочное возобновление контекста
-                if (Tone.context.state !== 'running') Tone.context.resume().catch(()=>{});
                 try {
                     switch(name) {
                         case 'tap': synths.tap.triggerAttackRelease('C5', '32n', time); break;
                         case 'swap': synths.swap.triggerAttackRelease('E5', '32n', time); break;
                         case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n', time); break;
-                        case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n', time); break;
+                        case 'bomb': synths.bomb.triggerAttackRelease('C2', '8n', time); break;
                         case 'rocket': synths.rocket.triggerAttackRelease('4n', time); break;
                         case 'combo': synths.combo.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '2n', time); break; 
                         case 'win': synths.win.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', time); break;
@@ -610,7 +604,10 @@
                     });
                 } catch (e) { vkUserId = 'local_user'; }
                 loadGameData();
-                showBannerAd();
+                
+                if (typeof vkBridge !== 'undefined') {
+                    vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e=>{});
+                }
             }
             
             async function saveGameData() {
@@ -657,38 +654,37 @@
                 if(audioContextInitialized) Tone.getDestination().mute = isMuted;
                 if(!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
             }
-
-            function showBannerAd() {
-                if (typeof vkBridge !== 'undefined') {
-                    vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e=>{});
-                }
-            }
             
-            // ИСПРАВЛЕНИЕ 2: Защита от вечного зависания рекламы через Promise.race
-            async function showInterstitialAd(callback) {
+            // ИСПРАВЛЕНИЕ: Переписанный вызов рекламы (Без зависаний, современный метод)
+            function showInterstitialAd(callback) {
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
                 const musicWasPlaying = !bgMusic.paused;
                 if(musicWasPlaying) bgMusic.pause();
                 
-                const adPromise = new Promise(async (resolve) => {
+                let adProcessed = false;
+
+                const attemptAd = async () => {
                     try {
                         const check = await vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'interstitial' });
                         if (check.result) {
-                            await vkBridge.send('VKWebAppShowInterstitialAd');
+                            await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'interstitial' });
                         }
-                    } catch (error) {
-                        console.warn("Ad error", error);
+                    } catch (e) {
+                        console.warn('Ad error or not available', e);
                     }
-                    resolve();
+                };
+
+                // Запускаем рекламу, но если ВК думает дольше 1.5 секунд - пропускаем и играем дальше
+                Promise.race([
+                    attemptAd(),
+                    new Promise(resolve => setTimeout(resolve, 1500))
+                ]).finally(() => {
+                    if (!adProcessed) {
+                        adProcessed = true;
+                        if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
+                        if(callback) callback();
+                    }
                 });
-                
-                // Ждем максимум 2 секунды. Если ВК не ответил - плюем и продолжаем игру
-                const timeoutPromise = new Promise(resolve => setTimeout(resolve, 2000));
-                
-                await Promise.race([adPromise, timeoutPromise]);
-                
-                if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
-                if (callback) callback();
             }
             
             async function showRewardedAd() {
@@ -709,7 +705,6 @@
             
             function startGame(mode, levelOverride = null) {
                 if(!isMusicMuted) bgMusic.play().catch(()=>{});
-                showBannerAd();
                 
                 gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; isProcessing = false;
                 extraMovesUsedThisLevel = false;
@@ -737,6 +732,12 @@
                 updateMovesDisplay();
             }
 
+            function updateTilePosition(el, r, c) {
+                const x = GAP + c * (TILE_SIZE + GAP);
+                const y = GAP + r * (TILE_SIZE + GAP);
+                el.style.transform = `translate(${x}px, ${y}px)`;
+            }
+
             function resizeBoard() {
                 const availableWidth = boardContainer.clientWidth - 8; 
                 const availableHeight = boardContainer.clientHeight - 8; 
@@ -757,8 +758,7 @@
                 boardElement.querySelectorAll('.tile').forEach(el => {
                     const r = parseInt(el.dataset.r), c = parseInt(el.dataset.c);
                     el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`;
-                    el.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
-                    el.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
+                    updateTilePosition(el, r, c);
                 });
             }
             window.addEventListener('resize', resizeBoard);
@@ -775,7 +775,7 @@
                 
                 let actualUnmovablesPlaced = 0;
                 let wantedUnmovables = 0;
-                // ИСПРАВЛЕНИЕ: Камни генерируются в Уровнях и Целях (Бесконечный)
+                
                 if ((gameMode === 'levels' || gameMode === 'goals') && level >= 10) {
                     const diffLevel = Math.min(level, 120);
                     wantedUnmovables = Math.floor((diffLevel - 5) / 10);
@@ -818,12 +818,11 @@
                 }
             }
             
+            // ИСПРАВЛЕНИЕ: Аппаратное ускорение анимаций (Transform вместо Top/Left)
             function createTile(r, c, type, color = null, bonus = null) {
                 const el = document.createElement('div');
                 el.classList.add('tile');
                 el.dataset.r = r; el.dataset.c = c;
-                
-                el.style.transition = 'top 0.3s ease-in-out, left 0.3s ease-in-out, transform 0.2s';
                 
                 const inner = document.createElement('div');
                 inner.classList.add('tile-inner');
@@ -837,8 +836,7 @@
                 if (type === 'unmovable') el.classList.add('unmovable');
                 if (TILE_SIZE > 0) {
                     el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`;
-                    el.style.left = `${GAP + c * (TILE_SIZE + GAP)}px`;
-                    el.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
+                    updateTilePosition(el, r, c);
                 }
                 boardElement.appendChild(el);
                 return tileData;
@@ -850,8 +848,12 @@
                 const size = (type === 'bomb' || type === 'combo') ? TILE_SIZE * 3.5 : TILE_SIZE * 2;
                 effect.style.width = `${size}px`;
                 effect.style.height = `${size}px`;
-                effect.style.left = `${GAP + c * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
-                effect.style.top = `${GAP + r * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
+                
+                const x = GAP + c * (TILE_SIZE + GAP) + TILE_SIZE/2;
+                const y = GAP + r * (TILE_SIZE + GAP) + TILE_SIZE/2;
+                effect.style.left = `${x}px`;
+                effect.style.top = `${y}px`;
+                
                 boardElement.appendChild(effect);
                 setTimeout(() => effect.remove(), 400);
             }
@@ -889,8 +891,7 @@
                             isProcessing = true; incrementMoves();
                             await handleBonusExplosion(new Set([t]));
                             
-                            const isEnded = checkGameStatus();
-                            if (!isEnded) isProcessing = false;
+                            if (!checkGameStatus()) isProcessing = false;
                         }
                     }
                     lastTap = now;
@@ -936,10 +937,7 @@
                 activeSwapT1 = null; 
                 activeSwapT2 = null;
                 
-                const isEnded = checkGameStatus();
-                if (!isEnded) {
-                    isProcessing = false;
-                }
+                if (!checkGameStatus()) isProcessing = false;
             }
             
             async function animateSwap(t1, t2) {
@@ -947,10 +945,8 @@
                 board[r1][c1] = t2; board[r2][c2] = t1;
                 t2.r = r1; t2.c = c1; t1.r = r2; t1.c = c2;
                 
-                t1.element.style.left = `${GAP + t1.c * (TILE_SIZE + GAP)}px`;
-                t1.element.style.top = `${GAP + t1.r * (TILE_SIZE + GAP)}px`;
-                t2.element.style.left = `${GAP + t2.c * (TILE_SIZE + GAP)}px`;
-                t2.element.style.top = `${GAP + t2.r * (TILE_SIZE + GAP)}px`;
+                updateTilePosition(t1.element, t1.r, t1.c);
+                updateTilePosition(t2.element, t2.r, t2.c);
                 
                 t1.element.dataset.r = t1.r; t1.element.dataset.c = t1.c;
                 t2.element.dataset.r = t2.r; t2.element.dataset.c = t2.c;
@@ -1205,7 +1201,6 @@
                 updateScore(score);
                 updateGoalsUI();
                 
-                // ИСПРАВЛЕНИЕ: Баланс времени. По +0.15с за фишку.
                 if(gameMode === 'speed' && tiles.size > 0) {
                      timeLeft += tiles.size * 150; 
                      if(timeLeft > totalTime) timeLeft = totalTime;
@@ -1236,9 +1231,8 @@
                                 board[r][c] = t; board[k][c] = null;
                                 t.r = r;
                                 
-                                t.element.style.transition = 'top 0.3s ease-in-out, left 0.3s ease-in-out, transform 0.2s';
-                                t.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
                                 t.element.dataset.r = r;
+                                updateTilePosition(t.element, r, c);
                             }
                         }
                     }
@@ -1249,7 +1243,6 @@
                 for (let c = 0; c < COLS; c++) {
                     for (let r = 0; r < ROWS; r++) {
                         if (board[r][c] === null) {
-                            // ИСПРАВЛЕНИЕ: В режиме На время камни появляются во время игры в зависимости от очков
                             let tType = 'gem';
                             if (gameMode === 'speed') {
                                 const stoneChance = Math.min(0.05, score / 100000); 
@@ -1257,17 +1250,23 @@
                             }
                             
                             const t = createTile(r, c, tType, tType === 'gem' ? getRandomColor() : null);
+                            
+                            // Анимация падения через transform
                             t.element.style.transition = 'none'; 
-                            t.element.style.top = `-${TILE_SIZE + 50}px`;
+                            const endX = GAP + c * (TILE_SIZE + GAP);
+                            const endY = GAP + r * (TILE_SIZE + GAP);
+                            const startY = -(TILE_SIZE + 50);
                             
-                            void t.element.offsetWidth; 
+                            t.element.style.transform = `translate(${endX}px, ${startY}px)`;
                             
-                            t.element.style.transition = 'top 0.4s ease-out';
-                            t.element.style.top = `${GAP + r * (TILE_SIZE + GAP)}px`;
-                            
-                            setTimeout(() => {
-                                if (t.element) t.element.style.transition = 'top 0.3s ease-in-out, left 0.3s ease-in-out, transform 0.2s';
-                            }, 400);
+                            requestAnimationFrame(() => {
+                                requestAnimationFrame(() => {
+                                    if (t.element) {
+                                        t.element.style.transition = 'transform 0.4s ease-out';
+                                        t.element.style.transform = `translate(${endX}px, ${endY}px)`;
+                                    }
+                                });
+                            });
                         }
                     }
                 }
@@ -1287,7 +1286,7 @@
                 
                 if (goalsDone) {
                     levelSuccess();
-                    if (gameMode === 'goals') return false; // В Бесконечном режиме продолжаем играть без блоков
+                    if (gameMode === 'goals') return false; 
                     return true;
                 } else if (gameMode !== 'speed' && movesLimit <= 0) {
                     gameOver("Ходы закончились");
@@ -1357,20 +1356,16 @@
                 }
             }
 
-            // ИСПРАВЛЕНИЕ 3: Баланс сложности уровней (плавно до 120 уровня)
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 120);
                 
                 if (gameMode === 'goals' && level > 1) {
-                    movesLimit += Math.max(10, 15 - Math.floor(diffLevel / 10)); // Бесконечный: +ходы каждый этап
+                    movesLimit += Math.max(10, 15 - Math.floor(diffLevel / 10)); 
                 } else {
-                    // Уровни: на 1 уровне 15 ходов. На 120 уровне -> 45 ходов. Плавно.
                     movesLimit = Math.floor(15 + (diffLevel / 4)); 
                 }
                 
-                // Цвета растут медленно: 3 цвета на старте, 6 цветов на 60 уровне.
                 const typesCount = Math.min(COLORS.length, 3 + Math.floor(diffLevel / 20)); 
-                // Целей собрать: от 5 штук до 30 штук.
                 const countPerType = Math.min(30, 5 + Math.floor(diffLevel / 5)); 
                 
                 goals = {};
@@ -1378,7 +1373,7 @@
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 
                 if ((gameMode === 'levels' || gameMode === 'goals') && level >= 5) {
-                    goals['unmovable'] = 99; // Значение будет переписано в initBoard()
+                    goals['unmovable'] = 99; 
                 }
                 updateGoalsUI();
                 updateMovesDisplay();
