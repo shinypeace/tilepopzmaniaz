@@ -24,7 +24,6 @@
             --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
         
-        /* Запрет выделения текста и базовый сброс */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -43,13 +42,11 @@
             transition: background-image 0.5s ease;
         }
         
-        /* Темы */
         body.theme-critters { background-image: url('bg-critters.png'); --bg-modal: rgba(255, 255, 255, 0.95); }
         body.theme-sweets { background-image: url('bg-sweets.png'); --text-primary: #d81b60; --border-color: #ad1457; --accent-color: #f8bbd0; }
         body.theme-nature { background-image: url('bg-nature.png'); --text-primary: #f57f17; --border-color: #f57f17; --accent-color: #c5e1a5; --text-secondary: #1b5e20; }
         body.theme-gems { background-image: url('bg-gems.png'); --text-primary: #ffd740; --border-color: #ffd600; --accent-color: #7e57c2; --text-secondary: #ffffff; --bg-modal: rgba(40, 10, 70, 0.95); }
         
-        /* Утилиты */
         .w-full { width: 100%; }
         .h-full { height: 100%; }
         .flex { display: flex; }
@@ -78,7 +75,6 @@
         .relative { position: relative; }
         .min-h-0 { min-height: 0; }
         
-        /* Preloader */
         #preloader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-main);
@@ -131,7 +127,6 @@
             margin-bottom: 2.5rem; text-align: center;
         }
         
-        /* Кнопки */
         .btn { 
             background: linear-gradient(to bottom, var(--accent-color), rgba(0,0,0,0.1));
             background-color: var(--accent-color);
@@ -168,9 +163,8 @@
         }
         .icon-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 0 var(--border-color);}
         .icon-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 0 var(--border-color);}
-        .icon-btn svg { width: 32px; height: 32px; fill: var(--text-primary); }
+        .icon-btn svg { width: 32px; height: 32px; fill: var(--text-primary); pointer-events: none; }
         
-        /* Модальные окна */
         .modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); 
@@ -190,7 +184,6 @@
         .modal.active .modal-content { transform: scale(1); }
         .modal-title { font-family: var(--font-title); font-size: 2.5rem; color: var(--text-primary); margin-bottom: 1rem; }
         
-        /* Игровой интерфейс */
         .game-header { 
             width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
             gap: 0.5rem; align-items: center; margin-bottom: 10px; padding: 8px; 
@@ -208,14 +201,15 @@
         
         .pause-btn-container .icon-btn { width: 48px; height: 48px; border-width: 2px; }
         
+        /* Фикс прыгающего поля: фиксируем минимальную высоту */
         #goals-container { 
             grid-column: 1 / -1; background: var(--bg-modal); border-radius: 0.75rem; 
             padding: 0.5rem; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; border: 1px solid var(--border-color);
+            min-height: 54px;
         }
         #goals-header { font-weight: 800; margin-right: 10px; color: var(--text-secondary); }
-        #goals-list-wrapper { display: flex; flex-wrap: wrap; justify-content: center; overflow-x: auto; max-width: 100%; }
+        #goals-list-wrapper { display: flex; flex-wrap: wrap; justify-content: center; overflow-x: auto; max-width: 100%; min-height: 32px; }
         
-        /* Игровое поле */
         #game-board { 
             position: relative; overflow: hidden; 
             background-color: rgba(255, 255, 255, 0.5);
@@ -243,7 +237,6 @@
         .tile.match .tile-inner { animation: match 0.3s ease-in forwards; }
         @keyframes match { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
         
-        /* Эффекты взрывов */
         .explosion-effect {
             position: absolute; border-radius: 50%; pointer-events: none;
             transform: translate(-50%, -50%) scale(0);
@@ -258,11 +251,9 @@
             100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
         }
 
-        /* Таймер */
         #time-bar-container { background-color: #bbdefb; border: 1px solid #90caf9; height: 12px; }
         #time-bar { background-color: var(--text-primary); transition: width 0.1s linear; }
         
-        /* Статистика */
         .stats-content { display: flex; flex-direction: column; gap: 1rem; }
         .stats-group { background: var(--bg-modal); border-radius: 1rem; padding: 1rem; border: 2px solid var(--accent-color); }
         .stats-group-title { font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; text-transform: uppercase; }
@@ -273,7 +264,6 @@
         
         .hidden { display: none !important; }
         
-        /* Свитчер */
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -281,7 +271,6 @@
         input:checked + .slider { background-color: var(--text-primary); }
         input:checked + .slider:before { transform: translateX(22px); }
         
-        /* Выбор темы */
         .theme-selection button { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #fff; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
         .theme-selection button:hover { transform: scale(1.1); }
         .theme-selection button.active { border-color: var(--text-primary); transform: scale(1.1); box-shadow: 0 0 0 2px var(--text-primary); }
@@ -337,7 +326,6 @@
                     <div id="goals-list-wrapper"></div>
                 </div>
             </div>
-            <!-- Обертка поля для идеальной адаптации -->
             <div id="board-container" class="flex-grow flex justify-center items-center w-full min-h-0 relative">
                 <div id="game-board"></div>
             </div>
@@ -469,7 +457,7 @@
         let dragStart = null, TILE_SIZE = 0, lastTap = 0;
         let activeSwapT1 = null, activeSwapT2 = null; 
         let goals = {}, movesLimit = 0;
-        let timerInterval = null, timeLeft = 0, totalTime = 60000;
+        let timerInterval = null, timeLeft = 0, totalTime = 90000; // На время: старт с 90 сек
         
         let audioContextInitialized = false;
         let isMuted = false;
@@ -515,39 +503,48 @@
         
         async function initGameLogic() {
             
+            // Фикс: Агрессивная попытка запуска звука по любому клику
             async function initAudioContext() {
                 if (audioContextInitialized) return;
+                audioContextInitialized = true; 
                 try {
                     await Tone.start();
                     Tone.context.resume();
                     
                     synths = {
-                        tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
-                        swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -5 }).toDestination(),
-                        match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
+                        tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
+                        swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
+                        match: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
                         bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 5, envelope: { attack: 0.001, decay: 0.5, sustain: 0.01 } }).toDestination(),
                         rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
-                        combo: new Tone.PolySynth(Tone.Synth, { volume: -5, oscillator: { type: 'sine' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 2 } }).toDestination(),
-                        win: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
-                        lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
-                        goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
+                        combo: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'triangle' }, envelope: { attack: 0.1, decay: 0.3, sustain: 0.4, release: 1.5 } }).toDestination(),
+                        win: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
+                        lose: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
+                        goal: new Tone.PluckSynth({ volume: 0 }).toDestination()
                     };
                     
-                    audioContextInitialized = true;
                     if (!isMusicMuted && bgMusic.paused) {
                         bgMusic.play().catch(e => {});
                     }
-                } catch (e) {}
+                } catch (e) {
+                    audioContextInitialized = false; 
+                }
             }
             
-            document.body.addEventListener('click', initAudioContext, { once: true });
-            document.body.addEventListener('touchstart', initAudioContext, { once: true });
+            document.addEventListener('pointerdown', () => {
+                if (!audioContextInitialized) initAudioContext();
+            });
+            
+            // Звук клика на все кнопки
+            document.querySelectorAll('button, .theme-selection button').forEach(btn => {
+                btn.addEventListener('pointerdown', () => playSound('tap'));
+            });
             
             function handleVisibilityChange() {
                 if (document.hidden) {
                     bgMusic.pause();
                     if (audioContextInitialized) Tone.getDestination().mute = true;
-                    dragStart = null; // Сброс зависания
+                    dragStart = null; 
                 } else {
                     if (audioContextInitialized) Tone.context.resume();
                     if (!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
@@ -565,7 +562,7 @@
                         case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n', time); break;
                         case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n', time); break;
                         case 'rocket': synths.rocket.triggerAttackRelease('4n', time); break;
-                        case 'combo': synths.combo.triggerAttackRelease(['C5', 'E5', 'G5', 'C6'], '4n', time); break; // Мягкий арпеджио-аккорд
+                        case 'combo': synths.combo.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '2n', time); break; 
                         case 'win': synths.win.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', time); break;
                         case 'lose': synths.lose.triggerAttackRelease(['G3', 'Eb3', 'C3'], '4n', time); break;
                         case 'goal': synths.goal.triggerAttackRelease('G5', '16n', time); break;
@@ -713,13 +710,11 @@
                 requestAnimationFrame(() => {
                     resizeBoard();
                     initBoard();
-                    // Фикс: Пересчет поля после того, как интерфейс целей полностью отобразился
-                    setTimeout(resizeBoard, 100);
+                    setTimeout(resizeBoard, 150); 
                 });
                 updateMovesDisplay();
             }
 
-            // Идеальное построение сетки по Флекс-контейнеру
             function resizeBoard() {
                 const availableWidth = boardContainer.clientWidth - 8; 
                 const availableHeight = boardContainer.clientHeight - 8; 
@@ -758,9 +753,9 @@
                 
                 let actualUnmovablesPlaced = 0;
                 let wantedUnmovables = 0;
-                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 5) {
-                    const diffLevel = Math.min(level, 40);
-                    wantedUnmovables = 2 + Math.floor((diffLevel - 5) / 3);
+                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 10) {
+                    const diffLevel = Math.min(level, 120);
+                    wantedUnmovables = Math.floor((diffLevel - 10) / 10);
                     wantedUnmovables = Math.min(wantedUnmovables, 8); 
                 }
                 if (wantedUnmovables > 0) {
@@ -838,7 +833,6 @@
                 setTimeout(() => effect.remove(), 400);
             }
 
-            // Фикс сброса сенсора при уходе с поля
             boardElement.addEventListener('pointercancel', () => { dragStart = null; });
             boardElement.addEventListener('pointerleave', () => { dragStart = null; });
 
@@ -941,7 +935,6 @@
                 await new Promise(r => setTimeout(r, 250));
             }
 
-            // Улучшенный алгоритм поиска Т и Г-образных пересечений
             function findMatches(useActiveSwap = false) {
                 const matches = new Set();
                 const hLines = [];
@@ -996,7 +989,6 @@
                     return target;
                 }
 
-                // 1. Поиск пересечений (Ракета)
                 tileToLines.forEach((lines, t) => {
                     if (lines.length >= 2) {
                         lines.forEach(l => processedLines.add(l));
@@ -1007,7 +999,6 @@
                     }
                 });
 
-                // 2. Прямые линии (Ракета от 5, Бомба от 4)
                 allLines.forEach(line => {
                     if (!processedLines.has(line)) {
                         if (line.length >= 5) {
@@ -1138,7 +1129,6 @@
                 const cR = t1.r, cC = t1.c;
                 
                 if (type1 === 'bomb' && type2 === 'bomb') {
-                    // Бомба + Бомба = Взрыв 5х5 (радиус 2)
                     for(let r = cR-2; r <= cR+2; r++) {
                         if(r>=0 && r<ROWS) {
                             for(let c=cC-2; c<=cC+2; c++) {
@@ -1147,7 +1137,6 @@
                         }
                     }
                 } else if (type1 === 'rocket' && type2 === 'rocket') {
-                    // Ракета + Ракета = Очистка 2 рядов и 2 колонок
                     for(let c=0; c<COLS; c++) {
                         if(board[t1.r][c]) allToDestroy.add(board[t1.r][c]);
                         if(board[t2.r][c]) allToDestroy.add(board[t2.r][c]);
@@ -1157,7 +1146,6 @@
                         if(board[r][t2.c]) allToDestroy.add(board[r][t2.c]);
                     }
                 } else {
-                    // Ракета + Бомба = Крест 3х3
                     for (let r = cR - 1; r <= cR + 1; r++) {
                         if (r >= 0 && r < ROWS) {
                             for(let c=0; c<COLS; c++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
@@ -1195,7 +1183,7 @@
                 updateGoalsUI();
                 
                 if(gameMode === 'speed' && tiles.size > 0) {
-                     timeLeft += tiles.size * 200; 
+                     timeLeft += tiles.size * 300; 
                      if(timeLeft > totalTime) timeLeft = totalTime;
                 }
             }
@@ -1268,6 +1256,7 @@
                 
                 if (goalsDone) {
                     levelSuccess();
+                    if (gameMode === 'goals') return false; 
                     return true;
                 } else if (gameMode !== 'speed' && movesLimit <= 0) {
                     gameOver("Ходы закончились");
@@ -1277,9 +1266,9 @@
             }
             
             function levelSuccess() {
-                isPaused = true;
                 playSound('win');
                 if (gameMode === 'levels') {
+                    isPaused = true;
                     if (currentLevel === maxReachedLevel) {
                         maxReachedLevel++;
                         updateLevelsButton(maxReachedLevel);
@@ -1302,7 +1291,6 @@
                     level++;
                     playSound('goal');
                     setupGoalsLevel(); 
-                    isPaused = false; 
                 }
             }
 
@@ -1339,27 +1327,26 @@
             }
 
             function setupGoalsLevel() {
-                const diffLevel = Math.min(level, 40);
+                const diffLevel = Math.min(level, 120);
                 
                 if (gameMode === 'goals' && level > 1) {
-                    movesLimit += Math.max(10, 20 - Math.floor(diffLevel / 3));
+                    movesLimit += Math.max(15, 10 + Math.floor(diffLevel / 5));
                 } else {
-                    movesLimit = Math.max(15, 30 - Math.floor(diffLevel / 3)); 
+                    movesLimit = Math.max(20, 20 + Math.floor(diffLevel / 3)); 
                 }
                 
-                const typesCount = Math.min(COLORS.length, 3 + Math.floor(diffLevel / 10)); 
-                const countPerType = Math.min(25, 5 + Math.floor(diffLevel / 1.5)); 
+                const typesCount = Math.min(COLORS.length, 3 + Math.floor(diffLevel / 20)); 
+                const countPerType = Math.min(30, 5 + Math.floor(diffLevel / 4)); 
                 
                 goals = {};
                 const shuffled = [...COLORS].sort(()=>Math.random()-0.5);
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 
-                if (gameMode === 'levels' && level >= 5) {
+                if (gameMode === 'levels' && level >= 10) {
                     goals['unmovable'] = 99; 
                 }
                 updateGoalsUI();
                 updateMovesDisplay();
-                setTimeout(resizeBoard, 50); 
             }
 
             function updateScore(s) { scoreElement.textContent = s; }
