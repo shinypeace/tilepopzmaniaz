@@ -218,7 +218,7 @@
             border: 4px solid rgba(255,255,255,0.8);
             border-radius: 1.5rem; box-sizing: border-box;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-            transform: translateZ(0);
+            transform: translateZ(0); 
         }
         
         .tile { 
@@ -428,6 +428,7 @@
         </div>
     </div>
     
+    <!-- ПРЕМИАЛЬНОЕ ОКНО ПРАВИЛ -->
     <div id="rules-modal" class="modal">
         <div class="modal-content text-left" style="padding: 1.5rem; max-width: 450px;">
             <h2 class="modal-title text-center">Как играть</h2>
@@ -552,17 +553,17 @@
         
         async function initGameLogic() {
             
-            // Надежная инициализация аудио (Возврат к самой стабильной версии)
+            // ИСПРАВЛЕНИЕ: Мгновенное срабатывание звуков, новые мягкие тапы и аккорд победы
             function initSynths() {
                 synths = {
-                    tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                    swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                    match: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
+                    tap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 }, volume: -10 }).toDestination(),
+                    swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -5 }).toDestination(),
+                    match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
                     bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 4, envelope: { attack: 0.001, decay: 0.4, sustain: 0.01 } }).toDestination(),
-                    rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0 } }).toDestination(),
-                    win: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
-                    lose: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
-                    goal: new Tone.PluckSynth({ volume: 0 }).toDestination()
+                    rocket: new Tone.NoiseSynth({ volume: -2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0 } }).toDestination(),
+                    win: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.4, release: 1.5 }, volume: -2 }).toDestination(),
+                    lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
+                    goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
                 };
             }
 
@@ -580,12 +581,9 @@
                     if (!isMusicMuted && bgMusic.paused) {
                         bgMusic.play().catch(()=>{});
                     }
-                } catch (e) {
-                    console.error("Audio init error:", e);
-                }
+                } catch (e) {}
             }
 
-            // Стандартные слушатели для разблокировки звука
             document.addEventListener('pointerdown', initAudio);
             
             document.querySelectorAll('button, .icon-btn').forEach(btn => {
@@ -603,19 +601,20 @@
             }
             document.addEventListener('visibilitychange', handleVisibilityChange);
             
-            function playSound(name, time = Tone.now()) {
+            // ИСПРАВЛЕНИЕ: Воспроизведение звуков мгновенно, без задержек Tone.now()
+            function playSound(name) {
                 if (isMuted || !audioContextInitialized || !synths[name]) return;
                 if (Tone.context.state !== 'running') Tone.context.resume().catch(()=>{});
                 try {
                     switch(name) {
-                        case 'tap': synths.tap.triggerAttackRelease('C5', '32n', time); break;
-                        case 'swap': synths.swap.triggerAttackRelease('E5', '32n', time); break;
-                        case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n', time); break;
-                        case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n', time); break;
-                        case 'rocket': synths.rocket.triggerAttackRelease('4n', time); break;
-                        case 'win': synths.win.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', time); break;
-                        case 'lose': synths.lose.triggerAttackRelease(['G3', 'Eb3', 'C3'], '4n', time); break;
-                        case 'goal': synths.goal.triggerAttackRelease('G5', '16n', time); break;
+                        case 'tap': synths.tap.triggerAttackRelease('E5', '64n'); break;
+                        case 'swap': synths.swap.triggerAttackRelease('E5', '32n'); break;
+                        case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n'); break;
+                        case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n'); break;
+                        case 'rocket': synths.rocket.triggerAttackRelease('4n'); break;
+                        case 'win': synths.win.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '2n'); break;
+                        case 'lose': synths.lose.triggerAttackRelease(['G3', 'Eb3', 'C3'], '4n'); break;
+                        case 'goal': synths.goal.triggerAttackRelease('G5', '16n'); break;
                     }
                 } catch(e) {}
             }
@@ -693,7 +692,7 @@
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
                 
                 const now = Date.now();
-                const AD_COOLDOWN = 5 * 60 * 1000; // Таймер 5 минут
+                const AD_COOLDOWN = 5 * 60 * 1000; 
                 
                 if (now - lastAdTime < AD_COOLDOWN) {
                     if (callback) callback();
@@ -725,7 +724,6 @@
                         lastAdTime = Date.now(); 
                         saveGameData();
                         
-                        // Пробуждаем контекст после выхода из рекламы
                         if (audioContextInitialized && Tone.context.state !== 'running') {
                             Tone.context.resume().catch(()=>{});
                         }
@@ -1198,7 +1196,7 @@
                 const cR = t1.r, cC = t1.c;
                 
                 if (type1 === 'bomb' && type2 === 'bomb') {
-                    playSound('bomb'); // Только звук бомбы
+                    playSound('bomb');
                     for(let r = cR-2; r <= cR+2; r++) {
                         if(r>=0 && r<ROWS) {
                             for(let c=cC-2; c<=cC+2; c++) {
@@ -1207,7 +1205,7 @@
                         }
                     }
                 } else if (type1 === 'rocket' && type2 === 'rocket') {
-                    playSound('rocket'); // Только звук ракеты
+                    playSound('rocket');
                     for(let c=0; c<COLS; c++) {
                         if(board[t1.r][c]) allToDestroy.add(board[t1.r][c]);
                         if(board[t2.r][c]) allToDestroy.add(board[t2.r][c]);
@@ -1217,7 +1215,7 @@
                         if(board[r][t2.c]) allToDestroy.add(board[r][t2.c]);
                     }
                 } else {
-                    playSound('rocket'); // Только звук ракеты для Бомба+Ракета
+                    playSound('rocket');
                     for (let r = cR - 1; r <= cR + 1; r++) {
                         if (r >= 0 && r < ROWS) {
                             for(let c=0; c<COLS; c++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
@@ -1260,12 +1258,10 @@
                 }
             }
 
-            // ИСПРАВЛЕНИЕ КАМНЕЙ: Убран transform: scale(0), который ломал позицию
             async function animateDestruction(tiles) {
                 tiles.forEach(t => {
                     if(t.element) {
                         t.element.classList.add('match');
-                        // Раньше тут был баг с t.element.style.transform = "scale(0)"
                     }
                     board[t.r][t.c] = null;
                 });
