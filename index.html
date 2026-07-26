@@ -220,12 +220,15 @@
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
             transform: translateZ(0);
         }
+        
+        /* Z-index для фишек, чтобы овалы комбо были всегда ПОД ними */
         .tile { 
             position: absolute; 
             top: 0; left: 0;
             transition: transform 0.3s ease-in-out; 
             will-change: transform; 
             display: flex; justify-content: center; align-items: center; 
+            z-index: 10;
         }
         
         .tile-inner {
@@ -234,6 +237,19 @@
             background-size: contain; background-repeat: no-repeat; background-position: center;
             filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15));
         }
+        
+        /* ПУЛЬСАЦИЯ БОМБ И РАКЕТ */
+        @keyframes bonus-pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15)); }
+            50% { transform: scale(1.12); filter: drop-shadow(0 8px 6px rgba(0,0,0,0.35)); }
+            100% { transform: scale(1); filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15)); }
+        }
+        .tile.bomb .tile-inner, .tile.rocket .tile-inner {
+            animation: bonus-pulse 1.5s infinite ease-in-out;
+        }
+        /* При матче анимация заменяется на взрыв, чтобы фишка корректно исчезала */
+        .tile.match .tile-inner { animation: match 0.3s ease-in forwards !important; }
+
         .tile-red .tile-inner { background-image: url('tile-red.png'); }
         .tile-blue .tile-inner { background-image: url('tile-blue.png'); }
         .tile-green .tile-inner { background-image: url('tile-green.png'); }
@@ -243,9 +259,24 @@
         .tile.bomb .tile-inner { background-image: url('tile-bomb.png'); }
         .tile.rocket .tile-inner { background-image: url('tile-rocket.png'); }
         .tile.unmovable .tile-inner { background-image: url('tile-unmovable.png'); filter: grayscale(0.2); }
-        .tile.match .tile-inner { animation: match 0.3s ease-in forwards; }
+        
         @keyframes match { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
         
+        /* ОВАЛ СОЕДИНЕНИЯ БОНУСОВ */
+        .combo-link {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(150, 200, 255, 0.3));
+            border-radius: 999px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.9), inset 0 0 10px rgba(255, 255, 255, 0.9);
+            z-index: 1;
+            animation: glow-link 1.5s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes glow-link {
+            0% { opacity: 0.4; filter: blur(2px); transform: scale(0.95); }
+            100% { opacity: 0.8; filter: blur(4px); transform: scale(1.02); }
+        }
+
         .explosion-effect {
             position: absolute; border-radius: 50%; pointer-events: none;
             transform: translate(-50%, -50%) scale(0);
@@ -271,6 +302,20 @@
         .stats-row-value { font-weight: 900; color: var(--text-primary); }
         .stats-row span { color: var(--text-secondary); }
         
+        /* ПРЕМИАЛЬНЫЕ ПРАВИЛА (CSS) */
+        .rules-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .rule-item {
+            display: flex; align-items: center; 
+            background: rgba(0,0,0,0.03); 
+            border: 2px solid rgba(0,0,0,0.05); 
+            border-radius: 12px; padding: 12px;
+            transition: transform 0.2s;
+        }
+        .rule-icon { font-size: 2rem; margin-right: 15px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); flex-shrink: 0; }
+        .rule-text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.4; text-align: left;}
+        .rule-text strong { color: var(--text-primary); font-weight: 900;}
+        .rule-item.premium { background: linear-gradient(135deg, var(--bg-secondary), #fff); border-color: var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
         .hidden { display: none !important; }
         
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -402,17 +447,33 @@
         </div>
     </div>
     
+    <!-- ПРЕМИАЛЬНОЕ ОКНО ПРАВИЛ -->
     <div id="rules-modal" class="modal">
-        <div class="modal-content text-left">
+        <div class="modal-content text-left" style="padding: 1.5rem; max-width: 450px;">
             <h2 class="modal-title text-center">Как играть</h2>
-            <div class="space-y-4 text-sm font-bold text-gray-700">
-                <p style="color: var(--text-secondary);">🔄 <strong>Свайп:</strong> Меняй фишки, собери 3 в ряд.</p>
-                <p style="color: var(--text-secondary);">💣 <strong>Бомба (4 в ряд):</strong> Взрывает всё вокруг.</p>
-                <p style="color: var(--text-secondary);">🚀 <strong>Ракета (T, Г или 5 в ряд):</strong> Чистит ряды.</p>
-                <p style="color: var(--text-secondary);">🧱 <strong>Камень:</strong> Ломай, собирая ряды рядом с ним!</p>
-                <p style="color: var(--text-secondary);">✨ <strong>Комбо:</strong> Смешай бонусы для супер-эффекта.</p>
+            <div class="rules-list">
+                <div class="rule-item">
+                    <div class="rule-icon">🔄</div>
+                    <div class="rule-text"><strong>Свайп:</strong> Меняй фишки местами, чтобы собрать 3 одинаковых в ряд.</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-icon">💣</div>
+                    <div class="rule-text"><strong>Бомба:</strong> Собери 4 в ряд. При взрыве мощно уничтожает всё вокруг!</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-icon">🚀</div>
+                    <div class="rule-text"><strong>Ракета:</strong> Собери 5 в ряд или формой Т и Г. Сносит целые ряды фишек.</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-icon">🧱</div>
+                    <div class="rule-text"><strong>Камень:</strong> Нельзя сдвинуть. Собирай комбинации рядом с ним, чтобы разбить.</div>
+                </div>
+                <div class="rule-item premium">
+                    <div class="rule-icon">✨</div>
+                    <div class="rule-text"><strong>Супер-Комбо:</strong> Если Бонусы оказались рядом, соедини их вместе для мега-взрыва!</div>
+                </div>
             </div>
-            <button id="close-rules-btn" class="btn btn-secondary mt-6">Понятно</button>
+            <button id="close-rules-btn" class="btn btn-primary mt-6">Всё понятно</button>
         </div>
     </div>
     
@@ -458,7 +519,7 @@
         let board = [], score = 0, movesCount = 0, totalMoves = 0, level = 1, currentLevel = 1;
         let gameMode = 'levels', isPaused = false, isProcessing = false;
         let vkUserId = null, currentTheme = 'critters';
-        let lastAdTime = 0; // ИСПРАВЛЕНИЕ: Таймер для рекламы
+        let lastAdTime = 0; 
         let extraMovesUsedThisLevel = false;
         let maxReachedLevel = 1;
         let stats = { goals: { games: 0, hiScore: 0 }, speed: { games: 0, hiScore: 0 } };
@@ -511,45 +572,40 @@
         
         async function initGameLogic() {
             
-            // ИСПРАВЛЕНИЕ: Гарантированная разблокировка аудио-движка (и новые приятные звуки)
             function initSynths() {
                 synths = {
+                    // ИСПРАВЛЕНИЕ: Мягкий звук тапа по кнопке
                     tap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -8 }).toDestination(),
                     swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -5 }).toDestination(),
                     match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
+                    // ИСПРАВЛЕНИЕ: Старая басистая мембранная бомба
                     bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 5, envelope: { attack: 0.001, decay: 0.5, sustain: 0.01 } }).toDestination(),
                     rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
-                    combo: new Tone.PolySynth(Tone.Synth, { volume: -5, oscillator: { type: 'triangle' }, envelope: { attack: 0.05, decay: 0.3, sustain: 0.3, release: 1.5 } }).toDestination(),
                     win: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
                     lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
                     goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
                 };
             }
 
+            // ИСПРАВЛЕНИЕ: Гарантированное восстановление звука после рекламы
             function unlockAudio() {
-                if (audioContextInitialized) return;
-                Tone.start().then(() => {
+                if (!audioContextInitialized) {
+                    Tone.start().then(() => {
+                        initSynths();
+                        audioContextInitialized = true;
+                        if (!isMusicMuted && bgMusic.paused) bgMusic.play().catch(()=>{});
+                    });
+                } else {
                     if (Tone.context.state !== 'running') {
-                        Tone.context.resume();
+                        Tone.context.resume().catch(()=>{});
                     }
-                    initSynths();
-                    audioContextInitialized = true;
-                    if (!isMusicMuted && bgMusic.paused) {
-                        bgMusic.play().catch(()=>{});
-                    }
-                });
+                    Tone.getDestination().mute = isMuted; // Принудительный фикс мьюта
+                }
             }
 
-            // Вешаем анлокер на все возможные события касания
-            ['touchstart', 'touchend', 'mousedown', 'keydown'].forEach(evt => {
-                document.addEventListener(evt, unlockAudio, { once: true });
-            });
-
-            // Страховка для будущих кликов
-            document.addEventListener('pointerdown', () => {
-                if (audioContextInitialized && Tone.context.state !== 'running') {
-                    Tone.context.resume().catch(()=>{});
-                }
+            // Анлокер на все касания (Спасает звук на iOS после рекламы)
+            ['touchstart', 'touchend', 'pointerdown', 'mousedown'].forEach(evt => {
+                document.addEventListener(evt, unlockAudio);
             });
             
             document.querySelectorAll('button, .icon-btn').forEach(btn => {
@@ -579,7 +635,6 @@
                         case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n', time); break;
                         case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n', time); break;
                         case 'rocket': synths.rocket.triggerAttackRelease('4n', time); break;
-                        case 'combo': synths.combo.triggerAttackRelease(['C4', 'E4', 'G4', 'B4'], '1n', time); break; 
                         case 'win': synths.win.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', time); break;
                         case 'lose': synths.lose.triggerAttackRelease(['G3', 'Eb3', 'C3'], '4n', time); break;
                         case 'goal': synths.goal.triggerAttackRelease('G5', '16n', time); break;
@@ -650,7 +705,7 @@
                     currentTheme = data.theme || 'critters';
                     isMuted = !!data.isMuted;
                     isMusicMuted = !!data.isMusicMuted;
-                    lastAdTime = data.lastAdTime || 0; // Подгружаем таймер рекламы
+                    lastAdTime = data.lastAdTime || 0; 
                     
                     if (stats.goals && stats.goals.hiLevel !== undefined) {
                         stats.goals.hiScore = 0;
@@ -670,12 +725,11 @@
                 if(!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
             }
             
-            // ИСПРАВЛЕНИЕ: 5 минутный кулдаун для рекламы ВК
             function showInterstitialAd(callback) {
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
                 
                 const now = Date.now();
-                const AD_COOLDOWN = 5 * 60 * 1000; // 5 минут в миллисекундах
+                const AD_COOLDOWN = 5 * 60 * 1000; 
                 
                 if (now - lastAdTime < AD_COOLDOWN) {
                     if (callback) callback();
@@ -694,7 +748,7 @@
                             await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'interstitial' });
                         }
                     } catch (e) {
-                        console.warn('Ad error or not available', e);
+                        console.warn('Ad error', e);
                     }
                 };
 
@@ -704,8 +758,14 @@
                 ]).finally(() => {
                     if (!adProcessed) {
                         adProcessed = true;
-                        lastAdTime = Date.now(); // Обновляем таймер после показа
+                        lastAdTime = Date.now(); 
                         saveGameData();
+                        
+                        // ИСПРАВЛЕНИЕ: Форсированный возврат звука после просмотра рекламы
+                        if (audioContextInitialized) {
+                            Tone.getDestination().mute = isMuted;
+                            Tone.context.resume().catch(()=>{});
+                        }
                         if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                         if(callback) callback();
                     }
@@ -721,6 +781,11 @@
                     const data = await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
                     if (data.result) result = true;
                 } catch (e) {}
+                
+                if (audioContextInitialized) {
+                    Tone.getDestination().mute = isMuted;
+                    Tone.context.resume().catch(()=>{});
+                }
                 if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                 return result;
             }
@@ -728,10 +793,64 @@
             function updateLevelsButton(lvl) { levelsModeBtn.textContent = `Уровень ${lvl}`; }
             function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
             
+            // ИСПРАВЛЕНИЕ: Центральный контроллер блокировки поля и связей комбо
+            function setProcessing(val) {
+                isProcessing = val;
+                if (!val) updateComboLinks();
+                else document.querySelectorAll('.combo-link').forEach(el => el.remove());
+            }
+            
+            // ИСПРАВЛЕНИЕ: Отрисовка овалов под комбо-бонусами
+            function updateComboLinks() {
+                document.querySelectorAll('.combo-link').forEach(el => el.remove());
+                if (isProcessing) return;
+                
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        const t1 = board[r][c];
+                        if (t1 && t1.bonus) {
+                            // Проверка соседа справа
+                            if (c + 1 < COLS && board[r][c+1] && board[r][c+1].bonus) {
+                                createLink(r, c, 'h');
+                            }
+                            // Проверка соседа снизу
+                            if (r + 1 < ROWS && board[r+1][c] && board[r+1][c].bonus) {
+                                createLink(r, c, 'v');
+                            }
+                        }
+                    }
+                }
+            }
+            
+            function createLink(r, c, dir) {
+                const link = document.createElement('div');
+                link.className = 'combo-link';
+                let width, height, left, top;
+                
+                // Делаем овал чуть тоньше самой фишки (0.8 от TILE_SIZE)
+                if (dir === 'h') {
+                    width = TILE_SIZE * 2 + GAP;
+                    height = TILE_SIZE * 0.85; 
+                    left = GAP + c * (TILE_SIZE + GAP);
+                    top = GAP + r * (TILE_SIZE + GAP) + (TILE_SIZE * 0.075);
+                } else {
+                    width = TILE_SIZE * 0.85;
+                    height = TILE_SIZE * 2 + GAP;
+                    left = GAP + c * (TILE_SIZE + GAP) + (TILE_SIZE * 0.075);
+                    top = GAP + r * (TILE_SIZE + GAP);
+                }
+                
+                link.style.width = width + 'px';
+                link.style.height = height + 'px';
+                link.style.left = left + 'px';
+                link.style.top = top + 'px';
+                boardElement.appendChild(link);
+            }
+            
             function startGame(mode, levelOverride = null) {
                 if(!isMusicMuted) bgMusic.play().catch(()=>{});
                 
-                gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; isProcessing = false;
+                gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; setProcessing(false);
                 extraMovesUsedThisLevel = false;
                 clearInterval(timerInterval);
                 updateScore(0);
@@ -785,6 +904,8 @@
                     el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`;
                     updateTilePosition(el, r, c);
                 });
+                
+                updateComboLinks(); // Обновляем размер овалов при ресайзе
             }
             window.addEventListener('resize', resizeBoard);
 
@@ -826,6 +947,7 @@
                     updateGoalsUI(); 
                 }
                 removeInitialMatches();
+                updateComboLinks();
             }
             
             function removeInitialMatches() {
@@ -912,10 +1034,10 @@
                     if (now - lastTap < 300) { 
                         const t = board[dragStart.r][dragStart.c];
                         if (t?.bonus) {
-                            isProcessing = true; incrementMoves();
+                            setProcessing(true); incrementMoves();
                             await handleBonusExplosion(new Set([t]));
                             
-                            if (!checkGameStatus()) isProcessing = false;
+                            if (!checkGameStatus()) setProcessing(false);
                         }
                     }
                     lastTap = now;
@@ -931,7 +1053,7 @@
                 const t1 = board[r][c], t2 = board[r2][c2];
                 
                 if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') return;
-                isProcessing = true;
+                setProcessing(true);
                 
                 activeSwapT1 = t1;
                 activeSwapT2 = t2;
@@ -961,7 +1083,7 @@
                 activeSwapT1 = null; 
                 activeSwapT2 = null;
                 
-                if (!checkGameStatus()) isProcessing = false;
+                if (!checkGameStatus()) setProcessing(false);
             }
             
             async function animateSwap(t1, t2) {
@@ -1165,13 +1287,14 @@
             async function handleCombo(t1, t2) {
                 const allToDestroy = new Set([t1, t2]);
                 showVisualEffect(t1.r, t1.c, 'combo');
-                playSound('combo');
                 
                 const type1 = t1.bonus;
                 const type2 = t2.bonus;
                 const cR = t1.r, cC = t1.c;
                 
+                // ИСПРАВЛЕНИЕ: Звуки на комбо (Бомба+Бомба = Бомба, остальное = Ракета)
                 if (type1 === 'bomb' && type2 === 'bomb') {
+                    playSound('bomb');
                     for(let r = cR-2; r <= cR+2; r++) {
                         if(r>=0 && r<ROWS) {
                             for(let c=cC-2; c<=cC+2; c++) {
@@ -1180,6 +1303,7 @@
                         }
                     }
                 } else if (type1 === 'rocket' && type2 === 'rocket') {
+                    playSound('rocket');
                     for(let c=0; c<COLS; c++) {
                         if(board[t1.r][c]) allToDestroy.add(board[t1.r][c]);
                         if(board[t2.r][c]) allToDestroy.add(board[t2.r][c]);
@@ -1189,6 +1313,7 @@
                         if(board[r][t2.c]) allToDestroy.add(board[r][t2.c]);
                     }
                 } else {
+                    playSound('rocket');
                     for (let r = cR - 1; r <= cR + 1; r++) {
                         if (r >= 0 && r < ROWS) {
                             for(let c=0; c<COLS; c++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
@@ -1364,14 +1489,12 @@
                 showInterstitialAd(() => openModal('game-over-modal'));
             }
 
-            // ИСПРАВЛЕНИЕ: Плавный рост ходов до 120 уровня.
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 120);
                 
                 if (gameMode === 'goals' && level > 1) {
                     movesLimit += Math.max(10, 15 - Math.floor(diffLevel / 10)); 
                 } else {
-                    // Стартуем с 15, плавно доходим до 45 к 120 уровню
                     movesLimit = Math.floor(15 + (diffLevel / 4)); 
                 }
                 
@@ -1432,14 +1555,14 @@
                 closeModal('pause-modal'); startGame(gameMode, currentLevel);
             });
             document.getElementById('main-menu-btn-pause').addEventListener('click', () => {
-                closeModal('pause-modal'); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); showBannerAd();
+                closeModal('pause-modal'); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); 
             });
             
             document.getElementById('restart-game-over-btn').addEventListener('click', () => {
                  closeModal('game-over-modal'); startGame(gameMode, currentLevel);
             });
             document.getElementById('main-menu-btn-over').addEventListener('click', () => {
-                closeModal('game-over-modal'); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); showBannerAd();
+                closeModal('game-over-modal'); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); 
             });
             
             document.getElementById('next-level-btn').addEventListener('click', () => {
