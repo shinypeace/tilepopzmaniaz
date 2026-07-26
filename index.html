@@ -201,14 +201,17 @@
         
         .pause-btn-container .icon-btn { width: 48px; height: 48px; border-width: 2px; }
         
-        /* Фикс прыгающего поля: фиксируем минимальную высоту */
+        /* ИСПРАВЛЕНИЕ 1: Жесткая высота для плашки целей, чтобы ничего не прыгало */
         #goals-container { 
             grid-column: 1 / -1; background: var(--bg-modal); border-radius: 0.75rem; 
-            padding: 0.5rem; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; border: 1px solid var(--border-color);
-            min-height: 54px;
+            padding: 0 0.5rem; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; border: 1px solid var(--border-color);
+            height: 60px; /* Фиксированная высота */
         }
-        #goals-header { font-weight: 800; margin-right: 10px; color: var(--text-secondary); }
-        #goals-list-wrapper { display: flex; flex-wrap: wrap; justify-content: center; overflow-x: auto; max-width: 100%; min-height: 32px; }
+        #goals-header { font-weight: 800; margin-right: 10px; color: var(--text-secondary); flex-shrink: 0; }
+        #goals-list-wrapper { 
+            display: flex; flex-wrap: nowrap; align-items: center; overflow-x: auto; 
+            height: 100%; max-width: 100%; 
+        }
         
         #game-board { 
             position: relative; overflow: hidden; 
@@ -457,7 +460,7 @@
         let dragStart = null, TILE_SIZE = 0, lastTap = 0;
         let activeSwapT1 = null, activeSwapT2 = null; 
         let goals = {}, movesLimit = 0;
-        let timerInterval = null, timeLeft = 0, totalTime = 90000; // На время: старт с 90 сек
+        let timerInterval = null, timeLeft = 0, totalTime = 60000; // На время: старт с 60 сек
         
         let audioContextInitialized = false;
         let isMuted = false;
@@ -503,40 +506,43 @@
         
         async function initGameLogic() {
             
-            // Фикс: Агрессивная попытка запуска звука по любому клику
+            // Надежная инициализация звука (пробиваем блокировки браузеров)
             async function initAudioContext() {
-                if (audioContextInitialized) return;
-                audioContextInitialized = true; 
+                if (audioContextInitialized && Tone.context.state === 'running') return;
                 try {
                     await Tone.start();
                     Tone.context.resume();
                     
-                    synths = {
-                        tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                        swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                        match: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
-                        bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 5, envelope: { attack: 0.001, decay: 0.5, sustain: 0.01 } }).toDestination(),
-                        rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
-                        combo: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'triangle' }, envelope: { attack: 0.1, decay: 0.3, sustain: 0.4, release: 1.5 } }).toDestination(),
-                        win: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
-                        lose: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
-                        goal: new Tone.PluckSynth({ volume: 0 }).toDestination()
-                    };
+                    if (!audioContextInitialized) {
+                        synths = {
+                            tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
+                            swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
+                            match: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
+                            bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 5, envelope: { attack: 0.001, decay: 0.5, sustain: 0.01 } }).toDestination(),
+                            rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
+                            combo: new Tone.PolySynth(Tone.Synth, { volume: -5, oscillator: { type: 'sine' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 2 } }).toDestination(),
+                            win: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
+                            lose: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
+                            goal: new Tone.PluckSynth({ volume: 0 }).toDestination()
+                        };
+                        audioContextInitialized = true;
+                    }
                     
                     if (!isMusicMuted && bgMusic.paused) {
                         bgMusic.play().catch(e => {});
                     }
-                } catch (e) {
-                    audioContextInitialized = false; 
-                }
+                } catch (e) {}
             }
             
+            // Возобновляем звук при любом тапе (особенно важно для iOS)
             document.addEventListener('pointerdown', () => {
-                if (!audioContextInitialized) initAudioContext();
+                if (!audioContextInitialized || Tone.context.state !== 'running') {
+                    initAudioContext();
+                }
             });
             
-            // Звук клика на все кнопки
-            document.querySelectorAll('button, .theme-selection button').forEach(btn => {
+            // Озвучка всех кнопок
+            document.querySelectorAll('button, .icon-btn').forEach(btn => {
                 btn.addEventListener('pointerdown', () => playSound('tap'));
             });
             
@@ -555,6 +561,8 @@
             
             function playSound(name, time = Tone.now()) {
                 if (isMuted || !audioContextInitialized || !synths[name]) return;
+                // Страховочное возобновление контекста
+                if (Tone.context.state !== 'running') Tone.context.resume().catch(()=>{});
                 try {
                     switch(name) {
                         case 'tap': synths.tap.triggerAttackRelease('C5', '32n', time); break;
@@ -656,17 +664,31 @@
                 }
             }
             
+            // ИСПРАВЛЕНИЕ 2: Защита от вечного зависания рекламы через Promise.race
             async function showInterstitialAd(callback) {
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
                 const musicWasPlaying = !bgMusic.paused;
                 if(musicWasPlaying) bgMusic.pause();
-                try {
-                    await vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'interstitial' });
-                    await vkBridge.send('VKWebAppShowInterstitialAd');
-                } catch (error) {} finally {
-                    if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
-                    if (callback) callback();
-                }
+                
+                const adPromise = new Promise(async (resolve) => {
+                    try {
+                        const check = await vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'interstitial' });
+                        if (check.result) {
+                            await vkBridge.send('VKWebAppShowInterstitialAd');
+                        }
+                    } catch (error) {
+                        console.warn("Ad error", error);
+                    }
+                    resolve();
+                });
+                
+                // Ждем максимум 2 секунды. Если ВК не ответил - плюем и продолжаем игру
+                const timeoutPromise = new Promise(resolve => setTimeout(resolve, 2000));
+                
+                await Promise.race([adPromise, timeoutPromise]);
+                
+                if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
+                if (callback) callback();
             }
             
             async function showRewardedAd() {
@@ -753,10 +775,11 @@
                 
                 let actualUnmovablesPlaced = 0;
                 let wantedUnmovables = 0;
+                // ИСПРАВЛЕНИЕ: Камни генерируются в Уровнях и Целях (Бесконечный)
                 if ((gameMode === 'levels' || gameMode === 'goals') && level >= 10) {
                     const diffLevel = Math.min(level, 120);
-                    wantedUnmovables = Math.floor((diffLevel - 10) / 10);
-                    wantedUnmovables = Math.min(wantedUnmovables, 8); 
+                    wantedUnmovables = Math.floor((diffLevel - 5) / 10);
+                    wantedUnmovables = Math.min(wantedUnmovables, 10); 
                 }
                 if (wantedUnmovables > 0) {
                     let attempts = 0;
@@ -1182,8 +1205,9 @@
                 updateScore(score);
                 updateGoalsUI();
                 
+                // ИСПРАВЛЕНИЕ: Баланс времени. По +0.15с за фишку.
                 if(gameMode === 'speed' && tiles.size > 0) {
-                     timeLeft += tiles.size * 300; 
+                     timeLeft += tiles.size * 150; 
                      if(timeLeft > totalTime) timeLeft = totalTime;
                 }
             }
@@ -1225,7 +1249,14 @@
                 for (let c = 0; c < COLS; c++) {
                     for (let r = 0; r < ROWS; r++) {
                         if (board[r][c] === null) {
-                            const t = createTile(r, c, 'gem', getRandomColor());
+                            // ИСПРАВЛЕНИЕ: В режиме На время камни появляются во время игры в зависимости от очков
+                            let tType = 'gem';
+                            if (gameMode === 'speed') {
+                                const stoneChance = Math.min(0.05, score / 100000); 
+                                if (Math.random() < stoneChance) tType = 'unmovable';
+                            }
+                            
+                            const t = createTile(r, c, tType, tType === 'gem' ? getRandomColor() : null);
                             t.element.style.transition = 'none'; 
                             t.element.style.top = `-${TILE_SIZE + 50}px`;
                             
@@ -1256,7 +1287,7 @@
                 
                 if (goalsDone) {
                     levelSuccess();
-                    if (gameMode === 'goals') return false; 
+                    if (gameMode === 'goals') return false; // В Бесконечном режиме продолжаем играть без блоков
                     return true;
                 } else if (gameMode !== 'speed' && movesLimit <= 0) {
                     gameOver("Ходы закончились");
@@ -1266,9 +1297,9 @@
             }
             
             function levelSuccess() {
-                playSound('win');
                 if (gameMode === 'levels') {
                     isPaused = true;
+                    playSound('win');
                     if (currentLevel === maxReachedLevel) {
                         maxReachedLevel++;
                         updateLevelsButton(maxReachedLevel);
@@ -1326,24 +1357,28 @@
                 }
             }
 
+            // ИСПРАВЛЕНИЕ 3: Баланс сложности уровней (плавно до 120 уровня)
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 120);
                 
                 if (gameMode === 'goals' && level > 1) {
-                    movesLimit += Math.max(15, 10 + Math.floor(diffLevel / 5));
+                    movesLimit += Math.max(10, 15 - Math.floor(diffLevel / 10)); // Бесконечный: +ходы каждый этап
                 } else {
-                    movesLimit = Math.max(20, 20 + Math.floor(diffLevel / 3)); 
+                    // Уровни: на 1 уровне 15 ходов. На 120 уровне -> 45 ходов. Плавно.
+                    movesLimit = Math.floor(15 + (diffLevel / 4)); 
                 }
                 
+                // Цвета растут медленно: 3 цвета на старте, 6 цветов на 60 уровне.
                 const typesCount = Math.min(COLORS.length, 3 + Math.floor(diffLevel / 20)); 
-                const countPerType = Math.min(30, 5 + Math.floor(diffLevel / 4)); 
+                // Целей собрать: от 5 штук до 30 штук.
+                const countPerType = Math.min(30, 5 + Math.floor(diffLevel / 5)); 
                 
                 goals = {};
                 const shuffled = [...COLORS].sort(()=>Math.random()-0.5);
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 
-                if (gameMode === 'levels' && level >= 10) {
-                    goals['unmovable'] = 99; 
+                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 5) {
+                    goals['unmovable'] = 99; // Значение будет переписано в initBoard()
                 }
                 updateGoalsUI();
                 updateMovesDisplay();
