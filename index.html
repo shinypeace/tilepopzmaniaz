@@ -212,18 +212,17 @@
             height: 100%; max-width: 100%; 
         }
         
-        /* ИСПРАВЛЕНИЕ: Оптимизация производительности, аппаратное ускорение для анимаций */
         #game-board { 
             position: relative; overflow: hidden; 
             background-color: rgba(255, 255, 255, 0.5);
             border: 4px solid rgba(255,255,255,0.8);
             border-radius: 1.5rem; box-sizing: border-box;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-            transform: translateZ(0); /* Force GPU */
+            transform: translateZ(0);
         }
         .tile { 
             position: absolute; 
-            top: 0; left: 0; /* Всегда 0, позиционируем через transform */
+            top: 0; left: 0;
             transition: transform 0.3s ease-in-out; 
             will-change: transform; 
             display: flex; justify-content: center; align-items: center; 
@@ -458,7 +457,8 @@
         
         let board = [], score = 0, movesCount = 0, totalMoves = 0, level = 1, currentLevel = 1;
         let gameMode = 'levels', isPaused = false, isProcessing = false;
-        let vkUserId = null, levelsSinceAd = 0, currentTheme = 'critters';
+        let vkUserId = null, currentTheme = 'critters';
+        let lastAdTime = 0; // ИСПРАВЛЕНИЕ: Таймер для рекламы
         let extraMovesUsedThisLevel = false;
         let maxReachedLevel = 1;
         let stats = { goals: { games: 0, hiScore: 0 }, speed: { games: 0, hiScore: 0 } };
@@ -511,31 +511,45 @@
         
         async function initGameLogic() {
             
-            // ИСПРАВЛЕНИЕ: Звуки (Tone.js) инициализируются 1 раз и надежно работают
-            async function initAudioContext() {
-                if (audioContextInitialized) return;
-                try {
-                    await Tone.start();
-                    synths = {
-                        tap: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                        swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -2 }).toDestination(),
-                        match: new Tone.PolySynth(Tone.Synth, { volume: 0, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
-                        bomb: new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0, release: 0.4 }, volume: 5 }).toDestination(),
-                        rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
-                        combo: new Tone.PolySynth(Tone.Synth, { volume: -5, oscillator: { type: 'sine' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 2 } }).toDestination(),
-                        win: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
-                        lose: new Tone.PolySynth(Tone.Synth, { volume: 0 }).toDestination(),
-                        goal: new Tone.PluckSynth({ volume: 0 }).toDestination()
-                    };
-                    audioContextInitialized = true;
-                    if (!isMusicMuted && bgMusic.paused) bgMusic.play().catch(e => {});
-                } catch (e) {}
+            // ИСПРАВЛЕНИЕ: Гарантированная разблокировка аудио-движка (и новые приятные звуки)
+            function initSynths() {
+                synths = {
+                    tap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -8 }).toDestination(),
+                    swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -5 }).toDestination(),
+                    match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
+                    bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 5, envelope: { attack: 0.001, decay: 0.5, sustain: 0.01 } }).toDestination(),
+                    rocket: new Tone.NoiseSynth({ volume: 2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.6, sustain: 0 } }).toDestination(),
+                    combo: new Tone.PolySynth(Tone.Synth, { volume: -5, oscillator: { type: 'triangle' }, envelope: { attack: 0.05, decay: 0.3, sustain: 0.3, release: 1.5 } }).toDestination(),
+                    win: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
+                    lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
+                    goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
+                };
             }
-            
-            // Включаем звук по первому клику, пробуждаем контекст по остальным
+
+            function unlockAudio() {
+                if (audioContextInitialized) return;
+                Tone.start().then(() => {
+                    if (Tone.context.state !== 'running') {
+                        Tone.context.resume();
+                    }
+                    initSynths();
+                    audioContextInitialized = true;
+                    if (!isMusicMuted && bgMusic.paused) {
+                        bgMusic.play().catch(()=>{});
+                    }
+                });
+            }
+
+            // Вешаем анлокер на все возможные события касания
+            ['touchstart', 'touchend', 'mousedown', 'keydown'].forEach(evt => {
+                document.addEventListener(evt, unlockAudio, { once: true });
+            });
+
+            // Страховка для будущих кликов
             document.addEventListener('pointerdown', () => {
-                if (!audioContextInitialized) initAudioContext();
-                else if (Tone.context.state !== 'running') Tone.context.resume().catch(()=>{});
+                if (audioContextInitialized && Tone.context.state !== 'running') {
+                    Tone.context.resume().catch(()=>{});
+                }
             });
             
             document.querySelectorAll('button, .icon-btn').forEach(btn => {
@@ -557,14 +571,15 @@
             
             function playSound(name, time = Tone.now()) {
                 if (isMuted || !audioContextInitialized || !synths[name]) return;
+                if (Tone.context.state !== 'running') Tone.context.resume().catch(()=>{});
                 try {
                     switch(name) {
-                        case 'tap': synths.tap.triggerAttackRelease('C5', '32n', time); break;
+                        case 'tap': synths.tap.triggerAttackRelease('G5', '32n', time); break;
                         case 'swap': synths.swap.triggerAttackRelease('E5', '32n', time); break;
                         case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n', time); break;
-                        case 'bomb': synths.bomb.triggerAttackRelease('C2', '8n', time); break;
+                        case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n', time); break;
                         case 'rocket': synths.rocket.triggerAttackRelease('4n', time); break;
-                        case 'combo': synths.combo.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '2n', time); break; 
+                        case 'combo': synths.combo.triggerAttackRelease(['C4', 'E4', 'G4', 'B4'], '1n', time); break; 
                         case 'win': synths.win.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', time); break;
                         case 'lose': synths.lose.triggerAttackRelease(['G3', 'Eb3', 'C3'], '4n', time); break;
                         case 'goal': synths.goal.triggerAttackRelease('G5', '16n', time); break;
@@ -612,7 +627,7 @@
             
             async function saveGameData() {
                 if (!vkUserId) return;
-                const data = { maxReachedLevel, stats, theme: currentTheme, isMuted, isMusicMuted, levelsSinceAd };
+                const data = { maxReachedLevel, stats, theme: currentTheme, isMuted, isMusicMuted, lastAdTime };
                 const str = JSON.stringify(data);
                 localStorage.setItem('tilepop_save', str);
                 try { await vkBridge.send('VKWebAppStorageSet', { key: 'tilepop_save', value: str }); } catch(e){}
@@ -635,7 +650,7 @@
                     currentTheme = data.theme || 'critters';
                     isMuted = !!data.isMuted;
                     isMusicMuted = !!data.isMusicMuted;
-                    levelsSinceAd = data.levelsSinceAd || 0;
+                    lastAdTime = data.lastAdTime || 0; // Подгружаем таймер рекламы
                     
                     if (stats.goals && stats.goals.hiLevel !== undefined) {
                         stats.goals.hiScore = 0;
@@ -655,9 +670,18 @@
                 if(!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
             }
             
-            // ИСПРАВЛЕНИЕ: Переписанный вызов рекламы (Без зависаний, современный метод)
+            // ИСПРАВЛЕНИЕ: 5 минутный кулдаун для рекламы ВК
             function showInterstitialAd(callback) {
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
+                
+                const now = Date.now();
+                const AD_COOLDOWN = 5 * 60 * 1000; // 5 минут в миллисекундах
+                
+                if (now - lastAdTime < AD_COOLDOWN) {
+                    if (callback) callback();
+                    return;
+                }
+
                 const musicWasPlaying = !bgMusic.paused;
                 if(musicWasPlaying) bgMusic.pause();
                 
@@ -674,13 +698,14 @@
                     }
                 };
 
-                // Запускаем рекламу, но если ВК думает дольше 1.5 секунд - пропускаем и играем дальше
                 Promise.race([
                     attemptAd(),
-                    new Promise(resolve => setTimeout(resolve, 1500))
+                    new Promise(resolve => setTimeout(resolve, 2000))
                 ]).finally(() => {
                     if (!adProcessed) {
                         adProcessed = true;
+                        lastAdTime = Date.now(); // Обновляем таймер после показа
+                        saveGameData();
                         if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                         if(callback) callback();
                     }
@@ -818,7 +843,6 @@
                 }
             }
             
-            // ИСПРАВЛЕНИЕ: Аппаратное ускорение анимаций (Transform вместо Top/Left)
             function createTile(r, c, type, color = null, bonus = null) {
                 const el = document.createElement('div');
                 el.classList.add('tile');
@@ -1251,7 +1275,6 @@
                             
                             const t = createTile(r, c, tType, tType === 'gem' ? getRandomColor() : null);
                             
-                            // Анимация падения через transform
                             t.element.style.transition = 'none'; 
                             const endX = GAP + c * (TILE_SIZE + GAP);
                             const endY = GAP + r * (TILE_SIZE + GAP);
@@ -1303,20 +1326,12 @@
                         maxReachedLevel++;
                         updateLevelsButton(maxReachedLevel);
                     }
-                    levelsSinceAd++;
                     saveGameData();
                     
-                    if (levelsSinceAd >= 2) {
-                        levelsSinceAd = 0;
-                        saveGameData();
-                        showInterstitialAd(() => {
-                            document.getElementById('level-complete-score-value').textContent = score;
-                            openModal('level-complete-modal');
-                        });
-                    } else {
+                    showInterstitialAd(() => {
                         document.getElementById('level-complete-score-value').textContent = score;
                         openModal('level-complete-modal');
-                    }
+                    });
                 } else {
                     level++;
                     playSound('goal');
@@ -1345,23 +1360,18 @@
                     adBtn.classList.add('hidden');
                 }
                 
-                levelsSinceAd++;
-                if (levelsSinceAd >= 2) {
-                    levelsSinceAd = 0;
-                    saveGameData();
-                    showInterstitialAd(() => openModal('game-over-modal'));
-                } else {
-                    saveGameData();
-                    openModal('game-over-modal');
-                }
+                saveGameData();
+                showInterstitialAd(() => openModal('game-over-modal'));
             }
 
+            // ИСПРАВЛЕНИЕ: Плавный рост ходов до 120 уровня.
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 120);
                 
                 if (gameMode === 'goals' && level > 1) {
                     movesLimit += Math.max(10, 15 - Math.floor(diffLevel / 10)); 
                 } else {
+                    // Стартуем с 15, плавно доходим до 45 к 120 уровню
                     movesLimit = Math.floor(15 + (diffLevel / 4)); 
                 }
                 
