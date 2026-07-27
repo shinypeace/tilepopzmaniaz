@@ -430,6 +430,7 @@
         </div>
     </div>
     
+    <!-- ПРЕМИАЛЬНОЕ ОКНО ПРАВИЛ -->
     <div id="rules-modal" class="modal">
         <div class="modal-content text-left" style="padding: 1.5rem; max-width: 450px;">
             <h2 class="modal-title text-center">Как играть</h2>
@@ -501,6 +502,7 @@
         let board = [], score = 0, movesCount = 0, totalMoves = 0, level = 1, currentLevel = 1;
         let gameMode = 'levels', isPaused = false, isProcessing = false;
         let vkUserId = null, currentTheme = 'critters';
+        // Таймер рекламы теперь живет только в памяти сессии
         let lastAdTime = 0; 
         let extraMovesUsedThisLevel = false;
         let maxReachedLevel = 1;
@@ -561,7 +563,7 @@
                     match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
                     bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 4, envelope: { attack: 0.001, decay: 0.4, sustain: 0.01 } }).toDestination(),
                     rocket: new Tone.NoiseSynth({ volume: -2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0 } }).toDestination(),
-                    win: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.4, release: 1.5 }, volume: -2 }).toDestination(),
+                    win: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 1 }, volume: -2 }).toDestination(),
                     lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
                     goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
                 };
@@ -579,22 +581,20 @@
                 } catch (e) {}
             }
 
-            // Глобальный "будильник" для звука после рекламы
+            // Глобальный будильник для аудио (решает проблему мертвого звука после рекламы)
             function ensureAudioAwake() {
                 if (audioContextInitialized) {
                     if (Tone.context.state !== 'running') {
-                        Tone.context.resume().catch(()=>{});
+                        Tone.start(); 
                     }
-                    if (!isMuted) Tone.getDestination().mute = false;
-                    if (!isMusicMuted && bgMusic.paused) bgMusic.play().catch(()=>{});
+                    Tone.getDestination().mute = isMuted;
                 } else {
                     initAudio();
                 }
             }
             
-            // Ловим абсолютно все тапы, чтобы звук не мог уснуть
+            // Ловим абсолютно любой клик на документе на стадии перехвата
             document.addEventListener('pointerdown', ensureAudioAwake, { capture: true });
-            document.addEventListener('touchstart', ensureAudioAwake, { capture: true, passive: true });
             
             document.querySelectorAll('button, .icon-btn').forEach(btn => {
                 btn.addEventListener('pointerdown', () => playSound('tap'));
@@ -607,6 +607,7 @@
                     dragStart = null; 
                 } else {
                     ensureAudioAwake();
+                    if (!isMusicMuted && audioContextInitialized && bgMusic.paused) bgMusic.play().catch(()=>{});
                 }
             }
             document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -620,7 +621,14 @@
                         case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n'); break;
                         case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n'); break;
                         case 'rocket': synths.rocket.triggerAttackRelease('4n'); break;
-                        case 'win': synths.win.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '2n'); break;
+                        case 'win': 
+                            // Новое приятное арпеджио победы (без резкого писка)
+                            const now = Tone.now();
+                            synths.win.triggerAttackRelease('C5', '8n', now);
+                            synths.win.triggerAttackRelease('E5', '8n', now + 0.1);
+                            synths.win.triggerAttackRelease('G5', '8n', now + 0.2);
+                            synths.win.triggerAttackRelease('C6', '2n', now + 0.3);
+                            break;
                         case 'lose': synths.lose.triggerAttackRelease(['G3', 'Eb3', 'C3'], '4n'); break;
                         case 'goal': synths.goal.triggerAttackRelease('G5', '16n'); break;
                     }
@@ -655,7 +663,8 @@
             
             async function saveGameData() {
                 if (!vkUserId) return;
-                const data = { maxReachedLevel, stats, theme: currentTheme, isMuted, isMusicMuted, lastAdTime };
+                // Больше не сохраняем lastAdTime в кэш!
+                const data = { maxReachedLevel, stats, theme: currentTheme, isMuted, isMusicMuted };
                 const str = JSON.stringify(data);
                 localStorage.setItem('tilepop_save', str);
                 try { await vkBridge.send('VKWebAppStorageSet', { key: 'tilepop_save', value: str }); } catch(e){}
@@ -678,7 +687,6 @@
                     currentTheme = data.theme || 'critters';
                     isMuted = !!data.isMuted;
                     isMusicMuted = !!data.isMusicMuted;
-                    lastAdTime = data.lastAdTime || 0; 
                     
                     if (stats.goals && stats.goals.hiLevel !== undefined) {
                         stats.goals.hiScore = 0;
@@ -701,7 +709,7 @@
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
                 
                 const now = Date.now();
-                const AD_COOLDOWN = 7 * 60 * 1000; // 7 МИНУТ
+                const AD_COOLDOWN = 7 * 60 * 1000; // 7 минут сессионный таймер
                 
                 if (now - lastAdTime < AD_COOLDOWN) {
                     if (callback) callback();
@@ -731,12 +739,8 @@
                     if (!adProcessed) {
                         adProcessed = true;
                         lastAdTime = Date.now(); 
-                        saveGameData();
                         
-                        if (audioContextInitialized) {
-                            Tone.getDestination().mute = isMuted;
-                            Tone.context.resume().catch(()=>{});
-                        }
+                        ensureAudioAwake();
                         if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                         if(callback) callback();
                     }
@@ -753,10 +757,7 @@
                     if (data.result) result = true;
                 } catch (e) {}
                 
-                if (audioContextInitialized) {
-                    Tone.getDestination().mute = isMuted;
-                    Tone.context.resume().catch(()=>{});
-                }
+                ensureAudioAwake();
                 if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                 return result;
             }
@@ -770,11 +771,13 @@
                 gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; isProcessing = false;
                 extraMovesUsedThisLevel = false;
                 clearInterval(timerInterval);
-                updateScore(0);
                 
                 if (mode === 'levels') { level = levelOverride || maxReachedLevel; currentLevel = level; }
                 else if (mode === 'goals') { level = 1; stats.goals.games++; }
                 else if (mode === 'speed') { level = 1; stats.speed.games++; timeLeft = totalTime; startTimer(); }
+                
+                // Обновляем очки ПОСЛЕ установки уровня (чтобы сразу вывелось "Ур. 31")
+                updateScore(0);
                 
                 mainMenuScreen.classList.add('hidden');
                 gameScreen.classList.remove('hidden');
@@ -837,10 +840,10 @@
                 let actualUnmovablesPlaced = 0;
                 let wantedUnmovables = 0;
                 
-                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 10) {
+                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 5) {
                     const diffLevel = Math.min(level, 120);
-                    wantedUnmovables = Math.floor((diffLevel - 5) / 10);
-                    wantedUnmovables = Math.min(wantedUnmovables, 10); 
+                    wantedUnmovables = Math.floor((diffLevel - 2) / 3); 
+                    wantedUnmovables = Math.min(wantedUnmovables, 12); 
                 }
                 if (wantedUnmovables > 0) {
                     let attempts = 0;
@@ -856,11 +859,14 @@
                     }
                 }
                 
-                if ((gameMode === 'levels' || gameMode === 'goals') && goals['unmovable'] !== undefined) {
+                // Фикс бага "99 камней" - привязываем цель жестко к факту наличия на поле
+                if (actualUnmovablesPlaced > 0) {
                     goals['unmovable'] = actualUnmovablesPlaced;
-                    if (goals['unmovable'] === 0) delete goals['unmovable'];
-                    updateGoalsUI(); 
+                } else {
+                    delete goals['unmovable'];
                 }
+                updateGoalsUI(); 
+                
                 removeInitialMatches();
             }
             
@@ -1134,6 +1140,11 @@
                     if (matches.size === 0) break;
                     
                     playSound('match');
+                    
+                    // Фикс бага с камнями: сначала ищем камни вокруг ВСЕХ фишек матча
+                    const stones = findAdjacentUnmovables(matches);
+                    
+                    // Потом уже превращаем цель в бонус
                     bonusInfo.forEach(info => {
                         let target = info.target;
                         matches.delete(target);
@@ -1142,7 +1153,7 @@
                         target.element.className = `tile ${info.type}`; 
                     });
                     
-                    const stones = findAdjacentUnmovables(matches);
+                    // Добавляем найденные камни в список на уничтожение
                     stones.forEach(s => matches.add(s));
                     
                     updateGoalsAndScore(matches);
@@ -1406,9 +1417,9 @@
                 const diffLevel = Math.min(level, 120);
                 
                 if (gameMode === 'goals' && level > 1) {
-                    // Даем от +2 до +6 ходов (в зависимости от уровня)
+                    // От +2 до +6 ходов (в зависимости от уровня)
                     movesLimit += Math.max(2, 6 - Math.floor(diffLevel / 10)); 
-                    // Жесткий кап ходов, чтобы не копились за 200+
+                    // Жесткий кап ходов
                     if (movesLimit > 45) movesLimit = 45; 
                 } else {
                     movesLimit = Math.floor(15 + (diffLevel / 4)); 
@@ -1421,9 +1432,8 @@
                 const shuffled = [...COLORS].sort(()=>Math.random()-0.5);
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 
-                if ((gameMode === 'levels' || gameMode === 'goals') && level >= 5) {
-                    goals['unmovable'] = 99; 
-                }
+                // Камни добавляются в initBoard, мы больше не пишем тут goals['unmovable'] = 99
+                
                 updateGoalsUI();
                 updateMovesDisplay();
             }
