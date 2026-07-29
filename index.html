@@ -206,7 +206,6 @@
             padding: 0 0.5rem; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; border: 1px solid var(--border-color);
             height: 60px; justify-content: center;
         }
-        /* Скрываем текст "Цели" */
         #goals-header { display: none !important; }
         #goals-list-wrapper { 
             display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; overflow-x: auto; 
@@ -349,7 +348,6 @@
         <div id="game-screen" class="game-screen hidden flex flex-col h-full w-full">
             <div class="game-header flex-shrink-0" id="top-header">
                 <div class="header-item score-container">
-                    <!-- Иконка звездочки будет прятаться в режиме Уровней -->
                     <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
                     <span id="score">0</span>
                 </div>
@@ -430,7 +428,6 @@
         </div>
     </div>
     
-    <!-- ПРЕМИАЛЬНОЕ ОКНО ПРАВИЛ -->
     <div id="rules-modal" class="modal">
         <div class="modal-content text-left" style="padding: 1.5rem; max-width: 450px;">
             <h2 class="modal-title text-center">Как играть</h2>
@@ -502,7 +499,6 @@
         let board = [], score = 0, movesCount = 0, totalMoves = 0, level = 1, currentLevel = 1;
         let gameMode = 'levels', isPaused = false, isProcessing = false;
         let vkUserId = null, currentTheme = 'critters';
-        // Таймер рекламы теперь живет только в памяти сессии
         let lastAdTime = 0; 
         let extraMovesUsedThisLevel = false;
         let maxReachedLevel = 1;
@@ -581,20 +577,25 @@
                 } catch (e) {}
             }
 
-            // Глобальный будильник для аудио (решает проблему мертвого звука после рекламы)
+            // МАКСИМАЛЬНО АГРЕССИВНЫЙ БУДИЛЬНИК ДЛЯ АУДИО (обход бага iOS)
             function ensureAudioAwake() {
                 if (audioContextInitialized) {
                     if (Tone.context.state !== 'running') {
-                        Tone.start(); 
+                        Tone.context.resume().catch(()=>{});
                     }
+                    try {
+                        if (Tone.context._context && Tone.context._context.state !== 'running') {
+                            Tone.context._context.resume().catch(()=>{});
+                        }
+                    } catch(e) {}
                     Tone.getDestination().mute = isMuted;
                 } else {
                     initAudio();
                 }
             }
             
-            // Ловим абсолютно любой клик на документе на стадии перехвата
             document.addEventListener('pointerdown', ensureAudioAwake, { capture: true });
+            document.addEventListener('touchstart', ensureAudioAwake, { capture: true, passive: true });
             
             document.querySelectorAll('button, .icon-btn').forEach(btn => {
                 btn.addEventListener('pointerdown', () => playSound('tap'));
@@ -622,7 +623,6 @@
                         case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n'); break;
                         case 'rocket': synths.rocket.triggerAttackRelease('4n'); break;
                         case 'win': 
-                            // Новое приятное арпеджио победы (без резкого писка)
                             const now = Tone.now();
                             synths.win.triggerAttackRelease('C5', '8n', now);
                             synths.win.triggerAttackRelease('E5', '8n', now + 0.1);
@@ -663,7 +663,6 @@
             
             async function saveGameData() {
                 if (!vkUserId) return;
-                // Больше не сохраняем lastAdTime в кэш!
                 const data = { maxReachedLevel, stats, theme: currentTheme, isMuted, isMusicMuted };
                 const str = JSON.stringify(data);
                 localStorage.setItem('tilepop_save', str);
@@ -709,7 +708,7 @@
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
                 
                 const now = Date.now();
-                const AD_COOLDOWN = 7 * 60 * 1000; // 7 минут сессионный таймер
+                const AD_COOLDOWN = 7 * 60 * 1000; 
                 
                 if (now - lastAdTime < AD_COOLDOWN) {
                     if (callback) callback();
@@ -765,6 +764,36 @@
             function updateLevelsButton(lvl) { levelsModeBtn.textContent = `Уровень ${lvl}`; }
             function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
             
+            // НОВАЯ ЛОГИКА: Появление камней с заменой существующих элементов
+            function spawnStonesOnBoard(count) {
+                let placed = 0;
+                let attempts = 0;
+                while (placed < count && attempts < 100) {
+                    // Избегаем самого верхнего ряда (r=0), чтобы камни не блокировали выход
+                    const r = Math.floor(Math.random() * (ROWS - 1)) + 1; 
+                    const c = Math.floor(Math.random() * COLS);
+                    const t = board[r][c];
+                    
+                    if (t && t.type === 'gem' && !t.bonus) {
+                        t.type = 'unmovable';
+                        t.color = null;
+                        t.element.className = 'tile unmovable';
+                        
+                        const inner = t.element.querySelector('.tile-inner');
+                        if (inner) {
+                            inner.style.transform = 'scale(0)';
+                            setTimeout(() => { 
+                                inner.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                                inner.style.transform = 'scale(1)'; 
+                            }, 50);
+                        }
+                        placed++;
+                    }
+                    attempts++;
+                }
+                return placed;
+            }
+
             function startGame(mode, levelOverride = null) {
                 if(!isMusicMuted) bgMusic.play().catch(()=>{});
                 
@@ -776,7 +805,6 @@
                 else if (mode === 'goals') { level = 1; stats.goals.games++; }
                 else if (mode === 'speed') { level = 1; stats.speed.games++; timeLeft = totalTime; startTimer(); }
                 
-                // Обновляем очки ПОСЛЕ установки уровня (чтобы сразу вывелось "Ур. 31")
                 updateScore(0);
                 
                 mainMenuScreen.classList.add('hidden');
@@ -843,24 +871,15 @@
                 if ((gameMode === 'levels' || gameMode === 'goals') && level >= 5) {
                     const diffLevel = Math.min(level, 120);
                     wantedUnmovables = Math.floor((diffLevel - 2) / 3); 
-                    wantedUnmovables = Math.min(wantedUnmovables, 12); 
-                }
-                if (wantedUnmovables > 0) {
-                    let attempts = 0;
-                    while (actualUnmovablesPlaced < wantedUnmovables && attempts < 100) {
-                        const r = Math.floor(Math.random() * (ROWS - 2)) + 2; 
-                        const c = Math.floor(Math.random() * COLS);
-                        if (board[r][c] && board[r][c].type === 'gem') {
-                            board[r][c].element.remove();
-                            createTile(r, c, 'unmovable');
-                            actualUnmovablesPlaced++;
-                        }
-                        attempts++;
-                    }
+                    wantedUnmovables = Math.min(wantedUnmovables, 10); 
                 }
                 
-                // Фикс бага "99 камней" - привязываем цель жестко к факту наличия на поле
-                if (actualUnmovablesPlaced > 0) {
+                if (wantedUnmovables > 0) {
+                    actualUnmovablesPlaced = spawnStonesOnBoard(wantedUnmovables);
+                }
+                
+                // Цели для камней устанавливаем только если они реально есть на поле
+                if (actualUnmovablesPlaced > 0 && gameMode === 'levels') {
                     goals['unmovable'] = actualUnmovablesPlaced;
                 } else {
                     delete goals['unmovable'];
@@ -1135,16 +1154,17 @@
 
             async function processMatches() {
                 let firstCycle = true;
+                let madeMatch = false;
+                
                 while(true) {
                     const { matches, bonusInfo } = findMatches(firstCycle);
                     if (matches.size === 0) break;
+                    madeMatch = true;
                     
                     playSound('match');
                     
-                    // Фикс бага с камнями: сначала ищем камни вокруг ВСЕХ фишек матча
                     const stones = findAdjacentUnmovables(matches);
                     
-                    // Потом уже превращаем цель в бонус
                     bonusInfo.forEach(info => {
                         let target = info.target;
                         matches.delete(target);
@@ -1153,13 +1173,20 @@
                         target.element.className = `tile ${info.type}`; 
                     });
                     
-                    // Добавляем найденные камни в список на уничтожение
                     stones.forEach(s => matches.add(s));
                     
                     updateGoalsAndScore(matches);
                     await animateDestruction(matches);
                     await dropTiles();
                     firstCycle = false;
+                }
+                
+                // Спавн камней для режима На Время после завершения хода
+                if (madeMatch && gameMode === 'speed') {
+                    const stoneChance = Math.min(0.2, score / 50000); 
+                    if (Math.random() < stoneChance) {
+                        spawnStonesOnBoard(1);
+                    }
                 }
             }
             
@@ -1218,7 +1245,7 @@
                 const cR = t1.r, cC = t1.c;
                 
                 if (type1 === 'bomb' && type2 === 'bomb') {
-                    playSound('bomb');
+                    playSound('bomb'); 
                     for(let r = cR-2; r <= cR+2; r++) {
                         if(r>=0 && r<ROWS) {
                             for(let c=cC-2; c<=cC+2; c++) {
@@ -1227,7 +1254,7 @@
                         }
                     }
                 } else if (type1 === 'rocket' && type2 === 'rocket') {
-                    playSound('rocket');
+                    playSound('rocket'); 
                     for(let c=0; c<COLS; c++) {
                         if(board[t1.r][c]) allToDestroy.add(board[t1.r][c]);
                         if(board[t2.r][c]) allToDestroy.add(board[t2.r][c]);
@@ -1237,7 +1264,7 @@
                         if(board[r][t2.c]) allToDestroy.add(board[r][t2.c]);
                     }
                 } else {
-                    playSound('rocket');
+                    playSound('rocket'); 
                     for (let r = cR - 1; r <= cR + 1; r++) {
                         if (r >= 0 && r < ROWS) {
                             for(let c=0; c<COLS; c++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
@@ -1315,13 +1342,8 @@
                 for (let c = 0; c < COLS; c++) {
                     for (let r = 0; r < ROWS; r++) {
                         if (board[r][c] === null) {
-                            let tType = 'gem';
-                            if (gameMode === 'speed') {
-                                const stoneChance = Math.min(0.05, score / 100000); 
-                                if (Math.random() < stoneChance) tType = 'unmovable';
-                            }
-                            
-                            const t = createTile(r, c, tType, tType === 'gem' ? getRandomColor() : null);
+                            const tType = 'gem'; // Сверху всегда падают обычные фишки!
+                            const t = createTile(r, c, tType, getRandomColor());
                             
                             t.element.style.transition = 'none'; 
                             const endX = GAP + c * (TILE_SIZE + GAP);
@@ -1384,6 +1406,10 @@
                     level++;
                     playSound('goal');
                     setupGoalsLevel(); 
+                    // Спавним 1 камень на поле при переходе на новый этап бесконечности
+                    if (level >= 5) {
+                        spawnStonesOnBoard(1);
+                    }
                 }
             }
 
@@ -1402,7 +1428,8 @@
                 document.querySelector('#game-over-modal .modal-title').textContent = reason === "Победа" ? "Победа!" : "Ой!";
                 
                 const adBtn = document.getElementById('add-moves-ad-btn');
-                if (reason === "Ходы закончились" && !extraMovesUsedThisLevel && gameMode === 'levels') {
+                // Кнопка рекламы доступна и в Уровнях, и в Бесконечности
+                if (reason === "Ходы закончились" && !extraMovesUsedThisLevel && (gameMode === 'levels' || gameMode === 'goals')) {
                     adBtn.classList.remove('hidden');
                 } else {
                     adBtn.classList.add('hidden');
@@ -1412,14 +1439,11 @@
                 showInterstitialAd(() => openModal('game-over-modal'));
             }
 
-            // БАЛАНС БЕСКОНЕЧНОГО РЕЖИМА
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 120);
                 
                 if (gameMode === 'goals' && level > 1) {
-                    // От +2 до +6 ходов (в зависимости от уровня)
                     movesLimit += Math.max(2, 6 - Math.floor(diffLevel / 10)); 
-                    // Жесткий кап ходов
                     if (movesLimit > 45) movesLimit = 45; 
                 } else {
                     movesLimit = Math.floor(15 + (diffLevel / 4)); 
@@ -1432,13 +1456,10 @@
                 const shuffled = [...COLORS].sort(()=>Math.random()-0.5);
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 
-                // Камни добавляются в initBoard, мы больше не пишем тут goals['unmovable'] = 99
-                
                 updateGoalsUI();
                 updateMovesDisplay();
             }
 
-            // ОЧКИ -> УРОВНИ
             function updateScore(s) { 
                 if (gameMode === 'levels') {
                     scoreElement.textContent = `Ур. ${currentLevel}`;
@@ -1453,7 +1474,6 @@
                 movesCountElement.textContent = (gameMode === 'speed') ? totalMoves : movesLimit;
             }
 
-            // СКРЫТИЕ ТЕКСТА "ЦЕЛИ:"
             function updateGoalsUI() {
                 if (gameMode === 'speed') return;
                 let html = '';
@@ -1462,7 +1482,7 @@
                     html += `<div class="flex flex-col items-center mx-1"><div class="w-8 h-8 bg-contain bg-no-repeat" style="background-image:url('${bg}')"></div><span class="font-bold text-sm text-gray-700">${val}</span></div>`;
                 }
                 goalsListWrapper.innerHTML = html;
-                goalsHeader.style.display = 'none'; // Прячем текст навсегда
+                goalsHeader.style.display = 'none'; 
             }
             
             function startTimer() {
