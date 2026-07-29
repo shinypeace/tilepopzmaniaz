@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Lobster&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     
     <style>
@@ -466,13 +465,86 @@
     </div>
 
     <script>
-    const ASSET_LIST = [
-        'music.mp3',
+    // Имена файлов для твоих звуков
+    const SOUND_FILES = {
+        'tap': 'tap.mp3',
+        'swap': 'swap.mp3',
+        'match': 'match.mp3',
+        'bomb': 'bomb.mp3',
+        'rocket': 'rocket.mp3',
+        'create_bonus': 'create_bonus.mp3',
+        'win': 'win.mp3',
+        'lose': 'lose.mp3',
+        'goal': 'goal.mp3'
+    };
+
+    const IMAGE_FILES = [
         'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png',
         'tile-red.png', 'tile-blue.png', 'tile-green.png', 'tile-yellow.png', 'tile-purple.png', 'tile-orange.png',
         'tile-bomb.png', 'tile-rocket.png', 'tile-unmovable.png'
     ];
     
+    // Web Audio API движок для нулевой задержки и полифонии
+    const AudioEngine = {
+        ctx: null,
+        masterGain: null,
+        buffers: {},
+        isMuted: false,
+        isInitialized: false,
+
+        init() {
+            if (this.isInitialized) return;
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return; // Fallback для старых браузеров
+            
+            this.ctx = new AudioContext();
+            this.masterGain = this.ctx.createGain();
+            this.masterGain.connect(this.ctx.destination);
+            this.isInitialized = true;
+        },
+
+        async loadAll() {
+            this.init(); // Инициализация контекста для декодирования
+            const loadPromises = Object.entries(SOUND_FILES).map(async ([name, url]) => {
+                try {
+                    const response = await fetch(url);
+                    const arrayBuffer = await response.arrayBuffer();
+                    this.buffers[name] = await this.ctx.decodeAudioData(arrayBuffer);
+                } catch (e) {
+                    console.warn("Audio file not found or couldn't decode:", url);
+                }
+            });
+            await Promise.all(loadPromises);
+        },
+
+        play(name) {
+            if (this.isMuted || !this.isInitialized || !this.buffers[name]) return;
+            
+            // Защита от остановленного контекста после рекламы/сворачивания
+            if (this.ctx.state === 'suspended') {
+                this.ctx.resume().catch(()=>{});
+            }
+
+            const source = this.ctx.createBufferSource();
+            source.buffer = this.buffers[name];
+            source.connect(this.masterGain);
+            source.start(0);
+        },
+
+        setMute(mute) {
+            this.isMuted = mute;
+            if (this.masterGain) {
+                this.masterGain.gain.value = mute ? 0 : 1;
+            }
+        },
+
+        wakeUp() {
+            if (this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume().catch(()=>{});
+            }
+        }
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
         const preloader = document.getElementById('preloader');
         const loadingBarFill = document.getElementById('loading-bar-fill');
@@ -507,37 +579,52 @@
         let activeSwapT1 = null, activeSwapT2 = null; 
         let goals = {}, movesLimit = 0;
         let timerInterval = null, timeLeft = 0, totalTime = 60000;
-        
-        let audioContextInitialized = false;
-        let isMuted = false;
         let isMusicMuted = false;
-        let synths = {};
 
-        function preloadAssets() {
+        async function preloadAssets() {
             let assetsLoaded = 0;
-            const totalAssets = ASSET_LIST.length;
-            if (totalAssets === 0) { showMainMenu(); return; }
+            const totalAssets = IMAGE_FILES.length + Object.keys(SOUND_FILES).length;
             
-            const safetyTimeout = setTimeout(() => { showMainMenu(); }, 5000);
             const checkProgress = () => {
                 assetsLoaded++;
                 const percent = (assetsLoaded / totalAssets) * 100;
                 loadingBarFill.style.width = `${percent}%`;
                 if (assetsLoaded >= totalAssets) {
-                    clearTimeout(safetyTimeout);
                     setTimeout(showMainMenu, 400);
                 }
             };
+
+            // Страховка, если файлы не загрузятся за 6 секунд
+            setTimeout(() => {
+                if (assetsLoaded < totalAssets) showMainMenu();
+            }, 6000);
             
-            ASSET_LIST.forEach(asset => {
-                const isAudio = asset.endsWith('.mp3');
-                const element = isAudio ? new Audio() : new Image();
-                element.onload = checkProgress;
-                element.oncanplaythrough = checkProgress;
-                element.onerror = () => { checkProgress(); };
-                element.src = asset;
-                if (isAudio) element.load();
+            // Загружаем картинки
+            IMAGE_FILES.forEach(asset => {
+                const img = new Image();
+                img.onload = checkProgress;
+                img.onerror = checkProgress; // Продолжаем даже при ошибке
+                img.src = asset;
             });
+
+            // Инициализируем и загружаем звуки через Web Audio API
+            try {
+                AudioEngine.init();
+                const loadPromises = Object.entries(SOUND_FILES).map(async ([name, url]) => {
+                    try {
+                        const response = await fetch(url);
+                        const arrayBuffer = await response.arrayBuffer();
+                        AudioEngine.buffers[name] = await AudioEngine.ctx.decodeAudioData(arrayBuffer);
+                    } catch (e) {
+                        console.warn("Sound not loaded:", url);
+                    } finally {
+                        checkProgress();
+                    }
+                });
+            } catch(e) {
+                // Если аудио не поддерживается (совсем старый браузер), пропускаем счетчик
+                for(let i=0; i<Object.keys(SOUND_FILES).length; i++) checkProgress();
+            }
         }
         
         function showMainMenu() {
@@ -552,99 +639,37 @@
         
         async function initGameLogic() {
             
-            function initSynths() {
-                synths = {
-                    tap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 }, volume: -10 }).toDestination(),
-                    swap: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, volume: -5 }).toDestination(),
-                    match: new Tone.PolySynth(Tone.Synth, { volume: -2, oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 } }).toDestination(),
-                    bomb: new Tone.MembraneSynth({ volume: 8, pitchDecay: 0.05, octaves: 4, envelope: { attack: 0.001, decay: 0.4, sustain: 0.01 } }).toDestination(),
-                    rocket: new Tone.NoiseSynth({ volume: -2, noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0 } }).toDestination(),
-                    win: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 1 }, volume: -2 }).toDestination(),
-                    lose: new Tone.PolySynth(Tone.Synth, { volume: -2 }).toDestination(),
-                    goal: new Tone.PluckSynth({ volume: -2 }).toDestination()
-                };
-            }
-
-            async function initAudio() {
-                if (audioContextInitialized) return;
-                try {
-                    await Tone.start();
-                    initSynths();
-                    audioContextInitialized = true;
-                    if (!isMusicMuted && bgMusic.paused) {
-                        bgMusic.play().catch(()=>{});
-                    }
-                } catch (e) {}
-            }
-
-            // МАКСИМАЛЬНО АГРЕССИВНЫЙ БУДИЛЬНИК ДЛЯ АУДИО (обход бага iOS)
-            function ensureAudioAwake() {
-                if (audioContextInitialized) {
-                    if (Tone.context.state !== 'running') {
-                        Tone.context.resume().catch(()=>{});
-                    }
-                    try {
-                        if (Tone.context._context && Tone.context._context.state !== 'running') {
-                            Tone.context._context.resume().catch(()=>{});
-                        }
-                    } catch(e) {}
-                    Tone.getDestination().mute = isMuted;
-                } else {
-                    initAudio();
-                }
-            }
-            
-            document.addEventListener('pointerdown', ensureAudioAwake, { capture: true });
-            document.addEventListener('touchstart', ensureAudioAwake, { capture: true, passive: true });
+            // Пробуждение аудио по любому клику
+            document.addEventListener('pointerdown', () => {
+                AudioEngine.wakeUp();
+            }, { capture: true });
+            document.addEventListener('touchstart', () => {
+                AudioEngine.wakeUp();
+            }, { capture: true, passive: true });
             
             document.querySelectorAll('button, .icon-btn').forEach(btn => {
-                btn.addEventListener('pointerdown', () => playSound('tap'));
+                btn.addEventListener('pointerdown', () => AudioEngine.play('tap'));
             });
             
             function handleVisibilityChange() {
                 if (document.hidden) {
                     bgMusic.pause();
-                    if (audioContextInitialized) Tone.getDestination().mute = true;
-                    dragStart = null; 
                 } else {
-                    ensureAudioAwake();
-                    if (!isMusicMuted && audioContextInitialized && bgMusic.paused) bgMusic.play().catch(()=>{});
+                    AudioEngine.wakeUp();
+                    if (!isMusicMuted && bgMusic.paused) bgMusic.play().catch(()=>{});
                 }
             }
             document.addEventListener('visibilitychange', handleVisibilityChange);
             
-            function playSound(name) {
-                if (isMuted || !audioContextInitialized || !synths[name]) return;
-                try {
-                    switch(name) {
-                        case 'tap': synths.tap.triggerAttackRelease('E5', '64n'); break;
-                        case 'swap': synths.swap.triggerAttackRelease('E5', '32n'); break;
-                        case 'match': synths.match.triggerAttackRelease(['C4', 'E4', 'G4'], '16n'); break;
-                        case 'bomb': synths.bomb.triggerAttackRelease('C1', '8n'); break;
-                        case 'rocket': synths.rocket.triggerAttackRelease('4n'); break;
-                        case 'win': 
-                            const now = Tone.now();
-                            synths.win.triggerAttackRelease('C5', '8n', now);
-                            synths.win.triggerAttackRelease('E5', '8n', now + 0.1);
-                            synths.win.triggerAttackRelease('G5', '8n', now + 0.2);
-                            synths.win.triggerAttackRelease('C6', '2n', now + 0.3);
-                            break;
-                        case 'lose': synths.lose.triggerAttackRelease(['G3', 'Eb3', 'C3'], '4n'); break;
-                        case 'goal': synths.goal.triggerAttackRelease('G5', '16n'); break;
-                    }
-                } catch(e) {}
-            }
-            
             muteToggle.addEventListener('change', () => {
-                isMuted = !muteToggle.checked;
-                if(audioContextInitialized) Tone.getDestination().mute = isMuted;
+                AudioEngine.setMute(!muteToggle.checked);
                 saveGameData();
             });
             
             muteMusicToggle.addEventListener('change', () => {
                 isMusicMuted = !muteMusicToggle.checked;
                 if (isMusicMuted) bgMusic.pause();
-                else if (audioContextInitialized) bgMusic.play().catch(e=>{});
+                else bgMusic.play().catch(e=>{});
                 saveGameData();
             });
 
@@ -663,7 +688,7 @@
             
             async function saveGameData() {
                 if (!vkUserId) return;
-                const data = { maxReachedLevel, stats, theme: currentTheme, isMuted, isMusicMuted };
+                const data = { maxReachedLevel, stats, theme: currentTheme, isMuted: AudioEngine.isMuted, isMusicMuted };
                 const str = JSON.stringify(data);
                 localStorage.setItem('tilepop_save', str);
                 try { await vkBridge.send('VKWebAppStorageSet', { key: 'tilepop_save', value: str }); } catch(e){}
@@ -684,7 +709,7 @@
                     maxReachedLevel = data.maxReachedLevel || 1;
                     stats = data.stats || stats;
                     currentTheme = data.theme || 'critters';
-                    isMuted = !!data.isMuted;
+                    AudioEngine.setMute(!!data.isMuted);
                     isMusicMuted = !!data.isMusicMuted;
                     
                     if (stats.goals && stats.goals.hiLevel !== undefined) {
@@ -699,9 +724,9 @@
                 const themeBtn = document.querySelector(`.theme-selection button[data-theme="${currentTheme}"]`);
                 if(themeBtn) themeBtn.classList.add('active');
                 
-                muteToggle.checked = !isMuted;
+                muteToggle.checked = !AudioEngine.isMuted;
                 muteMusicToggle.checked = !isMusicMuted;
-                if(!isMusicMuted && audioContextInitialized) bgMusic.play().catch(()=>{});
+                if(!isMusicMuted) bgMusic.play().catch(()=>{});
             }
             
             function showInterstitialAd(callback) {
@@ -739,7 +764,7 @@
                         adProcessed = true;
                         lastAdTime = Date.now(); 
                         
-                        ensureAudioAwake();
+                        AudioEngine.wakeUp();
                         if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                         if(callback) callback();
                     }
@@ -756,7 +781,7 @@
                     if (data.result) result = true;
                 } catch (e) {}
                 
-                ensureAudioAwake();
+                AudioEngine.wakeUp();
                 if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                 return result;
             }
@@ -764,12 +789,10 @@
             function updateLevelsButton(lvl) { levelsModeBtn.textContent = `Уровень ${lvl}`; }
             function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
             
-            // НОВАЯ ЛОГИКА: Появление камней с заменой существующих элементов
             function spawnStonesOnBoard(count) {
                 let placed = 0;
                 let attempts = 0;
                 while (placed < count && attempts < 100) {
-                    // Избегаем самого верхнего ряда (r=0), чтобы камни не блокировали выход
                     const r = Math.floor(Math.random() * (ROWS - 1)) + 1; 
                     const c = Math.floor(Math.random() * COLS);
                     const t = board[r][c];
@@ -878,7 +901,6 @@
                     actualUnmovablesPlaced = spawnStonesOnBoard(wantedUnmovables);
                 }
                 
-                // Цели для камней устанавливаем только если они реально есть на поле
                 if (actualUnmovablesPlaced > 0 && gameMode === 'levels') {
                     goals['unmovable'] = actualUnmovablesPlaced;
                 } else {
@@ -960,7 +982,7 @@
                 if (!dragStart.moved && (Math.abs(dx) > 20 || Math.abs(dy) > 20)) {
                     dragStart.moved = true;
                     const dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-                    playSound('swap');
+                    AudioEngine.play('swap');
                     attemptSwap(dragStart.r, dragStart.c, dir);
                     dragStart = null;
                 }
@@ -1008,7 +1030,7 @@
                         incrementMoves();
                         await processMatches();
                     } else {
-                        playSound('swap');
+                        AudioEngine.play('swap');
                         await animateSwap(t1, t2);
                     }
                 } else if (isCombo) {
@@ -1161,7 +1183,7 @@
                     if (matches.size === 0) break;
                     madeMatch = true;
                     
-                    playSound('match');
+                    AudioEngine.play('match');
                     
                     const stones = findAdjacentUnmovables(matches);
                     
@@ -1171,6 +1193,8 @@
                         target.color = null; 
                         target.bonus = info.type;
                         target.element.className = `tile ${info.type}`; 
+                        // ВОСПРОИЗВЕДЕНИЕ НОВОГО ЗВУКА
+                        AudioEngine.play('create_bonus');
                     });
                     
                     stones.forEach(s => matches.add(s));
@@ -1181,7 +1205,6 @@
                     firstCycle = false;
                 }
                 
-                // Спавн камней для режима На Время после завершения хода
                 if (madeMatch && gameMode === 'speed') {
                     const stoneChance = Math.min(0.2, score / 50000); 
                     if (Math.random() < stoneChance) {
@@ -1206,7 +1229,7 @@
                     
                     if (t.bonus === 'bomb') {
                         showVisualEffect(t.r, t.c, 'bomb');
-                        if(!playedBomb) { playSound('bomb'); playedBomb = true; }
+                        if(!playedBomb) { AudioEngine.play('bomb'); playedBomb = true; }
                         for(let r=t.r-1; r<=t.r+1; r++) {
                             for(let c=t.c-1; c<=t.c+1; c++) {
                                 if(r>=0 && r<ROWS && c>=0 && c<COLS && board[r][c]) {
@@ -1218,7 +1241,7 @@
                         }
                     } else if (t.bonus === 'rocket') {
                         showVisualEffect(t.r, t.c, 'rocket');
-                        if(!playedRocket) { playSound('rocket'); playedRocket = true; }
+                        if(!playedRocket) { AudioEngine.play('rocket'); playedRocket = true; }
                         for(let i=0; i<COLS; i++) {
                              const n = board[t.r][i];
                              if(n) { allToDestroy.add(n); if(n.bonus && !processed.has(n)) queue.push(n); }
@@ -1245,7 +1268,7 @@
                 const cR = t1.r, cC = t1.c;
                 
                 if (type1 === 'bomb' && type2 === 'bomb') {
-                    playSound('bomb'); 
+                    AudioEngine.play('bomb'); 
                     for(let r = cR-2; r <= cR+2; r++) {
                         if(r>=0 && r<ROWS) {
                             for(let c=cC-2; c<=cC+2; c++) {
@@ -1254,7 +1277,7 @@
                         }
                     }
                 } else if (type1 === 'rocket' && type2 === 'rocket') {
-                    playSound('rocket'); 
+                    AudioEngine.play('rocket'); 
                     for(let c=0; c<COLS; c++) {
                         if(board[t1.r][c]) allToDestroy.add(board[t1.r][c]);
                         if(board[t2.r][c]) allToDestroy.add(board[t2.r][c]);
@@ -1264,7 +1287,7 @@
                         if(board[r][t2.c]) allToDestroy.add(board[r][t2.c]);
                     }
                 } else {
-                    playSound('rocket'); 
+                    AudioEngine.play('rocket'); 
                     for (let r = cR - 1; r <= cR + 1; r++) {
                         if (r >= 0 && r < ROWS) {
                             for(let c=0; c<COLS; c++) { if(board[r][c]) allToDestroy.add(board[r][c]); }
@@ -1342,7 +1365,8 @@
                 for (let c = 0; c < COLS; c++) {
                     for (let r = 0; r < ROWS; r++) {
                         if (board[r][c] === null) {
-                            const tType = 'gem'; // Сверху всегда падают обычные фишки!
+                            const tType = 'gem'; 
+                            
                             const t = createTile(r, c, tType, getRandomColor());
                             
                             t.element.style.transition = 'none'; 
@@ -1391,7 +1415,7 @@
             function levelSuccess() {
                 if (gameMode === 'levels') {
                     isPaused = true;
-                    playSound('win');
+                    AudioEngine.play('win');
                     if (currentLevel === maxReachedLevel) {
                         maxReachedLevel++;
                         updateLevelsButton(maxReachedLevel);
@@ -1404,9 +1428,8 @@
                     });
                 } else {
                     level++;
-                    playSound('goal');
+                    AudioEngine.play('goal');
                     setupGoalsLevel(); 
-                    // Спавним 1 камень на поле при переходе на новый этап бесконечности
                     if (level >= 5) {
                         spawnStonesOnBoard(1);
                     }
@@ -1415,7 +1438,7 @@
 
             function gameOver(reason) {
                 isPaused = true; clearInterval(timerInterval);
-                playSound('lose');
+                AudioEngine.play('lose');
                 
                 if (gameMode === 'goals') {
                     stats.goals.hiScore = Math.max(stats.goals.hiScore || 0, score);
@@ -1428,7 +1451,6 @@
                 document.querySelector('#game-over-modal .modal-title').textContent = reason === "Победа" ? "Победа!" : "Ой!";
                 
                 const adBtn = document.getElementById('add-moves-ad-btn');
-                // Кнопка рекламы доступна и в Уровнях, и в Бесконечности
                 if (reason === "Ходы закончились" && !extraMovesUsedThisLevel && (gameMode === 'levels' || gameMode === 'goals')) {
                     adBtn.classList.remove('hidden');
                 } else {
