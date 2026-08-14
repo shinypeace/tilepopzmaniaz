@@ -3,64 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Tile Pop!</title>
+    <title>Wonder Match</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Lobster&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     
     <style>
-        /* === ПРЕМИУМ ЦВЕТА И ТЕМЫ === */
+        /* === ААА ПРЕМИУМ ЦВЕТА И ТЕМЫ === */
         :root {
             --font-main: 'Nunito', sans-serif;
             --font-title: 'Lobster', cursive;
         }
-
+        
         body.theme-critters { 
             background-image: url('bg-critters.png'); 
-            --bg-modal: rgba(255, 255, 255, 0.65);
-            --bg-glass-dark: rgba(255, 255, 255, 0.85);
-            --btn-top: #ff758c; --btn-bottom: #ff4081; --btn-shadow: #c2185b;
-            --btn-sec-top: #4facfe; --btn-sec-bottom: #00f2fe; --btn-sec-shadow: #0277bd;
-            --text-primary: #d81b60; --text-secondary: #2c3e50;
-            --border-glass: rgba(255, 255, 255, 0.6);
+            --modal-bg: #fffcf0; --modal-border: #8d6e63;
+            --btn-top: #8bc34a; --btn-bottom: #558b2f; --btn-shadow: #33691e;
+            --btn-sec-top: #29b6f6; --btn-sec-bottom: #0277bd; --btn-sec-shadow: #01579b;
+            --text-primary: #5d4037; --text-secondary: #3e2723;
+            --board-border: #5d4037; --board-shadow: #3e2723; --board-bg: rgba(62, 39, 35, 0.4);
+            --ribbon-top: #ff7043; --ribbon-bottom: #d84315; --ribbon-stroke: #bf360c;
         }
         body.theme-sweets { 
             background-image: url('bg-sweets.png'); 
-            --bg-modal: rgba(255, 240, 245, 0.7);
-            --bg-glass-dark: rgba(255, 240, 245, 0.9);
-            --btn-top: #f77062; --btn-bottom: #fe5196; --btn-shadow: #c93b6f;
-            --btn-sec-top: #f6d365; --btn-sec-bottom: #fda085; --btn-sec-shadow: #d18228;
-            --text-primary: #c2185b; --text-secondary: #5a1838;
-            --border-glass: rgba(255, 255, 255, 0.7);
+            --modal-bg: #fff5fb; --modal-border: #f48fb1;
+            --btn-top: #ff4081; --btn-bottom: #c2185b; --btn-shadow: #880e4f;
+            --btn-sec-top: #ab47bc; --btn-sec-bottom: #7b1fa2; --btn-sec-shadow: #4a148c;
+            --text-primary: #880e4f; --text-secondary: #4a148c;
+            --board-border: #c2185b; --board-shadow: #880e4f; --board-bg: rgba(136, 14, 79, 0.3);
+            --ribbon-top: #42a5f5; --ribbon-bottom: #1565c0; --ribbon-stroke: #0d47a1;
         }
         body.theme-nature { 
             background-image: url('bg-nature.png'); 
-            --bg-modal: rgba(240, 255, 240, 0.7);
-            --bg-glass-dark: rgba(240, 255, 240, 0.9);
-            --btn-top: #f6d365; --btn-bottom: #ffb347; --btn-shadow: #e65100;
-            --btn-sec-top: #43e97b; --btn-sec-bottom: #38f9d7; --btn-sec-shadow: #1b5e20;
+            --modal-bg: #f1f8e9; --modal-border: #689f38;
+            --btn-top: #ffa726; --btn-bottom: #ef6c00; --btn-shadow: #e65100;
+            --btn-sec-top: #66bb6a; --btn-sec-bottom: #2e7d32; --btn-sec-shadow: #1b5e20;
             --text-primary: #e65100; --text-secondary: #1b5e20;
-            --border-glass: rgba(255, 255, 255, 0.6);
+            --board-border: #33691e; --board-shadow: #1b5e20; --board-bg: rgba(27, 94, 32, 0.35);
+            --ribbon-top: #ffca28; --ribbon-bottom: #ff8f00; --ribbon-stroke: #ff6f00;
         }
         body.theme-gems { 
             background-image: url('bg-gems.png'); 
-            --bg-modal: rgba(30, 20, 50, 0.65);
-            --bg-glass-dark: rgba(40, 25, 70, 0.85);
-            --btn-top: #f6d365; --btn-bottom: #ffb347; --btn-shadow: #e65100;
-            --btn-sec-top: #b224ef; --btn-sec-bottom: #7579ff; --btn-sec-shadow: #311b92;
-            --text-primary: #ffd740; --text-secondary: #ffffff;
-            --border-glass: rgba(255, 255, 255, 0.2);
+            --modal-bg: #f3e5f5; --modal-border: #ab47bc;
+            --btn-top: #ffca28; --btn-bottom: #ff8f00; --btn-shadow: #ff6f00;
+            --btn-sec-top: #7e57c2; --btn-sec-bottom: #4527a0; --btn-sec-shadow: #311b92;
+            --text-primary: #ff8f00; --text-secondary: #311b92;
+            --board-border: #512da8; --board-shadow: #311b92; --board-bg: rgba(49, 27, 146, 0.4);
+            --ribbon-top: #ec407a; --ribbon-bottom: #c2185b; --ribbon-stroke: #880e4f;
         }
         
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            -webkit-tap-highlight-color: transparent; 
-            user-select: none;
-            -webkit-user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         
         html { overflow: hidden; height: 100%; width: 100%; }
         body {
@@ -68,6 +61,7 @@
             touch-action: none; overflow: hidden; 
             height: 100%; position: relative; width: 100%;
             background-size: cover; background-position: center center; background-repeat: no-repeat;
+            background-color: #2c3e50;
             transition: background-image 0.5s ease;
         }
         
@@ -78,43 +72,48 @@
         .items-center { align-items: center; } .justify-center { justify-content: center; }
         .justify-between { justify-content: space-between; }
         .space-y-4 > * + * { margin-top: 1rem; } .gap-4 { gap: 1rem; }
-        .mt-2 { margin-top: 0.5rem; } .mt-4 { margin-top: 1rem; } .mt-6 { margin-top: 1.5rem; }
+        .mt-2 { margin-top: 0.5rem; } .mt-4 { margin-top: 1rem; } .mt-6 { margin-top: 1.5rem; } .mt-8 { margin-top: 2rem; }
         .mb-2 { margin-bottom: 0.5rem; } .mb-4 { margin-bottom: 1rem; } .mb-6 { margin-bottom: 1.5rem; }
         .mx-1 { margin-left: 0.25rem; margin-right: 0.25rem; }
         .px-4 { padding-left: 1rem; padding-right: 1rem; } .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-        .text-xl { font-size: 1.25rem; } .text-lg { font-size: 1.125rem; } .text-sm { font-size: 0.875rem; }
+        .text-xl { font-size: 1.35rem; } .text-lg { font-size: 1.15rem; } .text-sm { font-size: 0.9rem; }
         .font-bold { font-weight: 800; } .font-black { font-weight: 900; }
         .rounded-full { border-radius: 9999px; } .overflow-hidden { overflow: hidden; }
         .bg-contain { background-size: contain; } .bg-no-repeat { background-repeat: no-repeat; }
-        .w-8 { width: 2rem; } .h-8 { height: 2rem; }
+        .w-8 { width: 2.2rem; } .h-8 { height: 2.2rem; }
         .relative { position: relative; } .min-h-0 { min-height: 0; }
         .text-primary { color: var(--text-primary); }
+        .hidden { display: none !important; }
 
         /* === PRELOADER === */
         #preloader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #f0f8ff; /* Fallback */
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 2000; transition: opacity 0.5s ease;
         }
         #loading-title {
-            font-family: var(--font-title); font-size: 4rem; 
-            color: #ff4081;
-            text-shadow: 0px 4px 0px #c2185b;
-            margin-bottom: 2rem;
-            animation: bounce 2s infinite;
+            font-family: var(--font-title); font-size: 5rem; 
+            color: #fff;
+            -webkit-text-stroke: 2px #ff4081;
+            text-shadow: 0px 8px 0px #c2185b, 0px 15px 15px rgba(0,0,0,0.5);
+            margin-bottom: 2.5rem;
+            animation: bounce 2s infinite cubic-bezier(0.28, 0.84, 0.42, 1);
         }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+        @keyframes bounce { 0%, 100% {transform: scale(1);} 50% {transform: scale(1.1);} }
+        
         #loading-bar-container {
-            width: 80%; max-width: 300px; height: 20px;
-            background-color: rgba(0,0,0,0.1);
+            width: 80%; max-width: 320px; height: 24px;
+            background-color: rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.2);
             border-radius: 20px; overflow: hidden;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.5);
         }
         #loading-bar-fill {
             width: 0%; height: 100%;
-            background: linear-gradient(90deg, #ff758c, #ff4081);
+            background: linear-gradient(90deg, #ffca28, #ff8f00);
             border-radius: 20px;
+            box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
             transition: width 0.3s ease;
         }
         
@@ -129,14 +128,15 @@
         }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        /* === ААА ТАЙТЛ === */
+        /* === ААА ТАЙТЛ (ГЛАВНОЕ МЕНЮ) === */
         .game-title {
-            font-family: var(--font-title); font-size: 5rem; line-height: 1.1;
-            background: linear-gradient(to bottom, #ffffff 20%, var(--btn-bottom) 80%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0px 8px 4px rgba(0,0,0,0.25));
-            margin-bottom: 3rem; text-align: center;
+            font-family: var(--font-title); 
+            font-size: 5.5rem; line-height: 1;
+            color: #ffffff;
+            -webkit-text-stroke: 3px var(--btn-shadow);
+            text-shadow: 0 10px 0 var(--btn-shadow), 0 20px 20px rgba(0,0,0,0.5);
+            margin-bottom: 3.5rem; text-align: center;
+            transform: rotate(-3deg);
         }
         
         /* === ПРЕМИУМ 3D КНОПКИ === */
@@ -144,76 +144,92 @@
             position: relative;
             background: linear-gradient(180deg, var(--btn-top) 0%, var(--btn-bottom) 100%);
             color: #fff; 
-            border: none; border-radius: 30px; 
-            padding: 1.1rem 1.5rem; 
-            font-size: 1.25rem; font-weight: 900; width: 100%; 
+            border: 3px solid rgba(255,255,255,0.4); 
+            border-radius: 40px; 
+            padding: 1.2rem 1.5rem; 
+            font-size: 1.3rem; font-weight: 900; width: 100%; 
             cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; 
             text-transform: uppercase; letter-spacing: 1px;
-            text-shadow: 0px 2px 2px rgba(0,0,0,0.2);
-            /* Желейная тень снизу + мягкая тень вокруг */
-            box-shadow: 0 8px 0px var(--btn-shadow), 0 15px 20px rgba(0,0,0,0.2), inset 0 2px 2px rgba(255,255,255,0.4);
+            -webkit-text-stroke: 1px rgba(0,0,0,0.3);
+            text-shadow: 0px 2px 0px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 0px var(--btn-shadow), 0 15px 20px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
         }
         .btn:active { 
-            transform: translateY(6px); 
-            box-shadow: 0 2px 0px var(--btn-shadow), 0 5px 10px rgba(0,0,0,0.2), inset 0 2px 2px rgba(255,255,255,0.2); 
-        }
-        .btn-primary { 
-            /* Использует дефолтные переменные --btn-top и тд */
+            transform: translateY(8px); 
+            box-shadow: 0 2px 0px var(--btn-shadow), 0 5px 10px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.2); 
         }
         .btn-secondary { 
             background: linear-gradient(180deg, var(--btn-sec-top) 0%, var(--btn-sec-bottom) 100%);
-            box-shadow: 0 8px 0px var(--btn-sec-shadow), 0 15px 20px rgba(0,0,0,0.2), inset 0 2px 2px rgba(255,255,255,0.4);
+            box-shadow: 0 10px 0px var(--btn-sec-shadow), 0 15px 20px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
+            -webkit-text-stroke: 1px rgba(0,0,0,0.2);
         }
         .btn-secondary:active {
-            box-shadow: 0 2px 0px var(--btn-sec-shadow), 0 5px 10px rgba(0,0,0,0.2), inset 0 2px 2px rgba(255,255,255,0.2);
+            box-shadow: 0 2px 0px var(--btn-sec-shadow), 0 5px 10px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.2);
         }
         
         .btn .ad-label {
-            position: absolute; top: -12px; right: -5px;
-            background: linear-gradient(135deg, #ff5252, #c62828); color: white;
-            font-size: 0.75rem; font-weight: 900;
-            padding: 4px 10px; border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transform: rotate(8deg); border: 2px solid white;
+            position: absolute; top: -15px; right: -10px;
+            background: linear-gradient(135deg, #00e676, #00c853); color: white;
+            font-size: 0.85rem; font-weight: 900;
+            padding: 5px 12px; border-radius: 12px;
+            box-shadow: 0 5px 0 #009624, 0 8px 10px rgba(0,0,0,0.3);
+            transform: rotate(10deg); border: 2px solid white;
+            -webkit-text-stroke: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         
         /* Иконки в меню */
-        .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem;}
+        .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;}
         .icon-btn { 
             background: linear-gradient(180deg, var(--btn-sec-top) 0%, var(--btn-sec-bottom) 100%);
-            border: none; border-radius: 50%; 
-            width: 64px; height: 64px; 
+            border: 3px solid rgba(255,255,255,0.4); border-radius: 50%; 
+            width: 70px; height: 70px; 
             display: flex; justify-content: center; align-items: center; 
             transition: transform 0.1s, box-shadow 0.1s; 
-            box-shadow: 0 6px 0px var(--btn-sec-shadow), 0 10px 15px rgba(0,0,0,0.2), inset 0 2px 2px rgba(255,255,255,0.4);
+            box-shadow: 0 8px 0px var(--btn-sec-shadow), 0 12px 15px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
         }
         .icon-btn:active { 
-            transform: translateY(4px); 
-            box-shadow: 0 2px 0px var(--btn-sec-shadow), 0 5px 10px rgba(0,0,0,0.2);
+            transform: translateY(6px); 
+            box-shadow: 0 2px 0px var(--btn-sec-shadow), 0 5px 10px rgba(0,0,0,0.3);
         }
-        .icon-btn svg { width: 30px; height: 30px; fill: #ffffff; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));}
+        .icon-btn svg { width: 34px; height: 34px; fill: #ffffff; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));}
         
-        /* === ГЛАССМОРФИЗМ (ОКНА) === */
+        /* === AAA МОДАЛЬНЫЕ ОКНА === */
         .modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            background-color: rgba(0,0,0,0.75); 
             display: flex; justify-content: center; align-items: center; 
             z-index: 1000; opacity: 0; visibility: hidden; 
             transition: opacity 0.3s ease, visibility 0.3s ease; 
         }
         .modal.active { opacity: 1; visibility: visible; }
         .modal-content { 
-            background: var(--bg-modal); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            padding: 2rem; border-radius: 32px; 
-            border: 2px solid var(--border-glass); 
+            position: relative;
+            background: var(--modal-bg); 
+            padding: 3rem 1.5rem 2rem; /* Сверху место для ленточки */
+            border-radius: 36px; 
+            border: 6px solid var(--modal-border); 
             width: 90%; max-width: 400px; 
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), inset 0 0 20px rgba(255,255,255,0.3); 
-            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
-            max-height: 85vh; overflow-y: auto; text-align: center;
+            box-shadow: 0 15px 0 var(--btn-shadow), 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(255,255,255,0.6); 
+            transform: scale(0.8) translateY(20px); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1.2); 
+            max-height: 85vh; text-align: center;
         }
-        .modal.active .modal-content { transform: scale(1); }
-        .modal-title { font-family: var(--font-title); font-size: 3rem; color: var(--text-primary); margin-bottom: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .modal.active .modal-content { transform: scale(1) translateY(0); }
+        
+        /* Ленточка-Заголовок */
+        .modal-title { 
+            position: absolute;
+            top: -30px; left: 50%; transform: translateX(-50%);
+            font-family: var(--font-title); font-size: 3rem; 
+            color: #fff; 
+            background: linear-gradient(180deg, var(--ribbon-top), var(--ribbon-bottom));
+            padding: 10px 45px; border-radius: 40px;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 0 var(--ribbon-stroke), 0 15px 15px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            -webkit-text-stroke: 1.5px var(--ribbon-stroke);
+            text-shadow: 0 3px 0 var(--ribbon-stroke);
+            z-index: 10;
+        }
         
         /* === GAME HUD (TOP BAR) === */
         .game-screen {
@@ -223,44 +239,47 @@
         }
         .game-header { 
             width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
-            gap: 0.5rem; align-items: center; margin-bottom: 15px; padding: 5px; 
+            gap: 0.8rem; align-items: center; margin-bottom: 12px; padding: 5px; 
             background: transparent;
         }
         .header-item { 
             display: flex; align-items: center; justify-content: center;
-            background: var(--bg-glass-dark); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            padding: 0.5rem 1rem; border-radius: 999px; 
-            border: 1px solid var(--border-glass);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.45); 
+            padding: 0.6rem 1rem; border-radius: 999px; 
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.2);
         }
-        .header-item svg { width: 22px; height: 22px; fill: var(--text-primary); margin-right: 0.5rem; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));}
-        .header-item span { font-size: 1.2rem; font-weight: 900; color: var(--text-secondary); }
+        .header-item svg { width: 24px; height: 24px; fill: #ffca28; margin-right: 0.5rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));}
+        .header-item span { font-size: 1.3rem; font-weight: 900; color: #fff; text-shadow: 0 2px 3px rgba(0,0,0,0.8); }
         
-        .pause-btn-container .icon-btn { width: 50px; height: 50px; }
+        .pause-btn-container .icon-btn { width: 55px; height: 55px; border-width: 3px; }
+        .pause-btn-container .icon-btn svg { width: 26px; height: 26px; }
         
         #goals-container { 
-            grid-column: 1 / -1; background: var(--bg-glass-dark); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px; border: 1px solid var(--border-glass);
-            padding: 5px; margin: 0 0.5rem 0.5rem; display: flex; align-items: center; justify-content: center;
-            height: 60px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            grid-column: 1 / -1; 
+            background: rgba(0,0,0,0.45);
+            border-radius: 24px; border: 3px solid rgba(255,255,255,0.2);
+            padding: 8px; margin: 0 0.2rem 0.5rem; display: flex; align-items: center; justify-content: center;
+            height: 70px; box-shadow: inset 0 4px 10px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.2);
         }
         #goals-header { display: none !important; }
         #goals-list-wrapper { 
             display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; overflow-x: auto; 
-            height: 100%; max-width: 100%; 
+            height: 100%; max-width: 100%; gap: 10px;
         }
         .goal-bg-circle {
-            background: rgba(255,255,255,0.4); border-radius: 50%; padding: 4px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0.4) 100%);
+            border-radius: 50%; padding: 4px; border: 2px solid rgba(255,255,255,0.8);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.4); margin-bottom: 2px;
         }
         
         /* === GAME BOARD === */
         #game-board { 
             position: relative; overflow: hidden; 
-            background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            border: 2px solid var(--border-glass);
-            border-radius: 1.5rem; box-sizing: border-box;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1), inset 0 0 20px rgba(255,255,255,0.3);
+            background-color: var(--board-bg);
+            border: 4px solid var(--board-border); /* Толщина 4px с каждой стороны = 8px к ширине JS */
+            border-radius: 20px; box-sizing: border-box;
+            box-shadow: 0 12px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.5);
             transform: translateZ(0); 
         }
         
@@ -277,19 +296,18 @@
             width: 90%; height: 90%; 
             transition: transform 0.2s ease, filter 0.2s;
             background-size: contain; background-repeat: no-repeat; background-position: center;
-            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.25)); /* Чуть сильнее тени у фишек */
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); /* Сочная тень для фишек */
         }
         
         @keyframes bonus-pulse {
-            0% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.25)); }
-            50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.4)); }
-            100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.25)); }
+            0% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); }
+            100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); }
         }
         .tile.bomb .tile-inner, .tile.rocket .tile-inner {
             animation: bonus-pulse 1.5s infinite ease-in-out;
         }
         .tile.match .tile-inner { animation: match 0.3s ease-in forwards !important; }
-
         .tile-red .tile-inner { background-image: url('tile-red.png'); }
         .tile-blue .tile-inner { background-image: url('tile-blue.png'); }
         .tile-green .tile-inner { background-image: url('tile-green.png'); }
@@ -300,82 +318,88 @@
         .tile.rocket .tile-inner { background-image: url('tile-rocket.png'); }
         .tile.unmovable .tile-inner { background-image: url('tile-unmovable.png'); filter: grayscale(0.2); }
         
-        @keyframes match { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
-
+        @keyframes match { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
         .explosion-effect {
             position: absolute; border-radius: 50%; pointer-events: none;
             transform: translate(-50%, -50%) scale(0);
             z-index: 100;
             animation: explodeAnim 0.4s ease-out forwards;
         }
-        .bomb-effect { background: radial-gradient(circle, rgba(255,80,0,0.8) 0%, rgba(255,0,0,0) 70%); }
-        .rocket-effect { background: rgba(0, 255, 255, 0.4); border: 3px solid #0ff; }
-        .combo-effect { background: radial-gradient(circle, rgba(255,0,255,0.8) 0%, rgba(100,0,255,0) 70%); }
+        .bomb-effect { background: radial-gradient(circle, rgba(255,100,0,0.9) 0%, rgba(255,0,0,0) 70%); }
+        .rocket-effect { background: rgba(0, 255, 255, 0.6); border: 4px solid #0ff; box-shadow: 0 0 20px #0ff;}
+        .combo-effect { background: radial-gradient(circle, rgba(255,50,255,0.9) 0%, rgba(100,0,255,0) 70%); }
         @keyframes explodeAnim {
             0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
         }
-
-        #time-bar-container { background-color: rgba(255,255,255,0.5); border: 2px solid var(--border-glass); height: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        #time-bar { background: linear-gradient(90deg, var(--btn-top), var(--btn-bottom)); transition: width 0.1s linear; border-radius: 10px;}
+        
+        #time-bar-container { background-color: rgba(0,0,0,0.4); border: 3px solid rgba(255,255,255,0.3); height: 20px; box-shadow: inset 0 3px 6px rgba(0,0,0,0.5); margin-top: 5px;}
+        #time-bar { background: linear-gradient(90deg, #ffca28, #ff8f00); transition: width 0.1s linear; border-radius: 10px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);}
         
         /* === ВНУТРЕННИЕ ЭЛЕМЕНТЫ ОКОН === */
-        .stats-content { display: flex; flex-direction: column; gap: 1rem; }
-        .stats-group { background: rgba(255,255,255,0.3); border-radius: 1.5rem; padding: 1rem; border: 1px solid var(--border-glass); }
-        .stats-group-title { font-size: 1.2rem; font-weight: 900; color: var(--text-primary); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;}
-        .stats-row { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(0,0,0,0.1); padding: 8px 0; }
-        .stats-row:last-child { border-bottom: none; }
-        .stats-row-value { font-weight: 900; color: var(--text-primary); }
-        .stats-row span { color: var(--text-secondary); font-weight: 700; }
+        .modal-text-line { font-size: 1.4rem; font-weight: 900; color: var(--text-secondary); text-shadow: 0 1px 0 rgba(255,255,255,0.8); margin-bottom: 1.5rem;}
+        .modal-text-highlight { color: var(--btn-bottom); font-size: 1.8rem; text-shadow: 0 2px 0 rgba(0,0,0,0.1);}
         
-        .rules-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .stats-content { display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; max-height: 40vh; padding: 10px;}
+        .stats-group { background: rgba(255,255,255,0.5); border-radius: 20px; padding: 1.2rem; border: 3px solid rgba(0,0,0,0.1); box-shadow: 0 4px 0 rgba(0,0,0,0.05); }
+        .stats-group-title { font-size: 1.3rem; font-weight: 900; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 1px;}
+        .stats-row { display: flex; justify-content: space-between; border-bottom: 2px dashed rgba(0,0,0,0.1); padding: 8px 0; }
+        .stats-row:last-child { border-bottom: none; }
+        .stats-row-value { font-weight: 900; color: var(--text-primary); font-size: 1.2rem;}
+        .stats-row span { color: var(--text-secondary); font-weight: 800; font-size: 1.1rem;}
+        
+        .rules-list { display: flex; flex-direction: column; gap: 12px; max-height: 50vh; overflow-y: auto; padding: 5px; }
         .rule-item {
             display: flex; align-items: center; 
-            background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2)); 
-            border: 1px solid var(--border-glass); 
-            border-radius: 16px; padding: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            background: #fff; 
+            border: 3px solid rgba(0,0,0,0.1); 
+            border-radius: 20px; padding: 12px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
         }
-        .rule-icon { font-size: 2rem; margin-right: 15px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); flex-shrink: 0; }
-        .rule-text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.4; text-align: left; font-weight: 600;}
-        .rule-text strong { color: var(--text-primary); font-weight: 900;}
-        .rule-item.premium { background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,215,0,0.1)); border-color: rgba(255,215,0,0.5); }
-
-        .hidden { display: none !important; }
+        .rule-icon { font-size: 2.2rem; margin-right: 15px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); flex-shrink: 0; }
+        .rule-text { font-size: 1rem; color: var(--text-secondary); line-height: 1.3; text-align: left; font-weight: 700;}
+        .rule-text strong { color: var(--text-primary); font-weight: 900; display: block; font-size: 1.1rem;}
+        .rule-item.premium { background: #fffde7; border-color: #ffd54f; box-shadow: 0 4px 0 #ffca28;}
         
-        /* Свитчи настроек iOS Style */
-        .switch { position: relative; display: inline-block; width: 56px; height: 30px; }
+        /* Свитчи настроек AAA Style */
+        .settings-row {
+            display: flex; justify-content: space-between; items-center; width: 100%; margin-top: 12px; 
+            background: rgba(255,255,255,0.6); border: 3px solid rgba(0,0,0,0.05); border-radius: 20px; padding: 12px 16px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+        }
+        .settings-label { font-size: 1.2rem; font-weight: 900; color: var(--text-secondary); }
+        .switch { position: relative; display: inline-block; width: 64px; height: 34px; margin-top: 2px;}
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.2); transition: .4s; border-radius: 34px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);}
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
-        input:checked + .slider { background: linear-gradient(90deg, #4facfe, #00f2fe); }
-        input:checked + .slider:before { transform: translateX(26px); }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cfd8dc; transition: .3s; border-radius: 34px; border: 2px solid #90a4ae; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);}
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 3px 5px rgba(0,0,0,0.3);}
+        input:checked + .slider { background: #4caf50; border-color: #388e3c; }
+        input:checked + .slider:before { transform: translateX(30px); }
         
-        .theme-selection button { width: 50px; height: 50px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.5); cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.2s; }
-        .theme-selection button:hover { transform: scale(1.1); }
-        .theme-selection button.active { border-color: #fff; transform: scale(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.8), 0 4px 10px rgba(0,0,0,0.2); }
-        #theme-critters { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); } 
-        #theme-sweets { background: linear-gradient(135deg, #ff9a9e, #fecfef); } 
-        #theme-nature { background: linear-gradient(135deg, #84fab0, #8fd3f4); } 
-        #theme-gems { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+        .theme-selection button { width: 55px; height: 55px; border-radius: 20px; border: 4px solid rgba(0,0,0,0.1); cursor: pointer; box-shadow: 0 5px 0 rgba(0,0,0,0.1); transition: all 0.2s; }
+        .theme-selection button:hover { transform: translateY(-3px); }
+        .theme-selection button.active { border-color: #fff; transform: translateY(-5px); box-shadow: 0 0 0 4px var(--btn-top), 0 8px 15px rgba(0,0,0,0.3); }
+        #theme-critters { background: linear-gradient(135deg, #aed581, #7cb342); } 
+        #theme-sweets { background: linear-gradient(135deg, #f48fb1, #d81b60); } 
+        #theme-nature { background: linear-gradient(135deg, #ffb74d, #f57c00); } 
+        #theme-gems { background: linear-gradient(135deg, #b39ddb, #5e35b1); }
     </style>
 </head>
 <body class="theme-critters">
     
     <div id="preloader">
-        <h1 id="loading-title">Tile Pop!</h1>
+        <h1 id="loading-title">Wonder Match</h1>
         <div id="loading-bar-container">
             <div id="loading-bar-fill"></div>
         </div>
-        <div id="loading-status" class="mt-4 font-bold text-gray-700">Загрузка магии...</div>
+        <div id="loading-status" class="mt-4 font-black text-white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Загрузка магии...</div>
     </div>
     <audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
     
     <div class="main-container">
         <!-- Main Menu -->
         <div id="main-menu-screen" class="main-menu">
-            <h1 class="game-title">Tile Pop!</h1>
-            <div class="w-full space-y-4">
+            <h1 class="game-title">Wonder<br>Match</h1>
+            <div class="w-full space-y-4 px-4">
                 <button data-mode="levels" id="levels-mode-btn" class="btn btn-primary mode-btn">Уровень 1</button>
                 <button data-mode="goals" class="btn btn-secondary mode-btn">Бесконечность</button>
                 <button data-mode="speed" class="btn btn-secondary mode-btn">На время</button>
@@ -400,8 +424,8 @@
                     <span id="score">0</span>
                 </div>
                 <div class="pause-btn-container"><button id="pause-btn" class="icon-btn"><svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></button></div>
-                <div class="header-item moves-container"><span id="moves-label">Ход: </span><span id="moves-count" class="ml-1">0</span></div>
-                <div id="time-bar-container" class="hidden w-full col-span-3 rounded-full mt-2 overflow-hidden border">
+                <div class="header-item moves-container"><span id="moves-label" style="font-size:0.9rem; margin-right:4px; opacity:0.8;">ХОД</span><span id="moves-count">0</span></div>
+                <div id="time-bar-container" class="hidden w-full col-span-3 rounded-full overflow-hidden">
                     <div id="time-bar" class="h-full transition-all"></div>
                 </div>
                 <div id="goals-container" class="hidden">
@@ -421,7 +445,7 @@
             <h2 class="modal-title">Пауза</h2>
             <div class="space-y-4 w-full">
                 <button id="resume-btn" class="btn btn-primary">Продолжить</button>
-                <button id="restart-game-btn" class="btn btn-secondary">Начать заново</button>
+                <button id="restart-game-btn" class="btn btn-secondary">Заново</button>
                 <button id="main-menu-btn-pause" class="btn btn-secondary">В меню</button>
             </div>
         </div>
@@ -430,8 +454,8 @@
     <div id="game-over-modal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">Финиш!</h2>
-            <p id="final-score-line" class="text-xl font-bold mb-2">Очки: <span id="final-score-value" class="text-primary">0</span></p>
-            <p id="final-moves-line" class="text-lg mb-6 hidden">Ходов: <span id="final-moves-value">0</span></p>
+            <p id="final-score-line" class="modal-text-line">Очки: <span id="final-score-value" class="modal-text-highlight">0</span></p>
+            <p id="final-moves-line" class="hidden">Ходов: <span id="final-moves-value">0</span></p>
             <div class="space-y-4 w-full">
                 <button id="add-moves-ad-btn" class="btn btn-primary hidden">
                     + 5 Ходов
@@ -446,10 +470,10 @@
     <div id="level-complete-modal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">Победа!</h2>
-            <p id="level-complete-score" class="text-xl mb-6 font-bold">Счет: <span id="level-complete-score-value" class="text-primary">0</span></p>
+            <p id="level-complete-score" class="modal-text-line">Счет: <span id="level-complete-score-value" class="modal-text-highlight">0</span></p>
             <div class="space-y-4 w-full">
                 <button id="next-level-btn" class="btn btn-primary">Далее</button>
-                <button id="main-menu-btn-complete" class="btn btn-secondary">Меню</button>
+                <button id="main-menu-btn-complete" class="btn btn-secondary">В меню</button>
             </div>
         </div>
     </div>
@@ -457,82 +481,76 @@
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">Настройки</h2>
-            <h3 class="text-lg font-bold mb-4">Тема оформления</h3>
-            <div class="theme-selection flex justify-center gap-4 mb-6">
-                <button id="theme-critters" data-theme="critters" title="Зверята"></button>
+            <h3 class="text-lg font-black mb-3" style="color:var(--text-primary)">Тема оформления</h3>
+            <div class="theme-selection flex justify-center gap-4 mb-4">
+                <button id="theme-critters" data-theme="critters" title="Лес"></button>
                 <button id="theme-sweets" data-theme="sweets" title="Сладости"></button>
                 <button id="theme-nature" data-theme="nature" title="Природа"></button>
-                <button id="theme-gems" data-theme="gems" title="Самоцветы"></button>
+                <button id="theme-gems" data-theme="gems" title="Магия"></button>
             </div>
-            <div class="flex justify-between items-center w-full mt-4 px-4 rounded-xl py-3" style="background: rgba(255,255,255,0.4); border: 1px solid var(--border-glass);">
-                <h3 class="text-lg font-bold text-secondary">Звуки</h3>
+            
+            <div class="settings-row">
+                <span class="settings-label">Звуки</span>
                 <label class="switch">
                     <input type="checkbox" id="mute-toggle">
                     <span class="slider"></span>
                 </label>
             </div>
-            <div class="flex justify-between items-center w-full mt-3 px-4 rounded-xl py-3" style="background: rgba(255,255,255,0.4); border: 1px solid var(--border-glass);">
-                <h3 class="text-lg font-bold text-secondary">Музыка</h3>
+            <div class="settings-row mb-6">
+                <span class="settings-label">Музыка</span>
                 <label class="switch">
                     <input type="checkbox" id="mute-music-toggle">
                     <span class="slider"></span>
                 </label>
             </div>
-            <button id="close-settings-btn" class="btn btn-primary mt-8">Готово</button>
+            <button id="close-settings-btn" class="btn btn-primary">Готово</button>
         </div>
     </div>
     
     <div id="rules-modal" class="modal">
-        <div class="modal-content text-left" style="padding: 1.5rem; max-width: 450px;">
-            <h2 class="modal-title text-center">Как играть</h2>
-            <div class="rules-list">
+        <div class="modal-content text-left" style="max-width: 450px;">
+            <h2 class="modal-title">Правила</h2>
+            <div class="rules-list mb-6">
                 <div class="rule-item">
                     <div class="rule-icon">🔄</div>
-                    <div class="rule-text"><strong>Свайп:</strong> Меняй фишки местами, чтобы собрать 3 одинаковых в ряд.</div>
+                    <div class="rule-text"><strong>Свайп</strong> Меняй фишки местами, собирая 3 в ряд.</div>
                 </div>
                 <div class="rule-item">
                     <div class="rule-icon">💣</div>
-                    <div class="rule-text"><strong>Бомба:</strong> Собери 4 в ряд. При взрыве мощно уничтожает всё вокруг!</div>
+                    <div class="rule-text"><strong>Бомба (4 в ряд)</strong> Уничтожает всё вокруг себя при взрыве!</div>
                 </div>
                 <div class="rule-item">
                     <div class="rule-icon">🚀</div>
-                    <div class="rule-text"><strong>Ракета:</strong> Собери 5 в ряд. Сносит целые ряды фишек.</div>
+                    <div class="rule-text"><strong>Ракета (5 в ряд)</strong> Сносит целые ряды фишек по прямой.</div>
                 </div>
                 <div class="rule-item">
                     <div class="rule-icon">🧱</div>
-                    <div class="rule-text"><strong>Камень:</strong> Нельзя сдвинуть. Собирай комбинации рядом с ним, чтобы разбить.</div>
+                    <div class="rule-text"><strong>Камень</strong> Не сдвигается. Собирай комбинации рядом, чтобы разбить.</div>
                 </div>
                 <div class="rule-item premium">
                     <div class="rule-icon">✨</div>
-                    <div class="rule-text"><strong>Супер-Комбо:</strong> Если Бонусы рядом, соедини их вместе для мега-взрыва!</div>
+                    <div class="rule-text"><strong>Супер-Комбо</strong> Соединяй Бонусы между собой для мега-взрыва!</div>
                 </div>
             </div>
-            <button id="close-rules-btn" class="btn btn-primary mt-6">Всё понятно</button>
+            <button id="close-rules-btn" class="btn btn-primary">Понятно!</button>
         </div>
     </div>
     
     <div id="stats-modal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">Рекорды</h2>
-            <div id="stats-content-container" class="stats-content w-full"></div>
-            <button id="close-stats-btn" class="btn btn-primary mt-8">Закрыть</button>
+            <div id="stats-content-container" class="stats-content w-full mb-6"></div>
+            <button id="close-stats-btn" class="btn btn-primary">Закрыть</button>
         </div>
     </div>
 
+    <!-- ВЕСЬ JS ОСТАЛСЯ ИДЕНТИЧНЫМ (ТОЛЬКО ЛОГИКА) -->
     <script>
-    // Имена файлов для звуков (Остались как просили)
     const SOUND_FILES = {
-        'tap': 'tap.mp3',
-        'swap': 'swap.mp3',
-        'match': 'match.mp3',
-        'bomb': 'bomb.mp3',
-        'rocket': 'rocket.mp3',
-        'create_bonus': 'create_bonus.mp3',
-        'win': 'win.mp3',
-        'lose': 'lose.mp3',
-        'goal': 'goal.mp3'
+        'tap': 'tap.mp3', 'swap': 'swap.mp3', 'match': 'match.mp3', 'bomb': 'bomb.mp3',
+        'rocket': 'rocket.mp3', 'create_bonus': 'create_bonus.mp3', 'win': 'win.mp3',
+        'lose': 'lose.mp3', 'goal': 'goal.mp3'
     };
-
     const IMAGE_FILES = [
         'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png',
         'tile-red.png', 'tile-blue.png', 'tile-green.png', 'tile-yellow.png', 'tile-purple.png', 'tile-orange.png',
@@ -577,7 +595,6 @@
             if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(()=>{});
         }
     };
-
     document.addEventListener('DOMContentLoaded', () => {
         const preloader = document.getElementById('preloader');
         const loadingBarFill = document.getElementById('loading-bar-fill');
@@ -624,7 +641,6 @@
                 loadingBarFill.style.width = `${percent}%`;
                 if (assetsLoaded >= totalAssets) setTimeout(showMainMenu, 400);
             };
-
             setTimeout(() => { if (assetsLoaded < totalAssets) showMainMenu(); }, 6000);
             
             IMAGE_FILES.forEach(asset => {
@@ -632,7 +648,6 @@
                 img.onload = checkProgress; img.onerror = checkProgress; 
                 img.src = asset;
             });
-
             try {
                 AudioEngine.init();
                 Object.entries(SOUND_FILES).map(async ([name, url]) => {
@@ -687,7 +702,6 @@
                 else bgMusic.play().catch(e=>{});
                 saveGameData();
             });
-
             async function initVK() {
                 try {
                     await vkBridge.send('VKWebAppInit');
@@ -753,19 +767,16 @@
                     if (callback) callback();
                     return;
                 }
-
                 const musicWasPlaying = !bgMusic.paused;
                 if(musicWasPlaying) bgMusic.pause();
                 
                 let adProcessed = false;
-
                 const attemptAd = async () => {
                     try {
                         const check = await vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'interstitial' });
                         if (check.result) await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'interstitial' });
                     } catch (e) {}
                 };
-
                 Promise.race([ attemptAd(), new Promise(resolve => setTimeout(resolve, 2000)) ]).finally(() => {
                     if (!adProcessed) {
                         adProcessed = true;
@@ -790,7 +801,6 @@
                 if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                 return result;
             }
-
             function updateLevelsButton(lvl) { levelsModeBtn.textContent = `Уровень ${lvl}`; }
             function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
             
@@ -817,7 +827,6 @@
                 }
                 return placed;
             }
-
             function startGame(mode, levelOverride = null) {
                 if(!isMusicMuted) bgMusic.play().catch(()=>{});
                 
@@ -840,17 +849,14 @@
                 requestAnimationFrame(() => { resizeBoard(); initBoard(); setTimeout(resizeBoard, 150); });
                 updateMovesDisplay();
             }
-
             function updateTilePosition(el, r, c) {
                 const x = GAP + c * (TILE_SIZE + GAP); const y = GAP + r * (TILE_SIZE + GAP);
                 el.style.transform = `translate(${x}px, ${y}px)`;
             }
-
             function resizeBoard() {
                 const availableWidth = boardContainer.clientWidth - 8; 
                 const availableHeight = boardContainer.clientHeight - 8; 
                 if (availableWidth <= 0 || availableHeight <= 0) return;
-
                 const sizeByWidth = (availableWidth - (COLS + 1) * GAP) / COLS;
                 const sizeByHeight = (availableHeight - (ROWS + 1) * GAP) / ROWS;
                 TILE_SIZE = Math.floor(Math.min(sizeByWidth, sizeByHeight));
@@ -867,7 +873,6 @@
                 });
             }
             window.addEventListener('resize', resizeBoard);
-
             function initBoard() {
                 boardElement.innerHTML = '';
                 board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -917,7 +922,6 @@
                 }
                 boardElement.appendChild(el); return tileData;
             }
-
             function showVisualEffect(r, c, type) {
                 const effect = document.createElement('div'); effect.className = `explosion-effect ${type}-effect`;
                 const size = (type === 'bomb' || type === 'combo') ? TILE_SIZE * 3.5 : TILE_SIZE * 2;
@@ -926,14 +930,12 @@
                 effect.style.top = `${GAP + r * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
                 boardElement.appendChild(effect); setTimeout(() => effect.remove(), 400);
             }
-
             boardElement.addEventListener('pointerdown', e => {
                 if (isProcessing || isPaused) return;
                 const t = e.target.closest('.tile'); if (!t) return;
                 const r = parseInt(t.dataset.r), c = parseInt(t.dataset.c);
                 if (board[r][c]?.type === 'gem') dragStart = { r, c, x: e.clientX, y: e.clientY, moved: false };
             });
-
             boardElement.addEventListener('pointermove', e => {
                 if (!dragStart) return;
                 const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
@@ -957,7 +959,6 @@
                 }
                 dragStart = null;
             });
-
             async function attemptSwap(r, c, dir) {
                 let r2 = r, c2 = c;
                 if (dir === 'left') c2--; else if (dir === 'right') c2++; else if (dir === 'up') r2--; else r2++;
@@ -988,7 +989,6 @@
                 t1.element.dataset.r = t1.r; t1.element.dataset.c = t1.c; t2.element.dataset.r = t2.r; t2.element.dataset.c = t2.c;
                 await new Promise(r => setTimeout(r, 250));
             }
-
             function findMatches(useActiveSwap = false) {
                 const matches = new Set(); const hLines = []; const vLines = [];
                 for (let r = 0; r < ROWS; r++) {
@@ -1005,11 +1005,9 @@
                 const allLines = [...hLines, ...vLines];
                 if (allLines.length === 0) return { matches: new Set(), bonusInfo: [] };
                 const bonusInfo = []; const tileToLines = new Map();
-
                 allLines.forEach(line => {
                     line.forEach(t => { matches.add(t); if (!tileToLines.has(t)) tileToLines.set(t, []); tileToLines.get(t).push(line); });
                 });
-
                 const processedLines = new Set(); const createdBonuses = new Set(); 
                 function getTargetTile(lines) {
                     let target = null;
@@ -1022,14 +1020,12 @@
                     }
                     return target;
                 }
-
                 tileToLines.forEach((lines, t) => {
                     if (lines.length >= 2) {
                         lines.forEach(l => processedLines.add(l));
                         if (!createdBonuses.has(t)) { bonusInfo.push({ type: 'rocket', target: t }); createdBonuses.add(t); }
                     }
                 });
-
                 allLines.forEach(line => {
                     if (!processedLines.has(line)) {
                         if (line.length >= 5) {
@@ -1043,7 +1039,6 @@
                 });
                 return { matches, bonusInfo };
             }
-
             function getLine(r, c, dr, dc) {
                 const color = board[r][c].color; const line = [{r,c, item: board[r][c]}];
                 let currR = r + dr, currC = c + dc;
@@ -1065,7 +1060,6 @@
                 });
                 return toDestroy;
             }
-
             async function processMatches() {
                 let firstCycle = true; let madeMatch = false;
                 while(true) {
@@ -1129,7 +1123,6 @@
                 }
                 updateGoalsAndScore(allToDestroy); await animateDestruction(allToDestroy); await dropTiles(); await processMatches();
             }
-
             function updateGoalsAndScore(tiles) {
                 let points = 0;
                 tiles.forEach(t => {
@@ -1140,13 +1133,11 @@
                 score += points; updateScore(score); updateGoalsUI();
                 if(gameMode === 'speed' && tiles.size > 0) { timeLeft += tiles.size * 150; if(timeLeft > totalTime) timeLeft = totalTime; }
             }
-
             async function animateDestruction(tiles) {
                 tiles.forEach(t => { if(t.element) t.element.classList.add('match'); board[t.r][t.c] = null; });
                 await new Promise(r => setTimeout(r, 300));
                 tiles.forEach(t => t.element.remove());
             }
-
             async function dropTiles() {
                 for (let c = 0; c < COLS; c++) {
                     for (let r = ROWS - 1; r >= 0; r--) {
@@ -1179,7 +1170,7 @@
             function checkGameStatus() {
                 const goalsDone = (gameMode === 'levels' || gameMode === 'goals') && Object.keys(goals).length === 0;
                 if (goalsDone) { levelSuccess(); if (gameMode === 'goals') return false; return true; } 
-                else if (gameMode !== 'speed' && movesLimit <= 0) { gameOver("Ходы закончились"); return true; }
+                else if (gameMode !== 'speed' && movesLimit <= 0) { gameOver("Кончились ходы"); return true; }
                 return false;
             }
             
@@ -1194,7 +1185,6 @@
                     if (level >= 5) spawnStonesOnBoard(1);
                 }
             }
-
             function gameOver(reason) {
                 isPaused = true; clearInterval(timerInterval); AudioEngine.play('lose');
                 if (gameMode === 'goals') stats.goals.hiScore = Math.max(stats.goals.hiScore || 0, score);
@@ -1203,12 +1193,11 @@
                 document.getElementById('final-score-value').textContent = score;
                 document.querySelector('#game-over-modal .modal-title').textContent = reason === "Победа" ? "Победа!" : "Ой!";
                 const adBtn = document.getElementById('add-moves-ad-btn');
-                if (reason === "Ходы закончились" && !extraMovesUsedThisLevel && (gameMode === 'levels' || gameMode === 'goals')) adBtn.classList.remove('hidden');
+                if (reason === "Кончились ходы" && !extraMovesUsedThisLevel && (gameMode === 'levels' || gameMode === 'goals')) adBtn.classList.remove('hidden');
                 else adBtn.classList.add('hidden');
                 
                 saveGameData(); showInterstitialAd(() => openModal('game-over-modal'));
             }
-
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 120);
                 if (gameMode === 'goals' && level > 1) { movesLimit += Math.max(2, 6 - Math.floor(diffLevel / 10)); if (movesLimit > 45) movesLimit = 45; } 
@@ -1219,19 +1208,17 @@
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 updateGoalsUI(); updateMovesDisplay();
             }
-
             function updateScore(s) { 
                 if (gameMode === 'levels') { scoreElement.textContent = `Ур. ${currentLevel}`; document.querySelector('.score-container svg').style.display = 'none'; } 
                 else { scoreElement.textContent = s; document.querySelector('.score-container svg').style.display = 'inline-block'; }
             }
             
             function updateMovesDisplay() { movesCountElement.textContent = (gameMode === 'speed') ? totalMoves : movesLimit; }
-
             function updateGoalsUI() {
                 if (gameMode === 'speed') return; let html = '';
                 for (const [key, val] of Object.entries(goals)) {
                     const bg = key === 'unmovable' ? 'tile-unmovable.png' : `tile-${key}.png`;
-                    html += `<div class="flex flex-col items-center mx-1"><div class="goal-bg-circle"><div class="w-8 h-8 bg-contain bg-no-repeat" style="background-image:url('${bg}')"></div></div><span class="font-bold text-sm" style="color:var(--text-secondary); text-shadow:0 1px 1px rgba(255,255,255,0.8);">${val}</span></div>`;
+                    html += `<div class="flex flex-col items-center mx-1"><div class="goal-bg-circle"><div class="w-8 h-8 bg-contain bg-no-repeat" style="background-image:url('${bg}')"></div></div><span class="font-bold text-sm" style="color:#fff; text-shadow:0 2px 3px rgba(0,0,0,0.8);">${val}</span></div>`;
                 }
                 goalsListWrapper.innerHTML = html; goalsHeader.style.display = 'none'; 
             }
@@ -1244,7 +1231,6 @@
                     if (timeLeft <= 0) gameOver("Время вышло");
                 }, 100);
             }
-
             function openModal(id) { document.getElementById(id).classList.add('active'); }
             function closeModal(id) { document.getElementById(id).classList.remove('active'); }
             
@@ -1286,12 +1272,10 @@
                     e.target.classList.add('active'); saveGameData(); 
                 }
             });
-
             document.getElementById('add-moves-ad-btn').addEventListener('click', async () => {
                 const success = await showRewardedAd();
                 if (success) { movesLimit += 5; extraMovesUsedThisLevel = true; updateMovesDisplay(); closeModal('game-over-modal'); isPaused = false; }
             });
-
             initVK();
         }
     });
