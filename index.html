@@ -22,7 +22,7 @@
             --btn-top: #8bc34a; --btn-bottom: #558b2f; --btn-shadow: #33691e;
             --btn-sec-top: #29b6f6; --btn-sec-bottom: #0277bd; --btn-sec-shadow: #01579b;
             --text-primary: #5d4037; --text-secondary: #3e2723;
-            --board-border: #5d4037; --board-shadow: #3e2723; --board-bg: rgba(62, 39, 35, 0.4);
+            --board-border: #5d4037; --board-shadow: #3e2723; --board-bg: rgba(62, 39, 35, 0.45);
             --ribbon-top: #ff7043; --ribbon-bottom: #d84315; --ribbon-stroke: #bf360c;
         }
         body.theme-sweets { 
@@ -31,7 +31,7 @@
             --btn-top: #ff4081; --btn-bottom: #c2185b; --btn-shadow: #880e4f;
             --btn-sec-top: #ab47bc; --btn-sec-bottom: #7b1fa2; --btn-sec-shadow: #4a148c;
             --text-primary: #880e4f; --text-secondary: #4a148c;
-            --board-border: #c2185b; --board-shadow: #880e4f; --board-bg: rgba(136, 14, 79, 0.3);
+            --board-border: #c2185b; --board-shadow: #880e4f; --board-bg: rgba(136, 14, 79, 0.35);
             --ribbon-top: #42a5f5; --ribbon-bottom: #1565c0; --ribbon-stroke: #0d47a1;
         }
         body.theme-nature { 
@@ -40,7 +40,7 @@
             --btn-top: #ffa726; --btn-bottom: #ef6c00; --btn-shadow: #e65100;
             --btn-sec-top: #66bb6a; --btn-sec-bottom: #2e7d32; --btn-sec-shadow: #1b5e20;
             --text-primary: #e65100; --text-secondary: #1b5e20;
-            --board-border: #33691e; --board-shadow: #1b5e20; --board-bg: rgba(27, 94, 32, 0.35);
+            --board-border: #33691e; --board-shadow: #1b5e20; --board-bg: rgba(27, 94, 32, 0.45);
             --ribbon-top: #ffca28; --ribbon-bottom: #ff8f00; --ribbon-stroke: #ff6f00;
         }
         body.theme-gems { 
@@ -49,7 +49,7 @@
             --btn-top: #ffca28; --btn-bottom: #ff8f00; --btn-shadow: #ff6f00;
             --btn-sec-top: #7e57c2; --btn-sec-bottom: #4527a0; --btn-sec-shadow: #311b92;
             --text-primary: #ff8f00; --text-secondary: #311b92;
-            --board-border: #512da8; --board-shadow: #311b92; --board-bg: rgba(49, 27, 146, 0.4);
+            --board-border: #512da8; --board-shadow: #311b92; --board-bg: rgba(49, 27, 146, 0.5);
             --ribbon-top: #ec407a; --ribbon-bottom: #c2185b; --ribbon-stroke: #880e4f;
         }
         
@@ -80,7 +80,6 @@
         .font-bold { font-weight: 800; } .font-black { font-weight: 900; }
         .rounded-full { border-radius: 9999px; } .overflow-hidden { overflow: hidden; }
         .bg-contain { background-size: contain; } .bg-no-repeat { background-repeat: no-repeat; }
-        .w-8 { width: 2.2rem; } .h-8 { height: 2.2rem; }
         .relative { position: relative; } .min-h-0 { min-height: 0; }
         .text-primary { color: var(--text-primary); }
         .hidden { display: none !important; }
@@ -205,7 +204,7 @@
         .modal-content { 
             position: relative;
             background: var(--modal-bg); 
-            padding: 3rem 1.5rem 2rem; /* Сверху место для ленточки */
+            padding: 4.5rem 1.5rem 2rem; /* УВЕЛИЧЕН ОТСТУП СВЕРХУ (ранее 3rem) */
             border-radius: 36px; 
             border: 6px solid var(--modal-border); 
             width: 90%; max-width: 400px; 
@@ -218,11 +217,11 @@
         /* Ленточка-Заголовок */
         .modal-title { 
             position: absolute;
-            top: -30px; left: 50%; transform: translateX(-50%);
-            font-family: var(--font-title); font-size: 3rem; 
+            top: -25px; left: 50%; transform: translateX(-50%);
+            font-family: var(--font-title); font-size: 2.8rem; 
             color: #fff; 
             background: linear-gradient(180deg, var(--ribbon-top), var(--ribbon-bottom));
-            padding: 10px 45px; border-radius: 40px;
+            padding: 8px 40px; border-radius: 40px;
             border: 4px solid #fff;
             box-shadow: 0 8px 0 var(--ribbon-stroke), 0 15px 15px rgba(0,0,0,0.3);
             white-space: nowrap;
@@ -259,25 +258,29 @@
             grid-column: 1 / -1; 
             background: rgba(0,0,0,0.45);
             border-radius: 24px; border: 3px solid rgba(255,255,255,0.2);
-            padding: 8px; margin: 0 0.2rem 0.5rem; display: flex; align-items: center; justify-content: center;
-            height: 70px; box-shadow: inset 0 4px 10px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.2);
+            padding: 4px 8px; margin: 0 0.2rem 0.5rem; display: flex; align-items: center; justify-content: center;
+            height: 60px; /* Уменьшена высота (ранее 70px) */
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.2);
         }
         #goals-header { display: none !important; }
         #goals-list-wrapper { 
             display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; overflow-x: auto; 
-            height: 100%; max-width: 100%; gap: 10px;
+            height: 100%; max-width: 100%; gap: 6px; /* Уменьшен отступ (ранее 10px) */
         }
         .goal-bg-circle {
             background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0.4) 100%);
-            border-radius: 50%; padding: 4px; border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50%; padding: 3px; border: 2px solid rgba(255,255,255,0.8); /* Уменьшен padding (ранее 4px) */
             box-shadow: 0 3px 5px rgba(0,0,0,0.4); margin-bottom: 2px;
+            display: flex; justify-content: center; align-items: center;
         }
         
         /* === GAME BOARD === */
         #game-board { 
             position: relative; overflow: hidden; 
             background-color: var(--board-bg);
-            border: 4px solid var(--board-border); /* Толщина 4px с каждой стороны = 8px к ширине JS */
+            /* ФОН ДОСКИ: Эффект выдавленных слотов через градиент. JS настроит размер под фишки */
+            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.35) 55%, transparent 65%);
+            border: 4px solid var(--board-border); 
             border-radius: 20px; box-sizing: border-box;
             box-shadow: 0 12px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.5);
             transform: translateZ(0); 
@@ -348,7 +351,7 @@
         .stats-row-value { font-weight: 900; color: var(--text-primary); font-size: 1.2rem;}
         .stats-row span { color: var(--text-secondary); font-weight: 800; font-size: 1.1rem;}
         
-        .rules-list { display: flex; flex-direction: column; gap: 12px; max-height: 50vh; overflow-y: auto; padding: 5px; }
+        .rules-list { display: flex; flex-direction: column; gap: 12px; max-height: 55vh; overflow-y: auto; padding: 5px; margin-bottom: 20px;}
         .rule-item {
             display: flex; align-items: center; 
             background: #fff; 
@@ -356,14 +359,14 @@
             border-radius: 20px; padding: 12px;
             box-shadow: 0 4px 0 rgba(0,0,0,0.05);
         }
-        .rule-icon { font-size: 2.2rem; margin-right: 15px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); flex-shrink: 0; }
+        .rule-icon { width: 44px; height: 44px; margin-right: 15px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
         .rule-text { font-size: 1rem; color: var(--text-secondary); line-height: 1.3; text-align: left; font-weight: 700;}
         .rule-text strong { color: var(--text-primary); font-weight: 900; display: block; font-size: 1.1rem;}
         .rule-item.premium { background: #fffde7; border-color: #ffd54f; box-shadow: 0 4px 0 #ffca28;}
         
         /* Свитчи настроек AAA Style */
         .settings-row {
-            display: flex; justify-content: space-between; items-center; width: 100%; margin-top: 12px; 
+            display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 12px; 
             background: rgba(255,255,255,0.6); border: 3px solid rgba(0,0,0,0.05); border-radius: 20px; padding: 12px 16px;
             box-shadow: 0 4px 0 rgba(0,0,0,0.05);
         }
@@ -510,21 +513,27 @@
     <div id="rules-modal" class="modal">
         <div class="modal-content text-left" style="max-width: 450px;">
             <h2 class="modal-title">Правила</h2>
-            <div class="rules-list mb-6">
+            <div class="rules-list">
                 <div class="rule-item">
                     <div class="rule-icon">🔄</div>
                     <div class="rule-text"><strong>Свайп</strong> Меняй фишки местами, собирая 3 в ряд.</div>
                 </div>
                 <div class="rule-item">
-                    <div class="rule-icon">💣</div>
+                    <div class="rule-icon">
+                        <div style="width: 38px; height: 38px; background: url('tile-bomb.png') center/contain no-repeat;"></div>
+                    </div>
                     <div class="rule-text"><strong>Бомба (4 в ряд)</strong> Уничтожает всё вокруг себя при взрыве!</div>
                 </div>
                 <div class="rule-item">
-                    <div class="rule-icon">🚀</div>
+                    <div class="rule-icon">
+                        <div style="width: 38px; height: 38px; background: url('tile-rocket.png') center/contain no-repeat;"></div>
+                    </div>
                     <div class="rule-text"><strong>Ракета (5 в ряд)</strong> Сносит целые ряды фишек по прямой.</div>
                 </div>
                 <div class="rule-item">
-                    <div class="rule-icon">🧱</div>
+                    <div class="rule-icon">
+                        <div style="width: 38px; height: 38px; background: url('tile-unmovable.png') center/contain no-repeat; filter: grayscale(0.2);"></div>
+                    </div>
                     <div class="rule-text"><strong>Камень</strong> Не сдвигается. Собирай комбинации рядом, чтобы разбить.</div>
                 </div>
                 <div class="rule-item premium">
@@ -544,7 +553,6 @@
         </div>
     </div>
 
-    <!-- ВЕСЬ JS ОСТАЛСЯ ИДЕНТИЧНЫМ (ТОЛЬКО ЛОГИКА) -->
     <script>
     const SOUND_FILES = {
         'tap': 'tap.mp3', 'swap': 'swap.mp3', 'match': 'match.mp3', 'bomb': 'bomb.mp3',
@@ -595,6 +603,7 @@
             if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(()=>{});
         }
     };
+
     document.addEventListener('DOMContentLoaded', () => {
         const preloader = document.getElementById('preloader');
         const loadingBarFill = document.getElementById('loading-bar-fill');
@@ -853,6 +862,7 @@
                 const x = GAP + c * (TILE_SIZE + GAP); const y = GAP + r * (TILE_SIZE + GAP);
                 el.style.transform = `translate(${x}px, ${y}px)`;
             }
+            
             function resizeBoard() {
                 const availableWidth = boardContainer.clientWidth - 8; 
                 const availableHeight = boardContainer.clientHeight - 8; 
@@ -866,6 +876,10 @@
                 
                 boardElement.style.width = `${boardWidth}px`; boardElement.style.height = `${boardHeight}px`;
                 
+                /* === МАГИЯ СЛОТОВ НА ФОНЕ === */
+                boardElement.style.backgroundSize = `${TILE_SIZE + GAP}px ${TILE_SIZE + GAP}px`;
+                boardElement.style.backgroundPosition = `${GAP/2}px ${GAP/2}px`;
+                
                 boardElement.querySelectorAll('.tile').forEach(el => {
                     const r = parseInt(el.dataset.r), c = parseInt(el.dataset.c);
                     el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`;
@@ -873,6 +887,7 @@
                 });
             }
             window.addEventListener('resize', resizeBoard);
+            
             function initBoard() {
                 boardElement.innerHTML = '';
                 board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -1214,11 +1229,18 @@
             }
             
             function updateMovesDisplay() { movesCountElement.textContent = (gameMode === 'speed') ? totalMoves : movesLimit; }
+            
             function updateGoalsUI() {
                 if (gameMode === 'speed') return; let html = '';
                 for (const [key, val] of Object.entries(goals)) {
                     const bg = key === 'unmovable' ? 'tile-unmovable.png' : `tile-${key}.png`;
-                    html += `<div class="flex flex-col items-center mx-1"><div class="goal-bg-circle"><div class="w-8 h-8 bg-contain bg-no-repeat" style="background-image:url('${bg}')"></div></div><span class="font-bold text-sm" style="color:#fff; text-shadow:0 2px 3px rgba(0,0,0,0.8);">${val}</span></div>`;
+                    html += `
+                        <div class="flex flex-col items-center mx-1">
+                            <div class="goal-bg-circle">
+                                <div class="bg-contain bg-no-repeat" style="width:26px; height:26px; background-image:url('${bg}')"></div>
+                            </div>
+                            <span class="font-bold" style="font-size:0.85rem; color:#fff; text-shadow:0 2px 3px rgba(0,0,0,0.8); line-height:1;">${val}</span>
+                        </div>`;
                 }
                 goalsListWrapper.innerHTML = html; goalsHeader.style.display = 'none'; 
             }
