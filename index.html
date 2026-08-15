@@ -380,7 +380,17 @@
             z-index: 200;
             pointer-events: none;
             filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
-            transition: transform 0.4s cubic-bezier(0.5, 0, 0.8, 1);
+            transition: transform 0.8s cubic-bezier(0.3, 0, 0.8, 1); /* ЗАМЕДЛЕНА ДО 0.8s */
+        }
+
+        /* АНИМАЦИЯ ОСКОЛКОВ КАМНЯ */
+        .stone-shard {
+            position: absolute;
+            background: url('tile-unmovable.png') center/contain no-repeat;
+            filter: grayscale(0.2);
+            pointer-events: none;
+            z-index: 100;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
         }
         
         #time-bar-container { border: 3px solid #ffca28; height: 16px; margin-top: 5px;}
@@ -603,10 +613,10 @@
     </div>
 
     <script>
+    // УДАЛЕНЫ error.mp3, combo.mp3, goal.mp3
     const SOUND_FILES = {
         'tap': 'tap.mp3',
         'swap': 'swap.mp3', 
-        'error': 'error.mp3',
         'match': 'match.mp3', 
         'bomb': 'bomb.mp3',
         'rocket': 'rocket.mp3', 
@@ -789,14 +799,13 @@
             async function initVK() {
                 try {
                     await vkBridge.send('VKWebAppInit');
+                    // Безопасный вызов баннера в инициализации:
+                    vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => console.log('Banner error:', e));
+                    
                     const user = await vkBridge.send('VKWebAppGetUserInfo');
                     vkUserId = user.id;
                 } catch (e) { vkUserId = 'local_user'; }
                 loadGameData();
-                
-                if (typeof vkBridge !== 'undefined') {
-                    vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e=>{});
-                }
             }
             
             async function saveGameData() {
@@ -1033,6 +1042,35 @@
                 effect.style.top = `${GAP + r * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
                 boardElement.appendChild(effect); setTimeout(() => effect.remove(), 400);
             }
+            
+            // НОВАЯ ФУНКЦИЯ: АНИМАЦИЯ РАЗЛОМА КАМНЯ НА ОСКОЛКИ
+            function showStoneShatter(r, c) {
+                const startX = GAP + c * (TILE_SIZE + GAP);
+                const startY = GAP + r * (TILE_SIZE + GAP);
+                for(let i=0; i<6; i++) {
+                    const shard = document.createElement('div');
+                    shard.className = 'stone-shard';
+                    shard.style.width = `${TILE_SIZE/2}px`;
+                    shard.style.height = `${TILE_SIZE/2}px`;
+                    shard.style.left = `${startX + TILE_SIZE/4}px`;
+                    shard.style.top = `${startY + TILE_SIZE/4}px`;
+                    boardElement.appendChild(shard);
+
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = TILE_SIZE * (0.8 + Math.random() * 1.5);
+                    const tx = Math.cos(angle) * distance;
+                    const ty = Math.sin(angle) * distance;
+                    const rot = (Math.random() - 0.5) * 720;
+
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            shard.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(0)`;
+                            shard.style.opacity = '0';
+                        });
+                    });
+                    setTimeout(() => shard.remove(), 500);
+                }
+            }
 
             boardElement.addEventListener('pointerdown', e => {
                 if (isProcessing || isPaused) return;
@@ -1070,7 +1108,7 @@
                 if (dir === 'left') c2--; else if (dir === 'right') c2++; else if (dir === 'up') r2--; else r2++;
                 if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) return;
                 const t1 = board[r][c], t2 = board[r2][c2];
-                if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') { AudioEngine.play('error'); return; }
+                if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') return; // Звука error больше нет
                 
                 isProcessing = true; activeSwapT1 = t1; activeSwapT2 = t2;
                 
@@ -1081,7 +1119,7 @@
                     const { matches } = findMatches(true);
                     if (matches.size > 0) { incrementMoves(); await processMatches(); } 
                     else { 
-                        AudioEngine.play('error');
+                        /* Возврат фишек без звука ошибки */
                         await animateSwap(t1, t2); 
                     }
                 } else if (isCombo) { incrementMoves(); await handleCombo(t1, t2); } 
@@ -1181,7 +1219,11 @@
                     AudioEngine.play('match');
                     
                     const stones = findAdjacentUnmovables(matches);
-                    if (stones.size > 0) AudioEngine.play('stone_break'); 
+                    if (stones.size > 0) {
+                        AudioEngine.play('stone_break');
+                        /* ВЫЗЫВАЕМ АНИМАЦИЮ РАЗЛОМА КАМНЯ */
+                        stones.forEach(s => showStoneShatter(s.r, s.c));
+                    }
                     
                     bonusInfo.forEach(info => {
                         let target = info.target; matches.delete(target);
@@ -1239,7 +1281,8 @@
                                     r.style.transform = `translate(${d.tx}px, ${d.ty}px) rotate(${d.rot}deg)`;
                                 });
                             });
-                            setTimeout(() => r.remove(), 400);
+                            // ЗАМЕДЛЕНА ДО 800ms
+                            setTimeout(() => r.remove(), 800);
                         });
 
                         for(let i=0; i<COLS; i++) { if(board[t.r][i]) { allToDestroy.add(board[t.r][i]); if(board[t.r][i].bonus && !processed.has(board[t.r][i])) queue.push(board[t.r][i]); } }
