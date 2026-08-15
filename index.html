@@ -22,8 +22,9 @@
             --btn-top: #8bc34a; --btn-bottom: #558b2f; --btn-shadow: #33691e;
             --btn-sec-top: #29b6f6; --btn-sec-bottom: #0277bd; --btn-sec-shadow: #01579b;
             --text-primary: #5d4037; --text-secondary: #3e2723;
-            --board-border: #5d4037; --board-shadow: #3e2723; --board-bg: rgba(255, 255, 255, 0.15);
+            --board-border: #5d4037; --board-shadow: #3e2723; --board-bg: rgba(255, 255, 255, 0.35);
             --ribbon-top: #ff7043; --ribbon-bottom: #d84315; --ribbon-stroke: #bf360c;
+            --title-stroke: #7cb342; --title-shadow: #558b2f;
         }
         body.theme-sweets { 
             background-image: url('bg-sweets.png'); 
@@ -31,8 +32,9 @@
             --btn-top: #ff4081; --btn-bottom: #c2185b; --btn-shadow: #880e4f;
             --btn-sec-top: #ab47bc; --btn-sec-bottom: #7b1fa2; --btn-sec-shadow: #4a148c;
             --text-primary: #880e4f; --text-secondary: #4a148c;
-            --board-border: #c2185b; --board-shadow: #880e4f; --board-bg: rgba(255, 255, 255, 0.15);
+            --board-border: #c2185b; --board-shadow: #880e4f; --board-bg: rgba(255, 255, 255, 0.35);
             --ribbon-top: #42a5f5; --ribbon-bottom: #1565c0; --ribbon-stroke: #0d47a1;
+            --title-stroke: #f48fb1; --title-shadow: #c2185b;
         }
         body.theme-nature { 
             background-image: url('bg-nature.png'); 
@@ -40,8 +42,9 @@
             --btn-top: #ffa726; --btn-bottom: #ef6c00; --btn-shadow: #e65100;
             --btn-sec-top: #66bb6a; --btn-sec-bottom: #2e7d32; --btn-sec-shadow: #1b5e20;
             --text-primary: #e65100; --text-secondary: #1b5e20;
-            --board-border: #33691e; --board-shadow: #1b5e20; --board-bg: rgba(255, 255, 255, 0.15);
+            --board-border: #33691e; --board-shadow: #1b5e20; --board-bg: rgba(255, 255, 255, 0.35);
             --ribbon-top: #ffca28; --ribbon-bottom: #ff8f00; --ribbon-stroke: #ff6f00;
+            --title-stroke: #ffb74d; --title-shadow: #ef6c00;
         }
         body.theme-gems { 
             background-image: url('bg-gems.png'); 
@@ -49,8 +52,9 @@
             --btn-top: #ffca28; --btn-bottom: #ff8f00; --btn-shadow: #ff6f00;
             --btn-sec-top: #7e57c2; --btn-sec-bottom: #4527a0; --btn-sec-shadow: #311b92;
             --text-primary: #ff8f00; --text-secondary: #311b92;
-            --board-border: #512da8; --board-shadow: #311b92; --board-bg: rgba(255, 255, 255, 0.15);
+            --board-border: #512da8; --board-shadow: #311b92; --board-bg: rgba(255, 255, 255, 0.35);
             --ribbon-top: #ec407a; --ribbon-bottom: #c2185b; --ribbon-stroke: #880e4f;
+            --title-stroke: #b39ddb; --title-shadow: #5e35b1;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
@@ -132,8 +136,8 @@
             font-family: var(--font-title); 
             font-size: 4.8rem; line-height: 1;
             color: #ffffff;
-            -webkit-text-stroke: 3px var(--btn-shadow);
-            text-shadow: 0 6px 0 var(--btn-shadow), 0 10px 10px rgba(0,0,0,0.3);
+            -webkit-text-stroke: 3px var(--title-stroke);
+            text-shadow: 0 6px 0 var(--title-shadow), 0 10px 10px rgba(0,0,0,0.3);
             margin-bottom: 2.5rem; text-align: center;
             transform: rotate(-3deg);
         }
@@ -149,8 +153,13 @@
             font-size: 1.3rem; font-weight: 900; width: 100%; 
             cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; 
             text-transform: uppercase; letter-spacing: 1px;
-            -webkit-text-stroke: 1px rgba(0,0,0,0.3);
-            text-shadow: 0px 2px 0px rgba(0,0,0,0.4);
+            /* Заменили багованный text-stroke на множественную тень */
+            text-shadow: 
+                -1px -1px 0 rgba(0,0,0,0.2),  
+                 1px -1px 0 rgba(0,0,0,0.2),
+                -1px  1px 0 rgba(0,0,0,0.2),
+                 1px  1px 0 rgba(0,0,0,0.2),
+                 0px  2px 0px rgba(0,0,0,0.4);
             box-shadow: 0 10px 0px var(--btn-shadow), 0 15px 20px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
         }
         .btn:active { 
@@ -160,7 +169,12 @@
         .btn-secondary { 
             background: linear-gradient(180deg, var(--btn-sec-top) 0%, var(--btn-sec-bottom) 100%);
             box-shadow: 0 10px 0px var(--btn-sec-shadow), 0 15px 20px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
-            -webkit-text-stroke: 1px rgba(0,0,0,0.2);
+            text-shadow: 
+                -1px -1px 0 rgba(0,0,0,0.15),  
+                 1px -1px 0 rgba(0,0,0,0.15),
+                -1px  1px 0 rgba(0,0,0,0.15),
+                 1px  1px 0 rgba(0,0,0,0.15),
+                 0px  2px 0px rgba(0,0,0,0.3);
         }
         .btn-secondary:active {
             box-shadow: 0 2px 0px var(--btn-sec-shadow), 0 5px 10px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.2);
@@ -173,7 +187,7 @@
             padding: 5px 12px; border-radius: 12px;
             box-shadow: 0 5px 0 #009624, 0 8px 10px rgba(0,0,0,0.3);
             transform: rotate(10deg); border: 2px solid white;
-            -webkit-text-stroke: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         
         /* Иконки в меню */
@@ -204,7 +218,7 @@
         .modal-content { 
             position: relative;
             background: var(--modal-bg); 
-            padding: 4rem 1.5rem 1.5rem; /* Увеличен отступ сверху, чтобы ленточка не перекрывала */
+            padding: 4rem 1.5rem 1.5rem; 
             border-radius: 36px; 
             border: 6px solid var(--modal-border); 
             width: 90%; max-width: 400px; 
@@ -265,24 +279,18 @@
         #goals-header { display: none !important; }
         #goals-list-wrapper { 
             display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; overflow-x: auto; 
-            height: 100%; max-width: 100%; gap: 4px;
-        }
-        .goal-bg-circle {
-            background: rgba(255,255,255,0.8);
-            border-radius: 50%; padding: 2px;
-            box-shadow: 0 2px 2px rgba(0,0,0,0.3);
-            display: flex; justify-content: center; align-items: center;
+            height: 100%; max-width: 100%; gap: 6px;
         }
         
         /* === GAME BOARD === */
         #game-board { 
             position: relative; overflow: hidden; 
             background-color: var(--board-bg);
-            /* Эффект лунок стал светлее */
-            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.15) 50%, transparent 60%);
+            /* Мягкие, светлые лунки */
+            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.08) 50%, transparent 60%);
             border: 4px solid var(--board-border); 
             border-radius: 20px; box-sizing: border-box;
-            box-shadow: 0 8px 0 var(--board-shadow), 0 15px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 0 var(--board-shadow), 0 15px 20px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.3);
             transform: translateZ(0); 
         }
         
@@ -1253,11 +1261,9 @@
                 for (const [key, val] of Object.entries(goals)) {
                     const bg = key === 'unmovable' ? 'tile-unmovable.png' : `tile-${key}.png`;
                     html += `
-                        <div class="flex flex-col items-center" style="margin: 0 2px;">
-                            <div class="goal-bg-circle">
-                                <div class="bg-contain bg-no-repeat" style="width:20px; height:20px; background-image:url('${bg}')"></div>
-                            </div>
-                            <span class="font-black" style="font-size:0.75rem; color:#fff; text-shadow:0 1px 1px rgba(0,0,0,0.5); margin-top: 2px;">${val}</span>
+                        <div class="flex flex-col items-center" style="margin: 0 4px;">
+                            <div class="bg-contain bg-no-repeat" style="width:28px; height:28px; background-image:url('${bg}'); filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));"></div>
+                            <span class="font-black" style="font-size:0.9rem; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.8); margin-top: 1px;">${val}</span>
                         </div>`;
                 }
                 goalsListWrapper.innerHTML = html; 
