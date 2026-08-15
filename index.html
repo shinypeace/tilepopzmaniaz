@@ -380,7 +380,7 @@
             z-index: 200;
             pointer-events: none;
             filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
-            transition: transform 0.8s cubic-bezier(0.3, 0, 0.8, 1);
+            transition: transform 0.8s cubic-bezier(0.3, 0, 0.8, 1); /* ЗАМЕДЛЕНА ДО 0.8s */
         }
 
         /* АНИМАЦИЯ ОСКОЛКОВ КАМНЯ */
@@ -454,7 +454,6 @@
         <div id="loading-status" class="mt-4 font-black text-white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Загрузка магии...</div>
     </div>
     
-    <!-- ДВА КАНАЛА МУЗЫКИ -->
     <audio id="menu-music" src="menu_music.mp3" loop preload="auto"></audio>
     <audio id="game-music" src="game_music.mp3" loop preload="auto"></audio>
     
@@ -482,15 +481,12 @@
         
         <div id="game-screen" class="game-screen hidden flex flex-col h-full w-full">
             <div class="game-header flex-shrink-0" id="top-header">
-                <div class="header-item hud-panel score-container" style="display:flex; flex-direction:column; padding: 0.2rem 0.5rem;">
-                    <span style="font-size: 0.8rem; opacity: 0.8; letter-spacing:1px;">ОЧКИ</span>
-                    <span id="score" style="font-size: 1.1rem;">0</span>
+                <div class="header-item hud-panel score-container">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
+                    <span id="score">0</span>
                 </div>
                 <div class="pause-btn-container"><button id="pause-btn" class="icon-btn"><svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></button></div>
-                <div class="header-item hud-panel moves-container" style="display:flex; flex-direction:column; padding: 0.2rem 0.5rem;">
-                    <span id="moves-label" style="font-size: 0.8rem; opacity: 0.8; letter-spacing:1px;">ХОДЫ</span>
-                    <span id="moves-count" style="font-size: 1.1rem;">0</span>
-                </div>
+                <div class="header-item hud-panel moves-container"><span id="moves-label" style="font-size:0.9rem; margin-right:4px; opacity:0.8;">ХОД</span><span id="moves-count">0</span></div>
                 <div id="time-bar-container" class="hidden w-full col-span-3 rounded-full overflow-hidden hud-panel" style="border-radius: 20px;">
                     <div id="time-bar" class="h-full transition-all"></div>
                 </div>
@@ -617,6 +613,7 @@
     </div>
 
     <script>
+    // УДАЛЕНЫ error.mp3, combo.mp3, goal.mp3
     const SOUND_FILES = {
         'tap': 'tap.mp3',
         'swap': 'swap.mp3', 
@@ -766,6 +763,7 @@
                 playMusic('menu');
             }, 500); 
         }
+        
         preloadAssets();
         
         async function initGameLogic() {
@@ -801,7 +799,7 @@
             async function initVK() {
                 try {
                     await vkBridge.send('VKWebAppInit');
-                    // Безопасный вызов баннера в инициализации
+                    // Безопасный вызов баннера в инициализации:
                     vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => console.log('Banner error:', e));
                     
                     const user = await vkBridge.send('VKWebAppGetUserInfo');
@@ -854,13 +852,11 @@
             
             function showInterstitialAd(callback) {
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
-                
                 const now = Date.now();
                 const AD_COOLDOWN = 7 * 60 * 1000; 
                 
                 if (now - lastAdTime < AD_COOLDOWN) {
-                    if (callback) callback();
-                    return;
+                    if (callback) callback(); return;
                 }
                 
                 let adProcessed = false;
@@ -873,10 +869,8 @@
                 };
                 Promise.race([ attemptAd(), new Promise(resolve => setTimeout(resolve, 2000)) ]).finally(() => {
                     if (!adProcessed) {
-                        adProcessed = true;
-                        lastAdTime = Date.now(); 
-                        AudioEngine.wakeUp();
-                        playMusic(currentMusicTrack);
+                        adProcessed = true; lastAdTime = Date.now(); 
+                        AudioEngine.wakeUp(); playMusic(currentMusicTrack);
                         if(callback) callback();
                     }
                 });
@@ -890,8 +884,7 @@
                     const data = await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
                     if (data.result) result = true;
                 } catch (e) {}
-                AudioEngine.wakeUp();
-                playMusic(currentMusicTrack);
+                AudioEngine.wakeUp(); playMusic(currentMusicTrack);
                 return result;
             }
 
@@ -965,7 +958,6 @@
                 
                 boardElement.style.width = `${boardWidth}px`; boardElement.style.height = `${boardHeight}px`;
                 
-                /* Обновление позиций как для лунок, так и для фишек */
                 boardElement.querySelectorAll('.slot').forEach(el => {
                     const r = parseInt(el.dataset.r), c = parseInt(el.dataset.c);
                     el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`;
@@ -983,7 +975,6 @@
                 boardElement.innerHTML = '';
                 board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
                 
-                /* ГЕНЕРАЦИЯ ЛУНОК (ФОН ДЛЯ ФИШЕК) */
                 for (let r = 0; r < ROWS; r++) {
                     for (let c = 0; c < COLS; c++) { 
                         const slot = document.createElement('div');
@@ -997,7 +988,6 @@
                     }
                 }
                 
-                /* ГЕНЕРАЦИЯ ФИШЕК */
                 for (let r = 0; r < ROWS; r++) {
                     for (let c = 0; c < COLS; c++) { createTile(r, c, 'gem', getRandomColor()); }
                 }
@@ -1053,7 +1043,7 @@
                 boardElement.appendChild(effect); setTimeout(() => effect.remove(), 400);
             }
             
-            // ФУНКЦИЯ: АНИМАЦИЯ РАЗЛОМА КАМНЯ НА ОСКОЛКИ
+            // НОВАЯ ФУНКЦИЯ: АНИМАЦИЯ РАЗЛОМА КАМНЯ НА ОСКОЛКИ
             function showStoneShatter(r, c) {
                 const startX = GAP + c * (TILE_SIZE + GAP);
                 const startY = GAP + r * (TILE_SIZE + GAP);
@@ -1118,7 +1108,7 @@
                 if (dir === 'left') c2--; else if (dir === 'right') c2++; else if (dir === 'up') r2--; else r2++;
                 if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) return;
                 const t1 = board[r][c], t2 = board[r2][c2];
-                if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') return; 
+                if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') return; // Звука error больше нет
                 
                 isProcessing = true; activeSwapT1 = t1; activeSwapT2 = t2;
                 
@@ -1291,7 +1281,7 @@
                                     r.style.transform = `translate(${d.tx}px, ${d.ty}px) rotate(${d.rot}deg)`;
                                 });
                             });
-                            // ЗАМЕДЛЕНА ДО 0.8s
+                            // ЗАМЕДЛЕНА ДО 800ms
                             setTimeout(() => r.remove(), 800);
                         });
 
