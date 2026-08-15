@@ -132,7 +132,7 @@
         /* BOARD */
         #game-board { position: relative; overflow: hidden; background-color: var(--board-bg); border: 6px solid var(--board-border); border-radius: 24px; box-sizing: border-box; box-shadow: 0 10px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.5), inset 0 4px 0 rgba(255,255,255,0.5), inset 0 -4px 0 rgba(0,0,0,0.1); transform: translateZ(0); }
         .slot { position: absolute; background-color: rgba(0, 0, 0, 0.05); border-radius: 8px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.5); z-index: 1; }
-        .empty-slot { display: none; } /* Для дырок в доске */
+        .empty-slot { display: none; } 
         
         .tile { position: absolute; top: 0; left: 0; transition: transform 0.3s ease-in-out; will-change: transform; display: flex; justify-content: center; align-items: center; z-index: 10; }
         .tile-inner { width: 90%; height: 90%; transition: transform 0.2s ease, filter 0.2s; background-size: contain; background-repeat: no-repeat; background-position: center; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); }
@@ -159,7 +159,7 @@
         .tile.bomb .tile-inner { background-image: url('tile-bomb.png'); }
         .tile.rocket-v .tile-inner { background-image: url('tile-rocket.png'); }
         .tile.rocket-h .tile-inner { background-image: url('tile-rocket.png'); transform: rotate(90deg); }
-        .tile.color-bomb .tile-inner { background-image: url('tile-colorbomb.png'); } /* Фоллбэк ниже если нет картинки */
+        .tile.color-bomb .tile-inner { background-image: url('tile-colorbomb.png'); } 
         .tile.color-bomb.fallback .tile-inner { background: radial-gradient(circle at 30% 30%, #fff, red, yellow, green, blue, violet); border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.8); background-image: none !important;}
         
         .tile.unmovable .tile-inner { background-image: url('tile-unmovable.png'); filter: grayscale(0.2); }
@@ -240,7 +240,8 @@
         <div id="main-menu-screen" class="main-menu">
             <h1 class="game-title">Wonder<br>Match</h1>
             <div class="w-full space-y-4 px-4">
-                <button id="map-mode-btn" class="btn btn-primary mode-btn">Карта уровней</button>
+                <button id="levels-mode-btn" data-mode="levels" class="btn btn-primary mode-btn">Уровень 1</button>
+                <button id="map-mode-btn" class="btn btn-secondary">Карта уровней</button>
                 <button data-mode="goals" class="btn btn-secondary mode-btn">Бесконечность</button>
                 <button data-mode="speed" class="btn btn-secondary mode-btn">На время</button>
             </div>
@@ -267,6 +268,7 @@
             <div class="levels-grid" id="levels-grid"></div>
         </div>
         
+        <!-- Game Screen -->
         <div id="game-screen" class="game-screen hidden flex flex-col h-full w-full">
             <div class="game-header flex-shrink-0" id="top-header">
                 <div class="header-item hud-panel score-container" style="display:flex; flex-direction:column; padding: 0.2rem 0.5rem;">
@@ -510,6 +512,7 @@
         const goalsContainer = document.getElementById('goals-container');
         const goalsHeader = document.getElementById('goals-header');
         const goalsListWrapper = document.getElementById('goals-list-wrapper');
+        const levelsModeBtn = document.getElementById('levels-mode-btn');
         const muteToggle = document.getElementById('mute-toggle');
         const muteMusicToggle = document.getElementById('mute-music-toggle');
         
@@ -604,6 +607,7 @@
                     AudioEngine.setMute(!!data.isMuted); isMusicMuted = !!data.isMusicMuted;
                 }
                 
+                updateLevelsButton(maxReachedLevel);
                 document.body.className = `theme-${currentTheme}`;
                 document.querySelectorAll('.theme-selection button').forEach(b => b.classList.remove('active'));
                 const themeBtn = document.querySelector(`.theme-selection button[data-theme="${currentTheme}"]`);
@@ -751,7 +755,6 @@
                 
                 updateGoalsUI();
                 
-                // Убираем изначальные матчи
                 let stable = false;
                 while(!stable) {
                     const { matches } = findMatches();
@@ -807,7 +810,6 @@
             }
 
             function findPossibleMove() {
-                // Ищем комбинации бонусов
                 for(let r=0; r<ROWS; r++) {
                     for(let c=0; c<COLS; c++) {
                         let t = board[r][c];
@@ -822,23 +824,16 @@
                         }
                     }
                 }
-                // Ищем обычные свайпы
                 for(let r=0; r<ROWS; r++) {
                     for(let c=0; c<COLS; c++) {
                         let t1 = board[r][c];
                         if(!t1 || t1.type !== 'gem') continue;
-                        // Right
                         if(c+1 < COLS && board[r][c+1] && board[r][c+1].type === 'gem') {
-                            swapData(t1, board[r][c+1]);
-                            let res = findMatches();
-                            swapData(t1, board[r][c+1]); // revert
+                            swapData(t1, board[r][c+1]); let res = findMatches(); swapData(t1, board[r][c+1]); 
                             if (res.matches.size > 0) return {t1:t1, t2:board[r][c+1]};
                         }
-                        // Down
                         if(r+1 < ROWS && board[r+1][c] && board[r+1][c].type === 'gem') {
-                            swapData(t1, board[r+1][c]);
-                            let res = findMatches();
-                            swapData(t1, board[r+1][c]); // revert
+                            swapData(t1, board[r+1][c]); let res = findMatches(); swapData(t1, board[r+1][c]); 
                             if (res.matches.size > 0) return {t1:t1, t2:board[r+1][c]};
                         }
                     }
@@ -853,14 +848,12 @@
             }
 
             async function ensurePossibleMove() {
-                while (!findPossibleMove()) {
-                    await shuffleBoard();
-                }
+                while (!findPossibleMove()) { await shuffleBoard(); }
                 resetHintTimer();
             }
 
             async function shuffleBoard() {
-                showFloatingText("SHUFFLE", ROWS/2, COLS/2);
+                showFloatingText("SHUFFLE", Math.floor(ROWS/2), Math.floor(COLS/2));
                 let gems = [];
                 for(let r=0; r<ROWS; r++) {
                     for(let c=0; c<COLS; c++) {
@@ -872,7 +865,6 @@
                 colors.sort(() => Math.random() - 0.5);
                 gems.forEach((g, i) => { g.color = colors[i]; g.element.className = `tile tile-${g.color}`; });
                 
-                // Убираем матчи после шафла
                 let stable = false; const cfg = LEVELS[currentLevel] || LEVELS[1]; const availColors = COLORS.slice(0, cfg.colors);
                 while(!stable) {
                     const { matches } = findMatches();
@@ -928,7 +920,6 @@
                 if (!t1 || !t2 || t1.type === 'empty' || t2.type === 'empty' || t1.type === 'unmovable' || t2.type === 'unmovable') return;
                 
                 isProcessing = true; cascadeCount = 0; resetHintTimer();
-                
                 const isSpecial = t1.bonus === 'color-bomb' || t2.bonus === 'color-bomb' || (t1.bonus && t2.bonus);
                 
                 await animateSwap(t1, t2);
@@ -950,7 +941,7 @@
                 if (matches.size > 0) { 
                     incrementMoves(); await processMatches(); await finishTurn();
                 } else { 
-                    await animateSwap(t1, t2); // revert
+                    await animateSwap(t1, t2);
                     isProcessing = false; resetHintTimer();
                 }
             }
@@ -984,13 +975,11 @@
                 if (allLines.length === 0) return { matches: new Set(), bonusInfo: [] };
                 
                 const bonusInfo = []; const tileToLines = new Map();
-                allLines.forEach(line => {
-                    line.forEach(t => { matches.add(t); if (!tileToLines.has(t)) tileToLines.set(t, []); tileToLines.get(t).push(line); });
-                });
+                allLines.forEach(line => { line.forEach(t => { matches.add(t); if (!tileToLines.has(t)) tileToLines.set(t, []); tileToLines.get(t).push(line); }); });
                 
                 const processedLines = new Set(); const createdBonuses = new Set(); 
                 tileToLines.forEach((lines, t) => {
-                    if (lines.length >= 2) { // Intersection (Bomb or Color Bomb)
+                    if (lines.length >= 2) { 
                         lines.forEach(l => processedLines.add(l));
                         if (!createdBonuses.has(t)) {
                             const isColorBomb = lines.some(l => l.length >= 5);
@@ -1022,8 +1011,7 @@
                     [[0,1], [0,-1], [1,0], [-1,0]].forEach(([dr, dc]) => {
                         const nr = t.r + dr, nc = t.c + dc;
                         if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
-                            const adj = board[nr][nc];
-                            if (adj && adj.type === 'unmovable') toDestroy.add(adj);
+                            const adj = board[nr][nc]; if (adj && adj.type === 'unmovable') toDestroy.add(adj);
                         }
                     });
                 });
@@ -1037,10 +1025,7 @@
                     if (matches.size === 0) break; 
                     madeMatch = true; cascadeCount++;
                     
-                    if (cascadeCount > 1) {
-                        const mult = Math.min(cascadeCount, 5);
-                        showFloatingText(`COMBO x${mult}`, Array.from(matches)[0].r, Array.from(matches)[0].c);
-                    }
+                    if (cascadeCount > 1) { const mult = Math.min(cascadeCount, 5); showFloatingText(`COMBO x${mult}`, Array.from(matches)[0].r, Array.from(matches)[0].c); }
                     
                     AudioEngine.play('match');
                     const stones = findAdjacentUnmovables(matches);
@@ -1053,7 +1038,6 @@
                         AudioEngine.play('create_bonus');
                     });
                     
-                    // Обработка льда
                     const finalTilesToDestroy = new Set();
                     matches.forEach(t => {
                         if (t.hasIce) {
@@ -1074,36 +1058,20 @@
             }
             
             async function handleColorBombCombo(cb, target) {
-                AudioEngine.play('create_bonus');
-                showVisualEffect(cb.r, cb.c, 'color-bomb');
-                
+                AudioEngine.play('create_bonus'); showVisualEffect(cb.r, cb.c, 'color-bomb');
                 let toDestroy = new Set([cb]);
                 if (target.bonus === 'color-bomb') {
-                    // Clear board
                     for(let r=0; r<ROWS; r++) for(let c=0; c<COLS; c++) if(board[r][c] && board[r][c].type !== 'empty') toDestroy.add(board[r][c]);
                 } else if (target.bonus) {
-                    // Turn all of target color into rockets/bombs
                     let color = target.color || getRandomColor(COLORS.slice(0, (LEVELS[currentLevel]||LEVELS[1]).colors));
                     let changed = [];
-                    for(let r=0; r<ROWS; r++) {
-                        for(let c=0; c<COLS; c++) {
-                            let t = board[r][c];
-                            if(t && t.color === color && t !== cb) changed.push(t);
-                        }
-                    }
+                    for(let r=0; r<ROWS; r++) for(let c=0; c<COLS; c++) { let t = board[r][c]; if(t && t.color === color && t !== cb) changed.push(t); }
                     changed.forEach(t => { t.bonus = target.bonus; t.color = null; t.element.className = `tile ${t.bonus}`; toDestroy.add(t); });
                     await new Promise(res => setTimeout(res, 400));
                 } else {
-                    // Destroy all of target color
                     let color = target.color;
-                    for(let r=0; r<ROWS; r++) {
-                        for(let c=0; c<COLS; c++) {
-                            let t = board[r][c];
-                            if(t && (t.color === color || t === target)) toDestroy.add(t);
-                        }
-                    }
+                    for(let r=0; r<ROWS; r++) for(let c=0; c<COLS; c++) { let t = board[r][c]; if(t && (t.color === color || t === target)) toDestroy.add(t); }
                 }
-                
                 cb.element.remove(); board[cb.r][cb.c] = null;
                 await handleBonusExplosion(toDestroy);
             }
@@ -1130,13 +1098,11 @@
                         if(!playedRocket) { AudioEngine.play('rocket'); playedRocket = true; }
                         const startX = GAP + t.c * (TILE_SIZE + GAP); const startY = GAP + t.r * (TILE_SIZE + GAP);
                         const dirs = t.bonus === 'rocket-h' ? [{rot:-90, tx:-1000, ty:0}, {rot:90, tx:1000, ty:0}] : [{rot:0, tx:0, ty:-1000}, {rot:180, tx:0, ty:1000}];
-                        
                         dirs.forEach(d => {
                             const rEl = document.createElement('div'); rEl.className = 'flying-rocket';
                             rEl.style.width = `var(--tile-size)`; rEl.style.height = `var(--tile-size)`;
                             rEl.style.left = `${startX}px`; rEl.style.top = `${startY}px`;
-                            rEl.style.transform = `translate(0, 0) rotate(${d.rot}deg)`;
-                            boardElement.appendChild(rEl);
+                            rEl.style.transform = `translate(0, 0) rotate(${d.rot}deg)`; boardElement.appendChild(rEl);
                             requestAnimationFrame(() => requestAnimationFrame(() => rEl.style.transform = `translate(${d.tx}px, ${d.ty}px) rotate(${d.rot}deg)`));
                             setTimeout(() => rEl.remove(), 800);
                         });
@@ -1152,9 +1118,7 @@
             }
             
             async function handleCombo(t1, t2) {
-                const allToDestroy = new Set([t1, t2]); 
-                showVisualEffect(t1.r, t1.c, 'combo');
-                
+                const allToDestroy = new Set([t1, t2]); showVisualEffect(t1.r, t1.c, 'combo');
                 const isBomb = t1.bonus === 'bomb' && t2.bonus === 'bomb';
                 const isRocket = t1.bonus.includes('rocket') && t2.bonus.includes('rocket');
                 const cR = t1.r, cC = t1.c;
@@ -1167,7 +1131,7 @@
                     for(let c=0; c<COLS; c++) { if(board[t1.r][c] && board[t1.r][c].type !== 'empty') allToDestroy.add(board[t1.r][c]); if(board[t2.r][c] && board[t2.r][c].type !== 'empty') allToDestroy.add(board[t2.r][c]); }
                     for(let r=0; r<ROWS; r++) { if(board[r][t1.c] && board[r][t1.c].type !== 'empty') allToDestroy.add(board[r][t1.c]); if(board[r][t2.c] && board[r][t2.c].type !== 'empty') allToDestroy.add(board[r][t2.c]); }
                 } else {
-                    AudioEngine.play('rocket'); // Rocket + Bomb = Cross + thickness
+                    AudioEngine.play('rocket');
                     for (let r = cR - 1; r <= cR + 1; r++) { if (r >= 0 && r < ROWS) { for(let c=0; c<COLS; c++) { if(board[r][c] && board[r][c].type !== 'empty') allToDestroy.add(board[r][c]); } } }
                     for (let c = cC - 1; c <= cC + 1; c++) { if (c >= 0 && c < COLS) { for(let r=0; r<ROWS; r++) { if(board[r][c] && board[r][c].type !== 'empty') allToDestroy.add(board[r][c]); } } }
                 }
@@ -1257,7 +1221,6 @@
             async function levelSuccess() {
                 isPaused = true; clearInterval(timerInterval);
                 if (gameMode === 'levels' || gameMode === 'goals') {
-                    // BONUS PHASE
                     while(movesLimit > 0) {
                         movesLimit--; updateMovesDisplay();
                         let normalGems = [];
@@ -1278,9 +1241,7 @@
                     const cfg = LEVELS[currentLevel] || LEVELS[30];
                     let stars = 1; if (score >= cfg.scoreStar1 + 1000) stars = 3; else if (score >= cfg.scoreStar1) stars = 2;
                     
-                    if (!levelProgress[currentLevel] || stars > levelProgress[currentLevel].stars) {
-                        levelProgress[currentLevel] = { stars: stars, score: score };
-                    }
+                    if (!levelProgress[currentLevel] || stars > levelProgress[currentLevel].stars) { levelProgress[currentLevel] = { stars: stars, score: score }; }
                     if (currentLevel === maxReachedLevel && maxReachedLevel < 30) { maxReachedLevel++; updateLevelsButton(maxReachedLevel); }
                     saveGameData();
                     
