@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     
     <style>
-        /* === ААА ПРЕМИУМ ЦВЕТА И ТЕМЫ === */
+        /* === ААА ПРЕМИУМ ЦВЕТА И ТЕМЫ (ROYAL MATCH STYLE) === */
         :root {
             --font-main: 'Nunito', sans-serif;
             --font-title: 'Lobster', cursive;
@@ -18,41 +18,45 @@
         
         body.theme-critters { 
             background-image: url('bg-critters.png'); 
-            --modal-bg: #fffcf0; --modal-border: #8d6e63;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #fff3e0;
+            --modal-border: #795548;
             --btn-top: #8bc34a; --btn-bottom: #558b2f; --btn-shadow: #33691e;
             --btn-sec-top: #29b6f6; --btn-sec-bottom: #0277bd; --btn-sec-shadow: #01579b;
             --text-primary: #5d4037; --text-secondary: #3e2723;
-            --board-border: #5d4037; --board-shadow: #3e2723; --board-bg: rgba(255, 255, 255, 0.35);
+            --board-border: #4e342e; --board-shadow: #261a17; --board-bg: #5d4037; /* Solid Wood */
             --ribbon-top: #ff7043; --ribbon-bottom: #d84315; --ribbon-stroke: #bf360c;
             --title-stroke: #7cb342; --title-shadow: #558b2f;
         }
         body.theme-sweets { 
             background-image: url('bg-sweets.png'); 
-            --modal-bg: #fff5fb; --modal-border: #f48fb1;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #fce4ec;
+            --modal-border: #c2185b;
             --btn-top: #ff4081; --btn-bottom: #c2185b; --btn-shadow: #880e4f;
             --btn-sec-top: #ab47bc; --btn-sec-bottom: #7b1fa2; --btn-sec-shadow: #4a148c;
             --text-primary: #880e4f; --text-secondary: #4a148c;
-            --board-border: #c2185b; --board-shadow: #880e4f; --board-bg: rgba(255, 255, 255, 0.35);
+            --board-border: #880e4f; --board-shadow: #4a082b; --board-bg: #c2185b; /* Solid Deep Pink */
             --ribbon-top: #42a5f5; --ribbon-bottom: #1565c0; --ribbon-stroke: #0d47a1;
             --title-stroke: #f48fb1; --title-shadow: #c2185b;
         }
         body.theme-nature { 
             background-image: url('bg-nature.png'); 
-            --modal-bg: #f1f8e9; --modal-border: #689f38;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #f1f8e9;
+            --modal-border: #558b2f;
             --btn-top: #ffa726; --btn-bottom: #ef6c00; --btn-shadow: #e65100;
             --btn-sec-top: #66bb6a; --btn-sec-bottom: #2e7d32; --btn-sec-shadow: #1b5e20;
             --text-primary: #e65100; --text-secondary: #1b5e20;
-            --board-border: #33691e; --board-shadow: #1b5e20; --board-bg: rgba(255, 255, 255, 0.35);
+            --board-border: #1b5e20; --board-shadow: #0d3010; --board-bg: #2e7d32; /* Solid Dark Green */
             --ribbon-top: #ffca28; --ribbon-bottom: #ff8f00; --ribbon-stroke: #ff6f00;
             --title-stroke: #ffb74d; --title-shadow: #ef6c00;
         }
         body.theme-gems { 
             background-image: url('bg-gems.png'); 
-            --modal-bg: #f3e5f5; --modal-border: #ab47bc;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #f3e5f5;
+            --modal-border: #7b1fa2;
             --btn-top: #ffca28; --btn-bottom: #ff8f00; --btn-shadow: #ff6f00;
             --btn-sec-top: #7e57c2; --btn-sec-bottom: #4527a0; --btn-sec-shadow: #311b92;
             --text-primary: #ff8f00; --text-secondary: #311b92;
-            --board-border: #512da8; --board-shadow: #311b92; --board-bg: rgba(255, 255, 255, 0.35);
+            --board-border: #311b92; --board-shadow: #1a0d52; --board-bg: #4527a0; /* Solid Deep Purple */
             --ribbon-top: #ec407a; --ribbon-bottom: #c2185b; --ribbon-stroke: #880e4f;
             --title-stroke: #b39ddb; --title-shadow: #5e35b1;
         }
@@ -153,7 +157,6 @@
             font-size: 1.3rem; font-weight: 900; width: 100%; 
             cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; 
             text-transform: uppercase; letter-spacing: 1px;
-            /* Заменили багованный text-stroke на множественную тень */
             text-shadow: 
                 -1px -1px 0 rgba(0,0,0,0.2),  
                  1px -1px 0 rgba(0,0,0,0.2),
@@ -209,7 +212,7 @@
         /* === AAA МОДАЛЬНЫЕ ОКНА === */
         .modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.75); 
+            background-color: rgba(0,0,0,0.8); 
             display: flex; justify-content: center; align-items: center; 
             z-index: 1000; opacity: 0; visibility: hidden; 
             transition: opacity 0.3s ease, visibility 0.3s ease; 
@@ -217,12 +220,12 @@
         .modal.active { opacity: 1; visibility: visible; }
         .modal-content { 
             position: relative;
-            background: var(--modal-bg); 
+            background: linear-gradient(180deg, var(--modal-bg-top) 0%, var(--modal-bg-bottom) 100%);
             padding: 4rem 1.5rem 1.5rem; 
             border-radius: 36px; 
             border: 6px solid var(--modal-border); 
             width: 90%; max-width: 400px; 
-            box-shadow: 0 15px 0 var(--btn-shadow), 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(255,255,255,0.6); 
+            box-shadow: 0 15px 0 var(--btn-shadow), 0 25px 50px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(255,255,255,0.8); 
             transform: scale(0.8) translateY(20px); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1.2); 
             max-height: 85vh; text-align: center;
         }
@@ -237,14 +240,14 @@
             background: linear-gradient(180deg, var(--ribbon-top), var(--ribbon-bottom));
             padding: 8px 40px; border-radius: 40px;
             border: 4px solid #fff;
-            box-shadow: 0 8px 0 var(--ribbon-stroke), 0 15px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 0 var(--ribbon-stroke), 0 15px 15px rgba(0,0,0,0.4), inset 0 -4px 0 rgba(0,0,0,0.2);
             white-space: nowrap;
             -webkit-text-stroke: 1.5px var(--ribbon-stroke);
             text-shadow: 0 3px 0 var(--ribbon-stroke);
             z-index: 10;
         }
         
-        /* === GAME HUD (TOP BAR) === */
+        /* === GAME HUD (TOP BAR) - SOLID ROYAL MATCH STYLE === */
         .game-screen {
             width: 100%; max-width: 480px; height: 100%;
             display: flex; flex-direction: column; justify-content: flex-start;
@@ -255,45 +258,67 @@
             gap: 0.8rem; align-items: center; margin-bottom: 12px; padding: 5px; 
             background: transparent;
         }
+        
+        /* Универсальный стиль плашек: Синий градиент + Золото */
+        .hud-panel {
+            background: linear-gradient(180deg, #1e3c72 0%, #112240 100%);
+            border: 3px solid #ffca28;
+            box-shadow: 0 6px 0 #0a1324, 0 10px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.2);
+            border-radius: 999px; 
+        }
+
         .header-item { 
             display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.45); 
-            padding: 0.6rem 1rem; border-radius: 999px; 
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            box-shadow: inset 0 4px 10px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.2);
+            padding: 0.6rem 1rem; 
         }
         .header-item svg { width: 24px; height: 24px; fill: #ffca28; margin-right: 0.5rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));}
         .header-item span { font-size: 1.3rem; font-weight: 900; color: #fff; text-shadow: 0 2px 3px rgba(0,0,0,0.8); }
         
-        .pause-btn-container .icon-btn { width: 55px; height: 55px; border-width: 3px; }
+        .pause-btn-container .icon-btn { 
+            width: 55px; height: 55px; 
+            background: linear-gradient(180deg, #1e3c72 0%, #112240 100%);
+            border: 3px solid #ffca28;
+            box-shadow: 0 6px 0 #0a1324, 0 10px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.2);
+        }
+        .pause-btn-container .icon-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #0a1324, 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
+        }
         .pause-btn-container .icon-btn svg { width: 26px; height: 26px; }
         
+        /* Исправленный контейнер целей: тянется по высоте */
         #goals-container { 
             grid-column: 1 / -1; 
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px; border: 2px solid rgba(255,255,255,0.2);
-            padding: 4px 6px; margin: 0 0.2rem 0.5rem; display: flex; align-items: center; justify-content: center;
-            height: 55px; 
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+            padding: 8px 12px; margin: 0 0.2rem 0.5rem; 
+            display: flex; align-items: center; justify-content: center;
+            min-height: 60px; height: auto;
+            border-radius: 20px;
         }
         #goals-header { display: none !important; }
         #goals-list-wrapper { 
-            display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; overflow-x: auto; 
-            height: 100%; max-width: 100%; gap: 6px;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: center; 
+            width: 100%; gap: 6px;
         }
         
-        /* === GAME BOARD === */
+        /* === GAME BOARD (SOLID) === */
         #game-board { 
             position: relative; overflow: hidden; 
-            background-color: var(--board-bg);
-            /* Мягкие, светлые лунки */
-            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.08) 50%, transparent 60%);
-            border: 4px solid var(--board-border); 
-            border-radius: 20px; box-sizing: border-box;
-            box-shadow: 0 8px 0 var(--board-shadow), 0 15px 20px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.3);
+            background-color: var(--board-bg); /* Полностью сплошной цвет! */
+            border: 6px solid var(--board-border); 
+            border-radius: 24px; box-sizing: border-box;
+            box-shadow: 0 10px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.6), inset 0 4px 0 rgba(255,255,255,0.25), inset 0 -4px 0 rgba(0,0,0,0.3);
             transform: translateZ(0); 
         }
         
+        /* JS-Генерируемые вдавленные лунки под фишками */
+        .slot {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.25);
+            border-radius: 14px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.6), 0 2px 0 rgba(255,255,255,0.1);
+            z-index: 1; /* Лежат строго под фишками */
+        }
+
         .tile { 
             position: absolute; 
             top: 0; left: 0;
@@ -307,13 +332,13 @@
             width: 90%; height: 90%; 
             transition: transform 0.2s ease, filter 0.2s;
             background-size: contain; background-repeat: no-repeat; background-position: center;
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); /* Сочная тень для фишек */
+            filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); /* Глубокая тень фишек */
         }
         
         @keyframes bonus-pulse {
-            0% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); }
-            50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); }
-            100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); }
+            0% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6)); }
+            100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); }
         }
         .tile.bomb .tile-inner, .tile.rocket .tile-inner {
             animation: bonus-pulse 1.5s infinite ease-in-out;
@@ -344,7 +369,7 @@
             100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
         }
         
-        #time-bar-container { background-color: rgba(0,0,0,0.4); border: 3px solid rgba(255,255,255,0.3); height: 20px; box-shadow: inset 0 3px 6px rgba(0,0,0,0.5); margin-top: 5px;}
+        #time-bar-container { background-color: rgba(0,0,0,0.6); border: 3px solid rgba(255,255,255,0.3); height: 20px; box-shadow: inset 0 3px 6px rgba(0,0,0,0.7); margin-top: 5px;}
         #time-bar { background: linear-gradient(90deg, #ffca28, #ff8f00); transition: width 0.1s linear; border-radius: 10px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);}
         
         /* === ВНУТРЕННИЕ ЭЛЕМЕНТЫ ОКОН === */
@@ -430,16 +455,16 @@
         
         <div id="game-screen" class="game-screen hidden flex flex-col h-full w-full">
             <div class="game-header flex-shrink-0" id="top-header">
-                <div class="header-item score-container">
+                <div class="header-item hud-panel score-container">
                     <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
                     <span id="score">0</span>
                 </div>
                 <div class="pause-btn-container"><button id="pause-btn" class="icon-btn"><svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></button></div>
-                <div class="header-item moves-container"><span id="moves-label" style="font-size:0.9rem; margin-right:4px; opacity:0.8;">ХОД</span><span id="moves-count">0</span></div>
-                <div id="time-bar-container" class="hidden w-full col-span-3 rounded-full overflow-hidden">
+                <div class="header-item hud-panel moves-container"><span id="moves-label" style="font-size:0.9rem; margin-right:4px; opacity:0.8;">ХОД</span><span id="moves-count">0</span></div>
+                <div id="time-bar-container" class="hidden w-full col-span-3 rounded-full overflow-hidden hud-panel" style="border-radius: 20px;">
                     <div id="time-bar" class="h-full transition-all"></div>
                 </div>
-                <div id="goals-container" class="hidden">
+                <div id="goals-container" class="hidden hud-panel">
                     <div id="goals-header"></div>
                     <div id="goals-list-wrapper"></div>
                 </div>
@@ -492,7 +517,7 @@
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">Настройки</h2>
-            <h3 class="text-lg font-black mb-3" style="color:var(--text-primary)">Тема оформления</h3>
+            <h3 class="text-lg font-black mb-3" style="color:var(--text-primary)">Тема</h3>
             <div class="theme-selection flex justify-center gap-4 mb-4">
                 <button id="theme-critters" data-theme="critters" title="Лес"></button>
                 <button id="theme-sweets" data-theme="sweets" title="Сладости"></button>
@@ -876,22 +901,24 @@
             }
             
             function resizeBoard() {
-                const availableWidth = boardContainer.clientWidth - 8; 
-                const availableHeight = boardContainer.clientHeight - 8; 
+                const availableWidth = boardContainer.clientWidth - 12; 
+                const availableHeight = boardContainer.clientHeight - 12; 
                 if (availableWidth <= 0 || availableHeight <= 0) return;
                 const sizeByWidth = (availableWidth - (COLS + 1) * GAP) / COLS;
                 const sizeByHeight = (availableHeight - (ROWS + 1) * GAP) / ROWS;
                 TILE_SIZE = Math.floor(Math.min(sizeByWidth, sizeByHeight));
                 
-                const boardWidth = (TILE_SIZE * COLS) + (GAP * (COLS + 1)) + 8;
-                const boardHeight = (TILE_SIZE * ROWS) + (GAP * (ROWS + 1)) + 8;
+                const boardWidth = (TILE_SIZE * COLS) + (GAP * (COLS + 1)) + 12;
+                const boardHeight = (TILE_SIZE * ROWS) + (GAP * (ROWS + 1)) + 12;
                 
                 boardElement.style.width = `${boardWidth}px`; boardElement.style.height = `${boardHeight}px`;
                 
-                /* === МАГИЯ СЛОТОВ НА ФОНЕ === */
-                boardElement.style.backgroundSize = `${TILE_SIZE + GAP}px ${TILE_SIZE + GAP}px`;
-                boardElement.style.backgroundPosition = `${GAP/2}px ${GAP/2}px`;
-                
+                /* Обновление позиций как для лунок, так и для фишек */
+                boardElement.querySelectorAll('.slot').forEach(el => {
+                    const r = parseInt(el.dataset.r), c = parseInt(el.dataset.c);
+                    el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`;
+                    updateTilePosition(el, r, c);
+                });
                 boardElement.querySelectorAll('.tile').forEach(el => {
                     const r = parseInt(el.dataset.r), c = parseInt(el.dataset.c);
                     el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`;
@@ -904,6 +931,21 @@
                 boardElement.innerHTML = '';
                 board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
                 
+                /* ГЕНЕРАЦИЯ ЛУНОК (ФОН ДЛЯ ФИШЕК) */
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) { 
+                        const slot = document.createElement('div');
+                        slot.classList.add('slot');
+                        slot.dataset.r = r; slot.dataset.c = c;
+                        if (TILE_SIZE > 0) {
+                            slot.style.width = `${TILE_SIZE}px`; slot.style.height = `${TILE_SIZE}px`;
+                            updateTilePosition(slot, r, c);
+                        }
+                        boardElement.appendChild(slot);
+                    }
+                }
+                
+                /* ГЕНЕРАЦИЯ ФИШЕК */
                 for (let r = 0; r < ROWS; r++) {
                     for (let c = 0; c < COLS; c++) { createTile(r, c, 'gem', getRandomColor()); }
                 }
@@ -1260,10 +1302,11 @@
                 let html = '';
                 for (const [key, val] of Object.entries(goals)) {
                     const bg = key === 'unmovable' ? 'tile-unmovable.png' : `tile-${key}.png`;
+                    /* Иконки без кружков, только сама фишка и цифра снизу */
                     html += `
-                        <div class="flex flex-col items-center" style="margin: 0 4px;">
-                            <div class="bg-contain bg-no-repeat" style="width:28px; height:28px; background-image:url('${bg}'); filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));"></div>
-                            <span class="font-black" style="font-size:0.9rem; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.8); margin-top: 1px;">${val}</span>
+                        <div class="flex flex-col items-center" style="margin: 2px 6px;">
+                            <div class="bg-contain bg-no-repeat" style="width:30px; height:30px; background-image:url('${bg}'); filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>
+                            <span class="font-black" style="font-size:1.1rem; color:#fff; text-shadow:0 2px 2px rgba(0,0,0,0.8); line-height: 1; margin-top: 2px;">${val}</span>
                         </div>`;
                 }
                 goalsListWrapper.innerHTML = html; 
