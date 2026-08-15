@@ -259,7 +259,8 @@
         }
         .game-header { 
             width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
-            gap: 0.8rem; align-items: center; margin-bottom: 12px; padding: 5px; 
+            gap: 0.8rem; align-items: center; margin-bottom: 4px; /* УМЕНЬШЕН ОТСТУП ДО ПОЛЯ */
+            padding: 5px; 
             background: transparent;
         }
         
@@ -290,10 +291,10 @@
         }
         .pause-btn-container .icon-btn svg { width: 26px; height: 26px; }
         
-        /* Исправленный контейнер целей: тянется по высоте */
+        /* Исправленный контейнер целей */
         #goals-container { 
             grid-column: 1 / -1; 
-            padding: 8px 12px; margin: 0 0.2rem 0.5rem; 
+            padding: 8px 12px; margin: 0 0.2rem; /* УБРАН НИЖНИЙ ОТСТУП */
             display: flex; align-items: center; justify-content: center;
             min-height: 60px; height: auto;
             border-radius: 20px;
@@ -314,12 +315,12 @@
             transform: translateZ(0); 
         }
         
-        /* Квадратные ячейки-лунки */
+        /* Квадратные нежные ячейки-лунки */
         .slot {
             position: absolute;
-            background-color: rgba(0, 0, 0, 0.12); /* Чуть темнее светлого фона */
+            background-color: rgba(0, 0, 0, 0.05); /* Стали еле заметными */
             border-radius: 8px; /* Небольшие закругления */
-            box-shadow: inset 0 3px 6px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.6);
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.4);
             z-index: 1; /* Лежат строго под фишками */
         }
 
@@ -1180,7 +1181,7 @@
                     } else if (t.bonus === 'rocket') {
                         showVisualEffect(t.r, t.c, 'rocket'); if(!playedRocket) { AudioEngine.play('rocket'); playedRocket = true; }
                         for(let i=0; i<COLS; i++) { if(board[t.r][i]) { allToDestroy.add(board[t.r][i]); if(board[t.r][i].bonus && !processed.has(board[t.r][i])) queue.push(board[t.r][i]); } }
-                        for(let i=0; i<ROWS; i++) { if(board[i][t.c]) { allToDestroy.add(board[i][t.c]); if(board[i][t.c].bonus && !processed.has(board[i][t.c])) queue.push(board[i][t.c]); } }
+                        for(let i=0; i<ROWS; i++) { if(board[i][t.c]) { allToDestroy.add(board[i][t.c]); if(board[i][t.c].bonus && !processed.has(board[i][t.c])) queuepush(board[i][t.c]); } }
                     }
                 }
                 updateGoalsAndScore(allToDestroy); await animateDestruction(allToDestroy); await dropTiles(); await processMatches(); 
@@ -1306,7 +1307,6 @@
                 let html = '';
                 for (const [key, val] of Object.entries(goals)) {
                     const bg = key === 'unmovable' ? 'tile-unmovable.png' : `tile-${key}.png`;
-                    /* Иконки без кружков, только сама фишка и цифра снизу */
                     html += `
                         <div class="flex flex-col items-center" style="margin: 2px 6px;">
                             <div class="bg-contain bg-no-repeat" style="width:30px; height:30px; background-image:url('${bg}'); filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>
