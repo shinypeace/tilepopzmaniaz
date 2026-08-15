@@ -22,7 +22,7 @@
             --btn-top: #8bc34a; --btn-bottom: #558b2f; --btn-shadow: #33691e;
             --btn-sec-top: #29b6f6; --btn-sec-bottom: #0277bd; --btn-sec-shadow: #01579b;
             --text-primary: #5d4037; --text-secondary: #3e2723;
-            --board-border: #5d4037; --board-shadow: #3e2723; --board-bg: rgba(62, 39, 35, 0.45);
+            --board-border: #5d4037; --board-shadow: #3e2723; --board-bg: rgba(255, 255, 255, 0.15);
             --ribbon-top: #ff7043; --ribbon-bottom: #d84315; --ribbon-stroke: #bf360c;
         }
         body.theme-sweets { 
@@ -31,7 +31,7 @@
             --btn-top: #ff4081; --btn-bottom: #c2185b; --btn-shadow: #880e4f;
             --btn-sec-top: #ab47bc; --btn-sec-bottom: #7b1fa2; --btn-sec-shadow: #4a148c;
             --text-primary: #880e4f; --text-secondary: #4a148c;
-            --board-border: #c2185b; --board-shadow: #880e4f; --board-bg: rgba(136, 14, 79, 0.35);
+            --board-border: #c2185b; --board-shadow: #880e4f; --board-bg: rgba(255, 255, 255, 0.15);
             --ribbon-top: #42a5f5; --ribbon-bottom: #1565c0; --ribbon-stroke: #0d47a1;
         }
         body.theme-nature { 
@@ -40,7 +40,7 @@
             --btn-top: #ffa726; --btn-bottom: #ef6c00; --btn-shadow: #e65100;
             --btn-sec-top: #66bb6a; --btn-sec-bottom: #2e7d32; --btn-sec-shadow: #1b5e20;
             --text-primary: #e65100; --text-secondary: #1b5e20;
-            --board-border: #33691e; --board-shadow: #1b5e20; --board-bg: rgba(27, 94, 32, 0.45);
+            --board-border: #33691e; --board-shadow: #1b5e20; --board-bg: rgba(255, 255, 255, 0.15);
             --ribbon-top: #ffca28; --ribbon-bottom: #ff8f00; --ribbon-stroke: #ff6f00;
         }
         body.theme-gems { 
@@ -49,7 +49,7 @@
             --btn-top: #ffca28; --btn-bottom: #ff8f00; --btn-shadow: #ff6f00;
             --btn-sec-top: #7e57c2; --btn-sec-bottom: #4527a0; --btn-sec-shadow: #311b92;
             --text-primary: #ff8f00; --text-secondary: #311b92;
-            --board-border: #512da8; --board-shadow: #311b92; --board-bg: rgba(49, 27, 146, 0.5);
+            --board-border: #512da8; --board-shadow: #311b92; --board-bg: rgba(255, 255, 255, 0.15);
             --ribbon-top: #ec407a; --ribbon-bottom: #c2185b; --ribbon-stroke: #880e4f;
         }
         
@@ -130,11 +130,11 @@
         /* === ААА ТАЙТЛ (ГЛАВНОЕ МЕНЮ) === */
         .game-title {
             font-family: var(--font-title); 
-            font-size: 5.5rem; line-height: 1;
+            font-size: 4.8rem; line-height: 1;
             color: #ffffff;
             -webkit-text-stroke: 3px var(--btn-shadow);
-            text-shadow: 0 10px 0 var(--btn-shadow), 0 20px 20px rgba(0,0,0,0.5);
-            margin-bottom: 3.5rem; text-align: center;
+            text-shadow: 0 6px 0 var(--btn-shadow), 0 10px 10px rgba(0,0,0,0.3);
+            margin-bottom: 2.5rem; text-align: center;
             transform: rotate(-3deg);
         }
         
@@ -204,7 +204,7 @@
         .modal-content { 
             position: relative;
             background: var(--modal-bg); 
-            padding: 4.5rem 1.5rem 2rem; /* УВЕЛИЧЕН ОТСТУП СВЕРХУ (ранее 3rem) */
+            padding: 4rem 1.5rem 1.5rem; /* Увеличен отступ сверху, чтобы ленточка не перекрывала */
             border-radius: 36px; 
             border: 6px solid var(--modal-border); 
             width: 90%; max-width: 400px; 
@@ -256,21 +256,21 @@
         
         #goals-container { 
             grid-column: 1 / -1; 
-            background: rgba(0,0,0,0.45);
-            border-radius: 24px; border: 3px solid rgba(255,255,255,0.2);
-            padding: 4px 8px; margin: 0 0.2rem 0.5rem; display: flex; align-items: center; justify-content: center;
-            height: 60px; /* Уменьшена высота (ранее 70px) */
-            box-shadow: inset 0 4px 10px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px; border: 2px solid rgba(255,255,255,0.2);
+            padding: 4px 6px; margin: 0 0.2rem 0.5rem; display: flex; align-items: center; justify-content: center;
+            height: 55px; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
         }
         #goals-header { display: none !important; }
         #goals-list-wrapper { 
             display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; overflow-x: auto; 
-            height: 100%; max-width: 100%; gap: 6px; /* Уменьшен отступ (ранее 10px) */
+            height: 100%; max-width: 100%; gap: 4px;
         }
         .goal-bg-circle {
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0.4) 100%);
-            border-radius: 50%; padding: 3px; border: 2px solid rgba(255,255,255,0.8); /* Уменьшен padding (ранее 4px) */
-            box-shadow: 0 3px 5px rgba(0,0,0,0.4); margin-bottom: 2px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%; padding: 2px;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.3);
             display: flex; justify-content: center; align-items: center;
         }
         
@@ -278,11 +278,11 @@
         #game-board { 
             position: relative; overflow: hidden; 
             background-color: var(--board-bg);
-            /* ФОН ДОСКИ: Эффект выдавленных слотов через градиент. JS настроит размер под фишки */
-            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.35) 55%, transparent 65%);
+            /* Эффект лунок стал светлее */
+            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.15) 50%, transparent 60%);
             border: 4px solid var(--board-border); 
             border-radius: 20px; box-sizing: border-box;
-            box-shadow: 0 12px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 0 var(--board-shadow), 0 15px 20px rgba(0,0,0,0.4);
             transform: translateZ(0); 
         }
         
@@ -359,7 +359,7 @@
             border-radius: 20px; padding: 12px;
             box-shadow: 0 4px 0 rgba(0,0,0,0.05);
         }
-        .rule-icon { width: 44px; height: 44px; margin-right: 15px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+        .rule-icon { width: 38px; height: 38px; margin-right: 12px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
         .rule-text { font-size: 1rem; color: var(--text-secondary); line-height: 1.3; text-align: left; font-weight: 700;}
         .rule-text strong { color: var(--text-primary); font-weight: 900; display: block; font-size: 1.1rem;}
         .rule-item.premium { background: #fffde7; border-color: #ffd54f; box-shadow: 0 4px 0 #ffca28;}
@@ -711,6 +711,7 @@
                 else bgMusic.play().catch(e=>{});
                 saveGameData();
             });
+
             async function initVK() {
                 try {
                     await vkBridge.send('VKWebAppInit');
@@ -810,6 +811,7 @@
                 if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
                 return result;
             }
+
             function updateLevelsButton(lvl) { levelsModeBtn.textContent = `Уровень ${lvl}`; }
             function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
             
@@ -836,6 +838,7 @@
                 }
                 return placed;
             }
+
             function startGame(mode, levelOverride = null) {
                 if(!isMusicMuted) bgMusic.play().catch(()=>{});
                 
@@ -858,6 +861,7 @@
                 requestAnimationFrame(() => { resizeBoard(); initBoard(); setTimeout(resizeBoard, 150); });
                 updateMovesDisplay();
             }
+
             function updateTilePosition(el, r, c) {
                 const x = GAP + c * (TILE_SIZE + GAP); const y = GAP + r * (TILE_SIZE + GAP);
                 el.style.transform = `translate(${x}px, ${y}px)`;
@@ -937,6 +941,7 @@
                 }
                 boardElement.appendChild(el); return tileData;
             }
+
             function showVisualEffect(r, c, type) {
                 const effect = document.createElement('div'); effect.className = `explosion-effect ${type}-effect`;
                 const size = (type === 'bomb' || type === 'combo') ? TILE_SIZE * 3.5 : TILE_SIZE * 2;
@@ -945,12 +950,14 @@
                 effect.style.top = `${GAP + r * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
                 boardElement.appendChild(effect); setTimeout(() => effect.remove(), 400);
             }
+
             boardElement.addEventListener('pointerdown', e => {
                 if (isProcessing || isPaused) return;
                 const t = e.target.closest('.tile'); if (!t) return;
                 const r = parseInt(t.dataset.r), c = parseInt(t.dataset.c);
                 if (board[r][c]?.type === 'gem') dragStart = { r, c, x: e.clientX, y: e.clientY, moved: false };
             });
+
             boardElement.addEventListener('pointermove', e => {
                 if (!dragStart) return;
                 const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
@@ -974,6 +981,7 @@
                 }
                 dragStart = null;
             });
+
             async function attemptSwap(r, c, dir) {
                 let r2 = r, c2 = c;
                 if (dir === 'left') c2--; else if (dir === 'right') c2++; else if (dir === 'up') r2--; else r2++;
@@ -1004,6 +1012,7 @@
                 t1.element.dataset.r = t1.r; t1.element.dataset.c = t1.c; t2.element.dataset.r = t2.r; t2.element.dataset.c = t2.c;
                 await new Promise(r => setTimeout(r, 250));
             }
+
             function findMatches(useActiveSwap = false) {
                 const matches = new Set(); const hLines = []; const vLines = [];
                 for (let r = 0; r < ROWS; r++) {
@@ -1054,6 +1063,7 @@
                 });
                 return { matches, bonusInfo };
             }
+
             function getLine(r, c, dr, dc) {
                 const color = board[r][c].color; const line = [{r,c, item: board[r][c]}];
                 let currR = r + dr, currC = c + dc;
@@ -1075,6 +1085,7 @@
                 });
                 return toDestroy;
             }
+
             async function processMatches() {
                 let firstCycle = true; let madeMatch = false;
                 while(true) {
@@ -1138,6 +1149,7 @@
                 }
                 updateGoalsAndScore(allToDestroy); await animateDestruction(allToDestroy); await dropTiles(); await processMatches();
             }
+
             function updateGoalsAndScore(tiles) {
                 let points = 0;
                 tiles.forEach(t => {
@@ -1148,11 +1160,13 @@
                 score += points; updateScore(score); updateGoalsUI();
                 if(gameMode === 'speed' && tiles.size > 0) { timeLeft += tiles.size * 150; if(timeLeft > totalTime) timeLeft = totalTime; }
             }
+
             async function animateDestruction(tiles) {
                 tiles.forEach(t => { if(t.element) t.element.classList.add('match'); board[t.r][t.c] = null; });
                 await new Promise(r => setTimeout(r, 300));
                 tiles.forEach(t => t.element.remove());
             }
+
             async function dropTiles() {
                 for (let c = 0; c < COLS; c++) {
                     for (let r = ROWS - 1; r >= 0; r--) {
@@ -1200,6 +1214,7 @@
                     if (level >= 5) spawnStonesOnBoard(1);
                 }
             }
+
             function gameOver(reason) {
                 isPaused = true; clearInterval(timerInterval); AudioEngine.play('lose');
                 if (gameMode === 'goals') stats.goals.hiScore = Math.max(stats.goals.hiScore || 0, score);
@@ -1213,6 +1228,7 @@
                 
                 saveGameData(); showInterstitialAd(() => openModal('game-over-modal'));
             }
+
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 120);
                 if (gameMode === 'goals' && level > 1) { movesLimit += Math.max(2, 6 - Math.floor(diffLevel / 10)); if (movesLimit > 45) movesLimit = 45; } 
@@ -1223,6 +1239,7 @@
                 for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
                 updateGoalsUI(); updateMovesDisplay();
             }
+
             function updateScore(s) { 
                 if (gameMode === 'levels') { scoreElement.textContent = `Ур. ${currentLevel}`; document.querySelector('.score-container svg').style.display = 'none'; } 
                 else { scoreElement.textContent = s; document.querySelector('.score-container svg').style.display = 'inline-block'; }
@@ -1231,18 +1248,20 @@
             function updateMovesDisplay() { movesCountElement.textContent = (gameMode === 'speed') ? totalMoves : movesLimit; }
             
             function updateGoalsUI() {
-                if (gameMode === 'speed') return; let html = '';
+                if (gameMode === 'speed') return; 
+                let html = '';
                 for (const [key, val] of Object.entries(goals)) {
                     const bg = key === 'unmovable' ? 'tile-unmovable.png' : `tile-${key}.png`;
                     html += `
-                        <div class="flex flex-col items-center mx-1">
+                        <div class="flex flex-col items-center" style="margin: 0 2px;">
                             <div class="goal-bg-circle">
-                                <div class="bg-contain bg-no-repeat" style="width:26px; height:26px; background-image:url('${bg}')"></div>
+                                <div class="bg-contain bg-no-repeat" style="width:20px; height:20px; background-image:url('${bg}')"></div>
                             </div>
-                            <span class="font-bold" style="font-size:0.85rem; color:#fff; text-shadow:0 2px 3px rgba(0,0,0,0.8); line-height:1;">${val}</span>
+                            <span class="font-black" style="font-size:0.75rem; color:#fff; text-shadow:0 1px 1px rgba(0,0,0,0.5); margin-top: 2px;">${val}</span>
                         </div>`;
                 }
-                goalsListWrapper.innerHTML = html; goalsHeader.style.display = 'none'; 
+                goalsListWrapper.innerHTML = html; 
+                goalsHeader.style.display = 'none'; 
             }
             
             function startTimer() {
@@ -1253,6 +1272,7 @@
                     if (timeLeft <= 0) gameOver("Время вышло");
                 }, 100);
             }
+
             function openModal(id) { document.getElementById(id).classList.add('active'); }
             function closeModal(id) { document.getElementById(id).classList.remove('active'); }
             
@@ -1294,10 +1314,12 @@
                     e.target.classList.add('active'); saveGameData(); 
                 }
             });
+
             document.getElementById('add-moves-ad-btn').addEventListener('click', async () => {
                 const success = await showRewardedAd();
                 if (success) { movesLimit += 5; extraMovesUsedThisLevel = true; updateMovesDisplay(); closeModal('game-over-modal'); isPaused = false; }
             });
+
             initVK();
         }
     });
