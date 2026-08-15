@@ -14,6 +14,7 @@
         :root {
             --font-main: 'Nunito', sans-serif;
             --font-title: 'Lobster', cursive;
+            --tile-size: 0px;
         }
         
         body.theme-critters { 
@@ -24,7 +25,7 @@
             --btn-top: #8bc34a; --btn-bottom: #558b2f; --btn-shadow: #33691e;
             --btn-sec-top: #29b6f6; --btn-sec-bottom: #0277bd; --btn-sec-shadow: #01579b;
             --text-primary: #33691e; --text-secondary: #1b5e20;
-            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #e8f5e9; /* Светло-зеленое поле */
+            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #e8f5e9;
             --ribbon-top: #ff7043; --ribbon-bottom: #d84315; --ribbon-stroke: #bf360c;
             --title-stroke: #7cb342; --title-shadow: #558b2f;
         }
@@ -36,7 +37,7 @@
             --btn-top: #ff4081; --btn-bottom: #c2185b; --btn-shadow: #880e4f;
             --btn-sec-top: #ab47bc; --btn-sec-bottom: #7b1fa2; --btn-sec-shadow: #4a148c;
             --text-primary: #880e4f; --text-secondary: #4a148c;
-            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #fce4ec; /* Светло-розовое поле */
+            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #fce4ec;
             --ribbon-top: #42a5f5; --ribbon-bottom: #1565c0; --ribbon-stroke: #0d47a1;
             --title-stroke: #f48fb1; --title-shadow: #c2185b;
         }
@@ -48,7 +49,7 @@
             --btn-top: #ffa726; --btn-bottom: #ef6c00; --btn-shadow: #e65100;
             --btn-sec-top: #66bb6a; --btn-sec-bottom: #2e7d32; --btn-sec-shadow: #1b5e20;
             --text-primary: #e65100; --text-secondary: #bf360c;
-            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #fff3e0; /* Светло-кремовое поле */
+            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #fff3e0;
             --ribbon-top: #ffca28; --ribbon-bottom: #ff8f00; --ribbon-stroke: #ff6f00;
             --title-stroke: #ffb74d; --title-shadow: #ef6c00;
         }
@@ -60,7 +61,7 @@
             --btn-top: #ffca28; --btn-bottom: #ff8f00; --btn-shadow: #ff6f00;
             --btn-sec-top: #7e57c2; --btn-sec-bottom: #4527a0; --btn-sec-shadow: #311b92;
             --text-primary: #ff8f00; --text-secondary: #311b92;
-            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #ede7f6; /* Светло-голубо-фиолетовое (Royal Match) */
+            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #ede7f6;
             --ribbon-top: #ec407a; --ribbon-bottom: #c2185b; --ribbon-stroke: #880e4f;
             --title-stroke: #b39ddb; --title-shadow: #5e35b1;
         }
@@ -251,7 +252,7 @@
             z-index: 10;
         }
         
-        /* === GAME HUD (TOP BAR) - SOLID ROYAL MATCH STYLE === */
+        /* === GAME HUD (TOP BAR) - COMPACT ROYAL MATCH STYLE === */
         .game-screen {
             width: 100%; max-width: 480px; height: 100%;
             display: flex; flex-direction: column; justify-content: flex-start;
@@ -259,44 +260,42 @@
         }
         .game-header { 
             width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
-            gap: 0.8rem; align-items: center; margin-bottom: 4px; /* УМЕНЬШЕН ОТСТУП ДО ПОЛЯ */
-            padding: 5px; 
+            gap: 0.6rem; align-items: center; margin-bottom: 4px;
+            padding: 2px 5px; 
             background: transparent;
         }
         
-        /* Адаптивный цвет плашек под каждую тему */
         .hud-panel {
             background: linear-gradient(180deg, var(--hud-top) 0%, var(--hud-bottom) 100%);
             border: 3px solid #ffca28;
-            box-shadow: 0 6px 0 var(--hud-shadow), 0 10px 15px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+            box-shadow: 0 5px 0 var(--hud-shadow), 0 8px 12px rgba(0,0,0,0.4), inset 0 2px 3px rgba(255,255,255,0.2);
             border-radius: 999px; 
         }
 
         .header-item { 
             display: flex; align-items: center; justify-content: center;
-            padding: 0.6rem 1rem; 
+            padding: 0.35rem 0.8rem;
         }
-        .header-item svg { width: 24px; height: 24px; fill: #ffca28; margin-right: 0.5rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));}
-        .header-item span { font-size: 1.3rem; font-weight: 900; color: #fff; text-shadow: 0 2px 3px rgba(0,0,0,0.8); }
+        .header-item svg { width: 22px; height: 22px; fill: #ffca28; margin-right: 0.4rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));}
+        .header-item span { font-size: 1.3rem; font-weight: 900; color: #fff; text-shadow: 0 2px 3px rgba(0,0,0,0.8); line-height: 1; }
         
         .pause-btn-container .icon-btn { 
-            width: 55px; height: 55px; 
+            width: 48px; height: 48px;
             background: linear-gradient(180deg, var(--hud-top) 0%, var(--hud-bottom) 100%);
             border: 3px solid #ffca28;
-            box-shadow: 0 6px 0 var(--hud-shadow), 0 10px 15px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+            box-shadow: 0 5px 0 var(--hud-shadow), 0 8px 12px rgba(0,0,0,0.4), inset 0 2px 3px rgba(255,255,255,0.2);
         }
         .pause-btn-container .icon-btn:active {
-            transform: translateY(6px);
+            transform: translateY(5px);
             box-shadow: 0 0 0 var(--hud-shadow), 0 4px 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1);
         }
-        .pause-btn-container .icon-btn svg { width: 26px; height: 26px; }
+        .pause-btn-container .icon-btn svg { width: 22px; height: 22px; }
         
-        /* Исправленный контейнер целей */
         #goals-container { 
             grid-column: 1 / -1; 
-            padding: 8px 12px; margin: 0 0.2rem; /* УБРАН НИЖНИЙ ОТСТУП */
+            padding: 6px 12px; margin: 0 0.2rem;
             display: flex; align-items: center; justify-content: center;
-            min-height: 60px; height: auto;
+            min-height: 45px; height: auto;
             border-radius: 20px;
         }
         #goals-header { display: none !important; }
@@ -308,20 +307,20 @@
         /* === GAME BOARD (SOLID LIGHT BG + GOLD BORDER) === */
         #game-board { 
             position: relative; overflow: hidden; 
-            background-color: var(--board-bg); /* Светлый, плотный цвет */
-            border: 6px solid var(--board-border); /* Золотая рамка */
+            background-color: var(--board-bg); 
+            border: 6px solid var(--board-border); 
             border-radius: 24px; box-sizing: border-box;
             box-shadow: 0 10px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.5), inset 0 4px 0 rgba(255,255,255,0.5), inset 0 -4px 0 rgba(0,0,0,0.1);
             transform: translateZ(0); 
         }
         
-        /* Квадратные нежные ячейки-лунки */
+        /* Квадратные НЕЖНЫЕ ячейки-лунки */
         .slot {
             position: absolute;
-            background-color: rgba(0, 0, 0, 0.05); /* Стали еле заметными */
-            border-radius: 8px; /* Небольшие закругления */
-            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.4);
-            z-index: 1; /* Лежат строго под фишками */
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 8px; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.5);
+            z-index: 1;
         }
 
         .tile { 
@@ -337,7 +336,7 @@
             width: 90%; height: 90%; 
             transition: transform 0.2s ease, filter 0.2s;
             background-size: contain; background-repeat: no-repeat; background-position: center;
-            filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); /* Глубокая тень фишек */
+            filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45));
         }
         
         @keyframes bonus-pulse {
@@ -345,9 +344,7 @@
             50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6)); }
             100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); }
         }
-        .tile.bomb .tile-inner, .tile.rocket .tile-inner {
-            animation: bonus-pulse 1.5s infinite ease-in-out;
-        }
+        .tile.bomb .tile-inner, .tile.rocket .tile-inner { animation: bonus-pulse 1.5s infinite ease-in-out; }
         .tile.match .tile-inner { animation: match 0.3s ease-in forwards !important; }
         .tile-red .tile-inner { background-image: url('tile-red.png'); }
         .tile-blue .tile-inner { background-image: url('tile-blue.png'); }
@@ -360,21 +357,33 @@
         .tile.unmovable .tile-inner { background-image: url('tile-unmovable.png'); filter: grayscale(0.2); }
         
         @keyframes match { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
+        
+        /* ВСПЫШКА БОМБЫ И КОМБО */
         .explosion-effect {
             position: absolute; border-radius: 50%; pointer-events: none;
             transform: translate(-50%, -50%) scale(0);
             z-index: 100;
             animation: explodeAnim 0.4s ease-out forwards;
         }
-        .bomb-effect { background: radial-gradient(circle, rgba(255,100,0,0.9) 0%, rgba(255,0,0,0) 70%); }
-        .rocket-effect { background: rgba(0, 255, 255, 0.6); border: 4px solid #0ff; box-shadow: 0 0 20px #0ff;}
-        .combo-effect { background: radial-gradient(circle, rgba(255,50,255,0.9) 0%, rgba(100,0,255,0) 70%); }
+        .bomb-effect { background: radial-gradient(circle, #ffffff 0%, #ffeb3b 40%, transparent 80%); box-shadow: 0 0 30px #ffeb3b; }
+        .combo-effect { background: radial-gradient(circle, #ffffff 0%, #e040fb 50%, transparent 80%); box-shadow: 0 0 40px #e040fb; }
+        
         @keyframes explodeAnim {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+        }
+
+        /* АНИМАЦИЯ ЛЕТЯЩИХ РАКЕТ */
+        .flying-rocket {
+            position: absolute;
+            background: url('tile-rocket.png') center/contain no-repeat;
+            z-index: 200;
+            pointer-events: none;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+            transition: transform 0.4s cubic-bezier(0.5, 0, 0.8, 1);
         }
         
-        #time-bar-container { border: 3px solid #ffca28; height: 20px; margin-top: 5px;}
+        #time-bar-container { border: 3px solid #ffca28; height: 16px; margin-top: 5px;}
         #time-bar { background: linear-gradient(90deg, #ffca28, #ff8f00); transition: width 0.1s linear; border-radius: 10px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);}
         
         /* === ВНУТРЕННИЕ ЭЛЕМЕНТЫ ОКОН === */
@@ -402,7 +411,7 @@
         .rule-text strong { color: var(--text-primary); font-weight: 900; display: block; font-size: 1.1rem;}
         .rule-item.premium { background: #fffde7; border-color: #ffd54f; box-shadow: 0 4px 0 #ffca28;}
         
-        /* Свитчи настроек AAA Style */
+        /* Свитчи настроек */
         .settings-row {
             display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 12px; 
             background: rgba(255,255,255,0.6); border: 3px solid rgba(0,0,0,0.05); border-radius: 20px; padding: 12px 16px;
@@ -434,7 +443,9 @@
         </div>
         <div id="loading-status" class="mt-4 font-black text-white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Загрузка магии...</div>
     </div>
-    <audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
+    
+    <audio id="menu-music" src="menu_music.mp3" loop preload="auto"></audio>
+    <audio id="game-music" src="game_music.mp3" loop preload="auto"></audio>
     
     <div class="main-container">
         <!-- Main Menu -->
@@ -566,7 +577,7 @@
                     <div class="rule-icon">
                         <div style="width: 38px; height: 38px; background: url('tile-rocket.png') center/contain no-repeat;"></div>
                     </div>
-                    <div class="rule-text"><strong>Ракета (5 в ряд)</strong> Сносит целые ряды фишек по прямой.</div>
+                    <div class="rule-text"><strong>Ракета (5 в ряд)</strong> Выпускает ракеты в 4 стороны.</div>
                 </div>
                 <div class="rule-item">
                     <div class="rule-icon">
@@ -593,10 +604,18 @@
 
     <script>
     const SOUND_FILES = {
-        'tap': 'tap.mp3', 'swap': 'swap.mp3', 'match': 'match.mp3', 'bomb': 'bomb.mp3',
-        'rocket': 'rocket.mp3', 'create_bonus': 'create_bonus.mp3', 'win': 'win.mp3',
-        'lose': 'lose.mp3', 'goal': 'goal.mp3'
+        'tap': 'tap.mp3',
+        'swap': 'swap.mp3', 
+        'error': 'error.mp3',
+        'match': 'match.mp3', 
+        'bomb': 'bomb.mp3',
+        'rocket': 'rocket.mp3', 
+        'create_bonus': 'create_bonus.mp3', 
+        'stone_break': 'stone_break.mp3',
+        'win': 'win.mp3',
+        'lose': 'lose.mp3'
     };
+    
     const IMAGE_FILES = [
         'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png',
         'tile-red.png', 'tile-blue.png', 'tile-green.png', 'tile-yellow.png', 'tile-purple.png', 'tile-orange.png',
@@ -646,7 +665,11 @@
         const preloader = document.getElementById('preloader');
         const loadingBarFill = document.getElementById('loading-bar-fill');
         const mainContainer = document.querySelector('.main-container');
-        const bgMusic = document.getElementById('bg-music');
+        
+        // Музыкальные каналы
+        const menuMusic = document.getElementById('menu-music');
+        const gameMusic = document.getElementById('game-music');
+        let currentMusicTrack = 'menu';
         
         const mainMenuScreen = document.getElementById('main-menu-screen');
         const gameScreen = document.getElementById('game-screen');
@@ -662,7 +685,7 @@
         const muteToggle = document.getElementById('mute-toggle');
         const muteMusicToggle = document.getElementById('mute-music-toggle');
         
-        const ROWS = 10; const COLS = 7; const GAP = 4;
+        const ROWS = 10; const COLS = 7; const GAP = 2; 
         const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
         
         let board = [], score = 0, movesCount = 0, totalMoves = 0, level = 1, currentLevel = 1;
@@ -709,14 +732,28 @@
             }
         }
         
+        function playMusic(track) {
+            currentMusicTrack = track;
+            if (isMusicMuted) { menuMusic.pause(); gameMusic.pause(); return; }
+            if (track === 'menu') {
+                gameMusic.pause();
+                menuMusic.play().catch(()=>{});
+            } else {
+                menuMusic.pause();
+                gameMusic.play().catch(()=>{});
+            }
+        }
+        
         function showMainMenu() {
             preloader.style.opacity = '0';
             setTimeout(() => {
                 preloader.style.display = 'none';
                 mainContainer.style.display = 'flex';
                 initGameLogic();
+                playMusic('menu');
             }, 500); 
         }
+        
         preloadAssets();
         
         async function initGameLogic() {
@@ -730,10 +767,10 @@
             
             function handleVisibilityChange() {
                 if (document.hidden) {
-                    bgMusic.pause();
+                    menuMusic.pause(); gameMusic.pause();
                 } else {
                     AudioEngine.wakeUp();
-                    if (!isMusicMuted && bgMusic.paused) bgMusic.play().catch(()=>{});
+                    playMusic(currentMusicTrack);
                 }
             }
             document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -745,8 +782,7 @@
             
             muteMusicToggle.addEventListener('change', () => {
                 isMusicMuted = !muteMusicToggle.checked;
-                if (isMusicMuted) bgMusic.pause();
-                else bgMusic.play().catch(e=>{});
+                playMusic(currentMusicTrack);
                 saveGameData();
             });
 
@@ -802,23 +838,20 @@
                 
                 muteToggle.checked = !AudioEngine.isMuted;
                 muteMusicToggle.checked = !isMusicMuted;
-                if(!isMusicMuted) bgMusic.play().catch(()=>{});
+                playMusic('menu');
             }
             
             function showInterstitialAd(callback) {
                 if (typeof vkBridge === 'undefined') { if(callback) callback(); return; }
-                
                 const now = Date.now();
                 const AD_COOLDOWN = 7 * 60 * 1000; 
                 
                 if (now - lastAdTime < AD_COOLDOWN) {
-                    if (callback) callback();
-                    return;
+                    if (callback) callback(); return;
                 }
-                const musicWasPlaying = !bgMusic.paused;
-                if(musicWasPlaying) bgMusic.pause();
                 
                 let adProcessed = false;
+                menuMusic.pause(); gameMusic.pause();
                 const attemptAd = async () => {
                     try {
                         const check = await vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'interstitial' });
@@ -827,10 +860,8 @@
                 };
                 Promise.race([ attemptAd(), new Promise(resolve => setTimeout(resolve, 2000)) ]).finally(() => {
                     if (!adProcessed) {
-                        adProcessed = true;
-                        lastAdTime = Date.now(); 
-                        AudioEngine.wakeUp();
-                        if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
+                        adProcessed = true; lastAdTime = Date.now(); 
+                        AudioEngine.wakeUp(); playMusic(currentMusicTrack);
                         if(callback) callback();
                     }
                 });
@@ -838,15 +869,13 @@
             
             async function showRewardedAd() {
                 if (typeof vkBridge === 'undefined') return true; 
-                const musicWasPlaying = !bgMusic.paused;
-                if(musicWasPlaying) bgMusic.pause();
+                menuMusic.pause(); gameMusic.pause();
                 let result = false;
                 try {
                     const data = await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
                     if (data.result) result = true;
                 } catch (e) {}
-                AudioEngine.wakeUp();
-                if(musicWasPlaying && !isMusicMuted) bgMusic.play().catch(()=>{});
+                AudioEngine.wakeUp(); playMusic(currentMusicTrack);
                 return result;
             }
 
@@ -878,7 +907,7 @@
             }
 
             function startGame(mode, levelOverride = null) {
-                if(!isMusicMuted) bgMusic.play().catch(()=>{});
+                playMusic('game');
                 
                 gameMode = mode; score = 0; movesCount = 0; totalMoves = 0; isPaused = false; isProcessing = false;
                 extraMovesUsedThisLevel = false; clearInterval(timerInterval);
@@ -913,12 +942,13 @@
                 const sizeByHeight = (availableHeight - (ROWS + 1) * GAP) / ROWS;
                 TILE_SIZE = Math.floor(Math.min(sizeByWidth, sizeByHeight));
                 
+                document.documentElement.style.setProperty('--tile-size', `${TILE_SIZE}px`);
+                
                 const boardWidth = (TILE_SIZE * COLS) + (GAP * (COLS + 1)) + 12;
                 const boardHeight = (TILE_SIZE * ROWS) + (GAP * (ROWS + 1)) + 12;
                 
                 boardElement.style.width = `${boardWidth}px`; boardElement.style.height = `${boardHeight}px`;
                 
-                /* Обновление позиций как для лунок, так и для фишек */
                 boardElement.querySelectorAll('.slot').forEach(el => {
                     const r = parseInt(el.dataset.r), c = parseInt(el.dataset.c);
                     el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`;
@@ -936,7 +966,6 @@
                 boardElement.innerHTML = '';
                 board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
                 
-                /* ГЕНЕРАЦИЯ ЛУНОК (ФОН ДЛЯ ФИШЕК) */
                 for (let r = 0; r < ROWS; r++) {
                     for (let c = 0; c < COLS; c++) { 
                         const slot = document.createElement('div');
@@ -950,7 +979,6 @@
                     }
                 }
                 
-                /* ГЕНЕРАЦИЯ ФИШЕК */
                 for (let r = 0; r < ROWS; r++) {
                     for (let c = 0; c < COLS; c++) { createTile(r, c, 'gem', getRandomColor()); }
                 }
@@ -999,7 +1027,7 @@
 
             function showVisualEffect(r, c, type) {
                 const effect = document.createElement('div'); effect.className = `explosion-effect ${type}-effect`;
-                const size = (type === 'bomb' || type === 'combo') ? TILE_SIZE * 3.5 : TILE_SIZE * 2;
+                const size = type === 'combo' ? TILE_SIZE * 3.5 : TILE_SIZE * 2.5; 
                 effect.style.width = `${size}px`; effect.style.height = `${size}px`;
                 effect.style.left = `${GAP + c * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
                 effect.style.top = `${GAP + r * (TILE_SIZE + GAP) + TILE_SIZE/2}px`;
@@ -1042,7 +1070,8 @@
                 if (dir === 'left') c2--; else if (dir === 'right') c2++; else if (dir === 'up') r2--; else r2++;
                 if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) return;
                 const t1 = board[r][c], t2 = board[r2][c2];
-                if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') return;
+                if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') { AudioEngine.play('error'); return; }
+                
                 isProcessing = true; activeSwapT1 = t1; activeSwapT2 = t2;
                 
                 await animateSwap(t1, t2);
@@ -1051,7 +1080,10 @@
                 if (!isCombo && !isBonusMove) {
                     const { matches } = findMatches(true);
                     if (matches.size > 0) { incrementMoves(); await processMatches(); } 
-                    else { AudioEngine.play('swap'); await animateSwap(t1, t2); }
+                    else { 
+                        AudioEngine.play('error');
+                        await animateSwap(t1, t2); 
+                    }
                 } else if (isCombo) { incrementMoves(); await handleCombo(t1, t2); } 
                 else if (isBonusMove) { incrementMoves(); await handleBonusExplosion(new Set([t1.bonus ? t1 : t2])); }
                 
@@ -1147,7 +1179,10 @@
                     const { matches, bonusInfo } = findMatches(firstCycle);
                     if (matches.size === 0) break; madeMatch = true;
                     AudioEngine.play('match');
+                    
                     const stones = findAdjacentUnmovables(matches);
+                    if (stones.size > 0) AudioEngine.play('stone_break'); 
+                    
                     bonusInfo.forEach(info => {
                         let target = info.target; matches.delete(target);
                         target.color = null; target.bonus = info.type; target.element.className = `tile ${info.type}`; 
@@ -1179,26 +1214,55 @@
                             }
                         }
                     } else if (t.bonus === 'rocket') {
-                        showVisualEffect(t.r, t.c, 'rocket'); if(!playedRocket) { AudioEngine.play('rocket'); playedRocket = true; }
+                        if(!playedRocket) { AudioEngine.play('rocket'); playedRocket = true; }
+                        
+                        const startX = GAP + t.c * (TILE_SIZE + GAP);
+                        const startY = GAP + t.r * (TILE_SIZE + GAP);
+                        const dirs = [
+                            { rot: 0, tx: 0, ty: -1000 },
+                            { rot: 180, tx: 0, ty: 1000 },
+                            { rot: -90, tx: -1000, ty: 0 },
+                            { rot: 90, tx: 1000, ty: 0 }
+                        ];
+                        dirs.forEach(d => {
+                            const r = document.createElement('div');
+                            r.className = 'flying-rocket';
+                            r.style.width = `var(--tile-size)`;
+                            r.style.height = `var(--tile-size)`;
+                            r.style.left = `${startX}px`;
+                            r.style.top = `${startY}px`;
+                            r.style.transform = `translate(0, 0) rotate(${d.rot}deg)`;
+                            boardElement.appendChild(r);
+                            
+                            requestAnimationFrame(() => {
+                                requestAnimationFrame(() => {
+                                    r.style.transform = `translate(${d.tx}px, ${d.ty}px) rotate(${d.rot}deg)`;
+                                });
+                            });
+                            setTimeout(() => r.remove(), 400);
+                        });
+
                         for(let i=0; i<COLS; i++) { if(board[t.r][i]) { allToDestroy.add(board[t.r][i]); if(board[t.r][i].bonus && !processed.has(board[t.r][i])) queue.push(board[t.r][i]); } }
-                        for(let i=0; i<ROWS; i++) { if(board[i][t.c]) { allToDestroy.add(board[i][t.c]); if(board[i][t.c].bonus && !processed.has(board[i][t.c])) queuepush(board[i][t.c]); } }
+                        for(let i=0; i<ROWS; i++) { if(board[i][t.c]) { allToDestroy.add(board[i][t.c]); if(board[i][t.c].bonus && !processed.has(board[i][t.c])) queue.push(board[i][t.c]); } }
                     }
                 }
                 updateGoalsAndScore(allToDestroy); await animateDestruction(allToDestroy); await dropTiles(); await processMatches(); 
             }
             
             async function handleCombo(t1, t2) {
-                const allToDestroy = new Set([t1, t2]); showVisualEffect(t1.r, t1.c, 'combo');
+                const allToDestroy = new Set([t1, t2]); 
+                showVisualEffect(t1.r, t1.c, 'combo');
+                
                 const type1 = t1.bonus; const type2 = t2.bonus; const cR = t1.r, cC = t1.c;
                 if (type1 === 'bomb' && type2 === 'bomb') {
-                    AudioEngine.play('bomb'); 
+                    AudioEngine.play('bomb');
                     for(let r = cR-2; r <= cR+2; r++) { if(r>=0 && r<ROWS) { for(let c=cC-2; c<=cC+2; c++) { if(c>=0 && c<COLS && board[r][c]) allToDestroy.add(board[r][c]); } } }
                 } else if (type1 === 'rocket' && type2 === 'rocket') {
-                    AudioEngine.play('rocket'); 
+                    AudioEngine.play('rocket');
                     for(let c=0; c<COLS; c++) { if(board[t1.r][c]) allToDestroy.add(board[t1.r][c]); if(board[t2.r][c]) allToDestroy.add(board[t2.r][c]); }
                     for(let r=0; r<ROWS; r++) { if(board[r][t1.c]) allToDestroy.add(board[r][t1.c]); if(board[r][t2.c]) allToDestroy.add(board[r][t2.c]); }
                 } else {
-                    AudioEngine.play('rocket'); 
+                    AudioEngine.play('rocket');
                     for (let r = cR - 1; r <= cR + 1; r++) { if (r >= 0 && r < ROWS) { for(let c=0; c<COLS; c++) { if(board[r][c]) allToDestroy.add(board[r][c]); } } }
                     for (let c = cC - 1; c <= cC + 1; c++) { if (c >= 0 && c < COLS) { for(let r=0; r<ROWS; r++) { if(board[r][c]) allToDestroy.add(board[r][c]); } } }
                 }
@@ -1265,7 +1329,7 @@
                     saveGameData();
                     showInterstitialAd(() => { document.getElementById('level-complete-score-value').textContent = score; openModal('level-complete-modal'); });
                 } else {
-                    level++; AudioEngine.play('goal'); setupGoalsLevel(); 
+                    level++; AudioEngine.play('win'); setupGoalsLevel(); 
                     if (level >= 5) spawnStonesOnBoard(1);
                 }
             }
@@ -1333,11 +1397,11 @@
             document.getElementById('pause-btn').addEventListener('click', () => { isPaused = true; openModal('pause-modal'); });
             document.getElementById('resume-btn').addEventListener('click', () => { isPaused = false; closeModal('pause-modal'); });
             document.getElementById('restart-game-btn').addEventListener('click', () => { closeModal('pause-modal'); startGame(gameMode, currentLevel); });
-            document.getElementById('main-menu-btn-pause').addEventListener('click', () => { closeModal('pause-modal'); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); });
+            document.getElementById('main-menu-btn-pause').addEventListener('click', () => { closeModal('pause-modal'); gameScreen.classList.add('hidden'); playMusic('menu'); mainMenuScreen.classList.remove('hidden'); });
             document.getElementById('restart-game-over-btn').addEventListener('click', () => { closeModal('game-over-modal'); startGame(gameMode, currentLevel); });
-            document.getElementById('main-menu-btn-over').addEventListener('click', () => { closeModal('game-over-modal'); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); });
+            document.getElementById('main-menu-btn-over').addEventListener('click', () => { closeModal('game-over-modal'); gameScreen.classList.add('hidden'); playMusic('menu'); mainMenuScreen.classList.remove('hidden'); });
             document.getElementById('next-level-btn').addEventListener('click', () => { closeModal('level-complete-modal'); startGame('levels', currentLevel + 1); });
-            document.getElementById('main-menu-btn-complete').addEventListener('click', () => { closeModal('level-complete-modal'); gameScreen.classList.add('hidden'); mainMenuScreen.classList.remove('hidden'); });
+            document.getElementById('main-menu-btn-complete').addEventListener('click', () => { closeModal('level-complete-modal'); gameScreen.classList.add('hidden'); playMusic('menu'); mainMenuScreen.classList.remove('hidden'); });
             document.getElementById('settings-btn').addEventListener('click', () => openModal('settings-modal'));
             document.getElementById('close-settings-btn').addEventListener('click', () => closeModal('settings-modal'));
             document.getElementById('rules-btn').addEventListener('click', () => openModal('rules-modal'));
