@@ -18,12 +18,13 @@
         
         body.theme-critters { 
             background-image: url('bg-critters.png'); 
-            --modal-bg-top: #ffffff; --modal-bg-bottom: #fff3e0;
-            --modal-border: #795548;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #f1f8e9;
+            --modal-border: #558b2f;
+            --hud-top: #558b2f; --hud-bottom: #33691e; --hud-shadow: #1b5e20;
             --btn-top: #8bc34a; --btn-bottom: #558b2f; --btn-shadow: #33691e;
             --btn-sec-top: #29b6f6; --btn-sec-bottom: #0277bd; --btn-sec-shadow: #01579b;
-            --text-primary: #5d4037; --text-secondary: #3e2723;
-            --board-border: #4e342e; --board-shadow: #261a17; --board-bg: #5d4037; /* Solid Wood */
+            --text-primary: #33691e; --text-secondary: #1b5e20;
+            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #e8f5e9; /* Светло-зеленое поле */
             --ribbon-top: #ff7043; --ribbon-bottom: #d84315; --ribbon-stroke: #bf360c;
             --title-stroke: #7cb342; --title-shadow: #558b2f;
         }
@@ -31,21 +32,23 @@
             background-image: url('bg-sweets.png'); 
             --modal-bg-top: #ffffff; --modal-bg-bottom: #fce4ec;
             --modal-border: #c2185b;
+            --hud-top: #d81b60; --hud-bottom: #880e4f; --hud-shadow: #4a082b;
             --btn-top: #ff4081; --btn-bottom: #c2185b; --btn-shadow: #880e4f;
             --btn-sec-top: #ab47bc; --btn-sec-bottom: #7b1fa2; --btn-sec-shadow: #4a148c;
             --text-primary: #880e4f; --text-secondary: #4a148c;
-            --board-border: #880e4f; --board-shadow: #4a082b; --board-bg: #c2185b; /* Solid Deep Pink */
+            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #fce4ec; /* Светло-розовое поле */
             --ribbon-top: #42a5f5; --ribbon-bottom: #1565c0; --ribbon-stroke: #0d47a1;
             --title-stroke: #f48fb1; --title-shadow: #c2185b;
         }
         body.theme-nature { 
             background-image: url('bg-nature.png'); 
-            --modal-bg-top: #ffffff; --modal-bg-bottom: #f1f8e9;
-            --modal-border: #558b2f;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #fff8e1;
+            --modal-border: #ef6c00;
+            --hud-top: #f57c00; --hud-bottom: #e65100; --hud-shadow: #bf360c;
             --btn-top: #ffa726; --btn-bottom: #ef6c00; --btn-shadow: #e65100;
             --btn-sec-top: #66bb6a; --btn-sec-bottom: #2e7d32; --btn-sec-shadow: #1b5e20;
-            --text-primary: #e65100; --text-secondary: #1b5e20;
-            --board-border: #1b5e20; --board-shadow: #0d3010; --board-bg: #2e7d32; /* Solid Dark Green */
+            --text-primary: #e65100; --text-secondary: #bf360c;
+            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #fff3e0; /* Светло-кремовое поле */
             --ribbon-top: #ffca28; --ribbon-bottom: #ff8f00; --ribbon-stroke: #ff6f00;
             --title-stroke: #ffb74d; --title-shadow: #ef6c00;
         }
@@ -53,10 +56,11 @@
             background-image: url('bg-gems.png'); 
             --modal-bg-top: #ffffff; --modal-bg-bottom: #f3e5f5;
             --modal-border: #7b1fa2;
+            --hud-top: #5e35b1; --hud-bottom: #311b92; --hud-shadow: #1a0d52;
             --btn-top: #ffca28; --btn-bottom: #ff8f00; --btn-shadow: #ff6f00;
             --btn-sec-top: #7e57c2; --btn-sec-bottom: #4527a0; --btn-sec-shadow: #311b92;
             --text-primary: #ff8f00; --text-secondary: #311b92;
-            --board-border: #311b92; --board-shadow: #1a0d52; --board-bg: #4527a0; /* Solid Deep Purple */
+            --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #ede7f6; /* Светло-голубо-фиолетовое (Royal Match) */
             --ribbon-top: #ec407a; --ribbon-bottom: #c2185b; --ribbon-stroke: #880e4f;
             --title-stroke: #b39ddb; --title-shadow: #5e35b1;
         }
@@ -259,11 +263,11 @@
             background: transparent;
         }
         
-        /* Универсальный стиль плашек: Синий градиент + Золото */
+        /* Адаптивный цвет плашек под каждую тему */
         .hud-panel {
-            background: linear-gradient(180deg, #1e3c72 0%, #112240 100%);
+            background: linear-gradient(180deg, var(--hud-top) 0%, var(--hud-bottom) 100%);
             border: 3px solid #ffca28;
-            box-shadow: 0 6px 0 #0a1324, 0 10px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.2);
+            box-shadow: 0 6px 0 var(--hud-shadow), 0 10px 15px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.2);
             border-radius: 999px; 
         }
 
@@ -276,13 +280,13 @@
         
         .pause-btn-container .icon-btn { 
             width: 55px; height: 55px; 
-            background: linear-gradient(180deg, #1e3c72 0%, #112240 100%);
+            background: linear-gradient(180deg, var(--hud-top) 0%, var(--hud-bottom) 100%);
             border: 3px solid #ffca28;
-            box-shadow: 0 6px 0 #0a1324, 0 10px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.2);
+            box-shadow: 0 6px 0 var(--hud-shadow), 0 10px 15px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.2);
         }
         .pause-btn-container .icon-btn:active {
             transform: translateY(6px);
-            box-shadow: 0 0 0 #0a1324, 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
+            box-shadow: 0 0 0 var(--hud-shadow), 0 4px 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1);
         }
         .pause-btn-container .icon-btn svg { width: 26px; height: 26px; }
         
@@ -300,22 +304,22 @@
             width: 100%; gap: 6px;
         }
         
-        /* === GAME BOARD (SOLID) === */
+        /* === GAME BOARD (SOLID LIGHT BG + GOLD BORDER) === */
         #game-board { 
             position: relative; overflow: hidden; 
-            background-color: var(--board-bg); /* Полностью сплошной цвет! */
-            border: 6px solid var(--board-border); 
+            background-color: var(--board-bg); /* Светлый, плотный цвет */
+            border: 6px solid var(--board-border); /* Золотая рамка */
             border-radius: 24px; box-sizing: border-box;
-            box-shadow: 0 10px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.6), inset 0 4px 0 rgba(255,255,255,0.25), inset 0 -4px 0 rgba(0,0,0,0.3);
+            box-shadow: 0 10px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.5), inset 0 4px 0 rgba(255,255,255,0.5), inset 0 -4px 0 rgba(0,0,0,0.1);
             transform: translateZ(0); 
         }
         
-        /* JS-Генерируемые вдавленные лунки под фишками */
+        /* Квадратные ячейки-лунки */
         .slot {
             position: absolute;
-            background-color: rgba(0, 0, 0, 0.25);
-            border-radius: 14px;
-            box-shadow: inset 0 4px 8px rgba(0,0,0,0.6), 0 2px 0 rgba(255,255,255,0.1);
+            background-color: rgba(0, 0, 0, 0.12); /* Чуть темнее светлого фона */
+            border-radius: 8px; /* Небольшие закругления */
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.6);
             z-index: 1; /* Лежат строго под фишками */
         }
 
@@ -369,7 +373,7 @@
             100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
         }
         
-        #time-bar-container { background-color: rgba(0,0,0,0.6); border: 3px solid rgba(255,255,255,0.3); height: 20px; box-shadow: inset 0 3px 6px rgba(0,0,0,0.7); margin-top: 5px;}
+        #time-bar-container { border: 3px solid #ffca28; height: 20px; margin-top: 5px;}
         #time-bar { background: linear-gradient(90deg, #ffca28, #ff8f00); transition: width 0.1s linear; border-radius: 10px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);}
         
         /* === ВНУТРЕННИЕ ЭЛЕМЕНТЫ ОКОН === */
