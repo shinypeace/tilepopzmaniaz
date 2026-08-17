@@ -6,64 +6,91 @@
     <title>Wonder Match</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     
     <style>
-        /* === ААА ПРЕМИУМ ЦВЕТА И ТЕМЫ === */
+        /* === АТЛАС И ПЕРЕМЕННЫЕ === */
         :root {
             --font-main: 'Nunito', sans-serif;
-            --font-title: 'Lobster', cursive;
             --tile-size: 0px;
+            
+            /* Настройки атласа */
+            --atlas-w: 1536;
+            --atlas-h: 1024;
+            --atlas-url: url('atlas.png');
         }
+
+        /* === УНИВЕРСАЛЬНЫЙ КЛАСС ДЛЯ СПРАЙТОВ === */
+        .sprite {
+            background-image: var(--atlas-url);
+            background-repeat: no-repeat;
+            background-size: calc((var(--atlas-w) / var(--sw)) * 100%) calc((var(--atlas-h) / var(--sh)) * 100%);
+            background-position: calc((var(--sx) / (var(--atlas-w) - var(--sw))) * 100%) calc((var(--sy) / (var(--atlas-h) - var(--sh))) * 100%);
+            background-color: transparent;
+        }
+
+        /* КООРДИНАТЫ АТЛАСА (Передаем переменные) */
+        .sprite-title { --sx: 48; --sy: 30; --sw: 663; --sh: 340; }
         
+        .btn-icon-settings { --sx: 1306; --sy: 61; --sw: 139; --sh: 143; }
+        .btn-icon-rules { --sx: 1307; --sy: 214; --sw: 136; --sh: 136; }
+        .btn-icon-stats { --sx: 1307; --sy: 359; --sw: 136; --sh: 136; }
+        .btn-icon-pause { --sx: 1307; --sy: 504; --sw: 136; --sh: 135; }
+        
+        .btn-long-green { --sx: 776; --sy: 65; --sw: 450; --sh: 110; }
+        .btn-long-blue { --sx: 775; --sy: 194; --sw: 451; --sh: 109; }
+        .btn-long-orange { --sx: 776; --sy: 319; --sw: 450; --sh: 111; }
+        .btn-long-purple { --sx: 776; --sy: 448; --sw: 450; --sh: 111; }
+        
+        .btn-narrow-green { --sx: 44; --sy: 881; --sw: 283; --sh: 103; }
+        .btn-narrow-orange { --sx: 344; --sy: 885; --sw: 271; --sh: 95; }
+        .btn-narrow-red { --sx: 634; --sy: 885; --sw: 288; --sh: 95; }
+        .btn-narrow-purple { --sx: 940; --sy: 885; --sw: 266; --sh: 95; }
+        
+        .tile-blue { --sx: 43; --sy: 411; --sw: 96; --sh: 106; }
+        .tile-green { --sx: 159; --sy: 411; --sw: 95; --sh: 105; }
+        .tile-orange { --sx: 278; --sy: 412; --sw: 96; --sh: 101; }
+        .tile-red { --sx: 403; --sy: 410; --sw: 102; --sh: 112; }
+        .tile-yellow { --sx: 529; --sy: 413; --sw: 109; --sh: 101; }
+        .tile-purple { --sx: 658; --sy: 410; --sw: 103; --sh: 105; }
+        
+        .rocket { --sx: 160; --sy: 550; --sw: 108; --sh: 144; }
+        .bomb { --sx: 296; --sy: 546; --sw: 133; --sh: 166; }
+        .unmovable { --sx: 477; --sy: 562; --sw: 140; --sh: 145; }
+
+        /* === ТЕМЫ (ФОНЫ И ПЛАШКИ) === */
         body.theme-critters { 
             background-image: url('bg-critters.png'); 
-            --modal-bg-top: #ffffff; --modal-bg-bottom: #f1f8e9;
-            --modal-border: #558b2f;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #f1f8e9; --modal-border: #558b2f;
             --hud-top: #558b2f; --hud-bottom: #33691e; --hud-shadow: #1b5e20;
-            --btn-top: #8bc34a; --btn-bottom: #558b2f; --btn-shadow: #33691e;
-            --btn-sec-top: #29b6f6; --btn-sec-bottom: #0277bd; --btn-sec-shadow: #01579b;
             --text-primary: #33691e; --text-secondary: #1b5e20;
             --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #e8f5e9;
             --ribbon-top: #ff7043; --ribbon-bottom: #d84315; --ribbon-stroke: #bf360c;
-            --title-stroke: #7cb342; --title-shadow: #558b2f;
         }
         body.theme-sweets { 
             background-image: url('bg-sweets.png'); 
-            --modal-bg-top: #ffffff; --modal-bg-bottom: #fce4ec;
-            --modal-border: #c2185b;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #fce4ec; --modal-border: #c2185b;
             --hud-top: #d81b60; --hud-bottom: #880e4f; --hud-shadow: #4a082b;
-            --btn-top: #ff4081; --btn-bottom: #c2185b; --btn-shadow: #880e4f;
-            --btn-sec-top: #ab47bc; --btn-sec-bottom: #7b1fa2; --btn-sec-shadow: #4a148c;
             --text-primary: #880e4f; --text-secondary: #4a148c;
             --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #fce4ec;
             --ribbon-top: #42a5f5; --ribbon-bottom: #1565c0; --ribbon-stroke: #0d47a1;
-            --title-stroke: #f48fb1; --title-shadow: #c2185b;
         }
         body.theme-nature { 
             background-image: url('bg-nature.png'); 
-            --modal-bg-top: #ffffff; --modal-bg-bottom: #fff8e1;
-            --modal-border: #ef6c00;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #fff8e1; --modal-border: #ef6c00;
             --hud-top: #f57c00; --hud-bottom: #e65100; --hud-shadow: #bf360c;
-            --btn-top: #ffa726; --btn-bottom: #ef6c00; --btn-shadow: #e65100;
-            --btn-sec-top: #66bb6a; --btn-sec-bottom: #2e7d32; --btn-sec-shadow: #1b5e20;
             --text-primary: #e65100; --text-secondary: #bf360c;
             --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #fff3e0;
             --ribbon-top: #ffca28; --ribbon-bottom: #ff8f00; --ribbon-stroke: #ff6f00;
-            --title-stroke: #ffb74d; --title-shadow: #ef6c00;
         }
         body.theme-gems { 
             background-image: url('bg-gems.png'); 
-            --modal-bg-top: #ffffff; --modal-bg-bottom: #f3e5f5;
-            --modal-border: #7b1fa2;
+            --modal-bg-top: #ffffff; --modal-bg-bottom: #f3e5f5; --modal-border: #7b1fa2;
             --hud-top: #5e35b1; --hud-bottom: #311b92; --hud-shadow: #1a0d52;
-            --btn-top: #ffca28; --btn-bottom: #ff8f00; --btn-shadow: #ff6f00;
-            --btn-sec-top: #7e57c2; --btn-sec-bottom: #4527a0; --btn-sec-shadow: #311b92;
             --text-primary: #ff8f00; --text-secondary: #311b92;
             --board-border: #ffca28; --board-shadow: #d84315; --board-bg: #ede7f6;
             --ribbon-top: #ec407a; --ribbon-bottom: #c2185b; --ribbon-stroke: #880e4f;
-            --title-stroke: #b39ddb; --title-shadow: #5e35b1;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
@@ -73,11 +100,9 @@
             touch-action: none; overflow: hidden; 
             height: 100%; position: relative; width: 100%;
             background-size: cover; background-position: center center; background-repeat: no-repeat;
-            background-color: #2c3e50;
-            transition: background-image 0.5s ease;
+            background-color: #2c3e50; transition: background-image 0.5s ease;
         }
         
-        /* Утилиты */
         .w-full { width: 100%; } .h-full { height: 100%; }
         .flex { display: flex; } .flex-col { flex-direction: column; }
         .flex-grow { flex-grow: 1; } .flex-shrink-0 { flex-shrink: 0; }
@@ -95,75 +120,36 @@
         .text-primary { color: var(--text-primary); }
         .hidden { display: none !important; }
         
-        /* === PRELOADER === */
         #preloader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 2000; transition: opacity 0.5s ease;
         }
-        #loading-title {
-            font-family: var(--font-title); font-size: 5rem; 
-            color: #fff;
-            -webkit-text-stroke: 2px #ff4081;
-            text-shadow: 0px 8px 0px #c2185b, 0px 15px 15px rgba(0,0,0,0.5);
-            margin-bottom: 2.5rem;
-            animation: bounce 2s infinite cubic-bezier(0.28, 0.84, 0.42, 1);
-        }
-        @keyframes bounce { 0%, 100% {transform: scale(1);} 50% {transform: scale(1.1);} }
         
-        #loading-bar-container {
-            width: 80%; max-width: 320px; height: 24px;
-            background-color: rgba(0,0,0,0.4); border: 3px solid rgba(255,255,255,0.2);
-            border-radius: 20px; overflow: hidden; box-shadow: inset 0 3px 6px rgba(0,0,0,0.5);
-        }
-        #loading-bar-fill {
-            width: 0%; height: 100%; background: linear-gradient(90deg, #ffca28, #ff8f00);
-            border-radius: 20px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
-            transition: width 0.3s ease;
-        }
+        #loading-bar-container { width: 80%; max-width: 320px; height: 24px; background-color: rgba(0,0,0,0.4); border: 3px solid rgba(255,255,255,0.2); border-radius: 20px; overflow: hidden; box-shadow: inset 0 3px 6px rgba(0,0,0,0.5); }
+        #loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ffca28, #ff8f00); border-radius: 20px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4); transition: width 0.3s ease; }
         
-        .main-container { 
-            background-color: transparent; display: none;
-            justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; 
-        }
-        .main-menu { 
-            width: 100%; max-width: 420px; height: 100%; max-height: 900px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            padding: 1rem; animation: fadeIn 0.5s ease-out;
-        }
+        .main-container { background-color: transparent; display: none; justify-content: center; align-items: center; height: 100%; width: 100%; overflow: hidden; }
+        .main-menu { width: 100%; max-width: 420px; height: 100%; max-height: 900px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        /* === ААА ТАЙТЛ === */
+        /* Заголовок теперь использует атлас */
         .game-title {
-            font-family: var(--font-title); font-size: 4.8rem; line-height: 1;
-            color: #ffffff; -webkit-text-stroke: 3px var(--title-stroke);
-            text-shadow: 0 6px 0 var(--title-shadow), 0 10px 10px rgba(0,0,0,0.3);
-            margin-bottom: 2.5rem; text-align: center; transform: rotate(-3deg);
+            width: 100%; max-width: 320px; aspect-ratio: 663 / 340;
+            margin: 0 auto 2.5rem; transform: rotate(-3deg);
         }
         
-        /* === ПРЕМИУМ КНОПКИ === */
+        /* Кнопки теперь используют атлас */
         .btn { 
-            position: relative;
-            background: linear-gradient(180deg, var(--btn-top) 0%, var(--btn-bottom) 100%);
-            color: #fff; border: 3px solid rgba(255,255,255,0.4); border-radius: 40px; 
-            padding: 1.2rem 1.5rem; font-size: 1.3rem; font-weight: 900; width: 100%; 
-            cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; 
+            position: relative; color: #fff; border: none; background-color: transparent;
+            padding: 1.1rem 1.5rem; font-size: 1.35rem; font-weight: 900; width: 100%; 
+            cursor: pointer; transition: transform 0.1s, filter 0.1s; 
             text-transform: uppercase; letter-spacing: 1px;
-            text-shadow: -1px -1px 0 rgba(0,0,0,0.2), 1px -1px 0 rgba(0,0,0,0.2), -1px 1px 0 rgba(0,0,0,0.2), 1px 1px 0 rgba(0,0,0,0.2), 0px 2px 0px rgba(0,0,0,0.4);
-            box-shadow: 0 10px 0px var(--btn-shadow), 0 15px 20px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
+            text-shadow: -1px -1px 0 rgba(0,0,0,0.4), 1px -1px 0 rgba(0,0,0,0.4), -1px 1px 0 rgba(0,0,0,0.4), 1px 1px 0 rgba(0,0,0,0.4), 0px 3px 0px rgba(0,0,0,0.6);
+            display: flex; justify-content: center; align-items: center;
         }
-        .btn:active { 
-            transform: translateY(8px); 
-            box-shadow: 0 2px 0px var(--btn-shadow), 0 5px 10px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.2); 
-        }
-        .btn-secondary { 
-            background: linear-gradient(180deg, var(--btn-sec-top) 0%, var(--btn-sec-bottom) 100%);
-            box-shadow: 0 10px 0px var(--btn-sec-shadow), 0 15px 20px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
-        }
-        .btn-secondary:active {
-            box-shadow: 0 2px 0px var(--btn-sec-shadow), 0 5px 10px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.2);
-        }
+        .btn:active { transform: translateY(4px); filter: brightness(0.9); }
         
         .btn .ad-label {
             position: absolute; top: -15px; right: -10px;
@@ -173,43 +159,24 @@
             transform: rotate(10deg); border: 2px solid white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         
+        /* Иконки теперь используют атлас */
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;}
         .icon-btn { 
-            background: linear-gradient(180deg, var(--btn-sec-top) 0%, var(--btn-sec-bottom) 100%);
-            border: 3px solid rgba(255,255,255,0.4); border-radius: 50%; 
+            border: none; background-color: transparent; 
             width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; 
-            transition: transform 0.1s, box-shadow 0.1s; 
-            box-shadow: 0 8px 0px var(--btn-sec-shadow), 0 12px 15px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2), inset 0 3px 0 rgba(255,255,255,0.4);
+            transition: transform 0.1s, filter 0.1s; cursor: pointer;
         }
-        .icon-btn:active { transform: translateY(6px); box-shadow: 0 2px 0px var(--btn-sec-shadow), 0 5px 10px rgba(0,0,0,0.3); }
-        .icon-btn svg { width: 34px; height: 34px; fill: #ffffff; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));}
+        .icon-btn:active { transform: translateY(4px); filter: brightness(0.9); }
         
-        /* === МОДАЛЬНЫЕ ОКНА === */
-        .modal { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; 
-            z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; 
-        }
+        /* Модальные окна */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
         .modal.active { opacity: 1; visibility: visible; }
-        .modal-content { 
-            position: relative; background: linear-gradient(180deg, var(--modal-bg-top) 0%, var(--modal-bg-bottom) 100%);
-            padding: 4rem 1.5rem 1.5rem; border-radius: 36px; border: 6px solid var(--modal-border); 
-            width: 90%; max-width: 400px; box-shadow: 0 15px 0 var(--btn-shadow), 0 25px 50px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(255,255,255,0.8); 
-            transform: scale(0.8) translateY(20px); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1.2); 
-            max-height: 85vh; text-align: center;
-        }
+        .modal-content { position: relative; background: linear-gradient(180deg, var(--modal-bg-top) 0%, var(--modal-bg-bottom) 100%); padding: 4rem 1.5rem 1.5rem; border-radius: 36px; border: 6px solid var(--modal-border); width: 90%; max-width: 400px; box-shadow: 0 15px 0 rgba(0,0,0,0.2), 0 25px 50px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(255,255,255,0.8); transform: scale(0.8) translateY(20px); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1.2); max-height: 85vh; text-align: center; }
         .modal.active .modal-content { transform: scale(1) translateY(0); }
         
-        .modal-title { 
-            position: absolute; top: -25px; left: 50%; transform: translateX(-50%);
-            font-family: var(--font-title); font-size: 2.8rem; color: #fff; 
-            background: linear-gradient(180deg, var(--ribbon-top), var(--ribbon-bottom));
-            padding: 8px 40px; border-radius: 40px; border: 4px solid #fff;
-            box-shadow: 0 8px 0 var(--ribbon-stroke), 0 15px 15px rgba(0,0,0,0.4), inset 0 -4px 0 rgba(0,0,0,0.2);
-            white-space: nowrap; -webkit-text-stroke: 1.5px var(--ribbon-stroke); text-shadow: 0 3px 0 var(--ribbon-stroke); z-index: 10;
-        }
+        .modal-title { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-family: var(--font-title); font-size: 2.8rem; color: #fff; background: linear-gradient(180deg, var(--ribbon-top), var(--ribbon-bottom)); padding: 8px 40px; border-radius: 40px; border: 4px solid #fff; box-shadow: 0 8px 0 var(--ribbon-stroke), 0 15px 15px rgba(0,0,0,0.4), inset 0 -4px 0 rgba(0,0,0,0.2); white-space: nowrap; -webkit-text-stroke: 1.5px var(--ribbon-stroke); text-shadow: 0 3px 0 var(--ribbon-stroke); z-index: 10; }
         
-        /* === GAME HUD === */
+        /* HUD */
         .game-screen { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; padding: 10px; }
         .game-header { width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.6rem; align-items: center; margin-bottom: 4px; padding: 2px 5px; }
         .hud-panel { background: linear-gradient(180deg, var(--hud-top) 0%, var(--hud-bottom) 100%); border: 3px solid #ffca28; box-shadow: 0 5px 0 var(--hud-shadow), 0 8px 12px rgba(0,0,0,0.4), inset 0 2px 3px rgba(255,255,255,0.2); border-radius: 999px; }
@@ -217,34 +184,21 @@
         .header-item svg { width: 22px; height: 22px; fill: #ffca28; margin-right: 0.4rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));}
         .header-item span { font-size: 1.3rem; font-weight: 900; color: #fff; text-shadow: 0 2px 3px rgba(0,0,0,0.8); line-height: 1; }
         
-        .pause-btn-container .icon-btn { width: 48px; height: 48px; background: linear-gradient(180deg, var(--hud-top) 0%, var(--hud-bottom) 100%); border: 3px solid #ffca28; box-shadow: 0 5px 0 var(--hud-shadow), 0 8px 12px rgba(0,0,0,0.4), inset 0 2px 3px rgba(255,255,255,0.2); }
-        .pause-btn-container .icon-btn:active { transform: translateY(5px); box-shadow: 0 0 0 var(--hud-shadow), 0 4px 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1); }
-        
+        .pause-btn-container .icon-btn { width: 48px; height: 48px; }
         #goals-container { grid-column: 1 / -1; padding: 6px 12px; margin: 0 0.2rem; display: flex; align-items: center; justify-content: center; min-height: 45px; height: auto; border-radius: 20px; }
         #goals-list-wrapper { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; width: 100%; gap: 6px; }
         
-        /* === GAME BOARD === */
-        #game-board { 
-            position: relative; overflow: hidden; background-color: var(--board-bg); border: 6px solid var(--board-border); 
-            border-radius: 24px; box-sizing: border-box; box-shadow: 0 10px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.5), inset 0 4px 0 rgba(255,255,255,0.5), inset 0 -4px 0 rgba(0,0,0,0.1);
-        }
+        /* GAME BOARD */
+        #game-board { position: relative; overflow: hidden; background-color: var(--board-bg); border: 6px solid var(--board-border); border-radius: 24px; box-sizing: border-box; box-shadow: 0 10px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.5), inset 0 4px 0 rgba(255,255,255,0.5), inset 0 -4px 0 rgba(0,0,0,0.1); }
         .slot { position: absolute; background-color: rgba(0, 0, 0, 0.05); border-radius: 8px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.5); z-index: 1; }
         .tile { position: absolute; top: 0; left: 0; transition: transform 0.3s ease-in-out; will-change: transform; display: flex; justify-content: center; align-items: center; z-index: 10; }
-        .tile-inner { width: 90%; height: 90%; transition: transform 0.2s ease, filter 0.2s; background-size: contain; background-repeat: no-repeat; background-position: center; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); }
+        
+        /* Внутренняя часть фишки будет брать переменные из родительского класса (tile-red и тд) */
+        .tile-inner { width: 90%; height: 90%; transition: transform 0.2s ease, filter 0.2s; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); }
         
         @keyframes bonus-pulse { 0% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); } 50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6)); } 100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); } }
         .tile.bomb .tile-inner, .tile.rocket .tile-inner { animation: bonus-pulse 1.5s infinite ease-in-out; }
         .tile.match .tile-inner { animation: match 0.3s ease-in forwards !important; }
-        .tile-red .tile-inner { background-image: url('tile-red.png'); }
-        .tile-blue .tile-inner { background-image: url('tile-blue.png'); }
-        .tile-green .tile-inner { background-image: url('tile-green.png'); }
-        .tile-yellow .tile-inner { background-image: url('tile-yellow.png'); }
-        .tile-purple .tile-inner { background-image: url('tile-purple.png'); }
-        .tile-orange .tile-inner { background-image: url('tile-orange.png'); }
-        .tile.bomb .tile-inner { background-image: url('tile-bomb.png'); }
-        .tile.rocket .tile-inner { background-image: url('tile-rocket.png'); }
-        .tile.unmovable .tile-inner { background-image: url('tile-unmovable.png'); filter: grayscale(0.2); }
-        
         @keyframes match { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
         
         .explosion-effect { position: absolute; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%) scale(0); z-index: 100; animation: explodeAnim 0.4s ease-out forwards; }
@@ -252,8 +206,8 @@
         .combo-effect { background: radial-gradient(circle, #ffffff 0%, #e040fb 50%, transparent 80%); box-shadow: 0 0 40px #e040fb; }
         @keyframes explodeAnim { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; } }
         
-        .flying-rocket { position: absolute; background: url('tile-rocket.png') center/contain no-repeat; z-index: 200; pointer-events: none; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); transition: transform 0.8s cubic-bezier(0.3, 0, 0.8, 1); }
-        .stone-shard { position: absolute; background: url('tile-unmovable.png') center/contain no-repeat; filter: grayscale(0.2); pointer-events: none; z-index: 100; transition: transform 0.5s ease-out, opacity 0.5s ease-out; }
+        .flying-rocket { position: absolute; z-index: 200; pointer-events: none; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); transition: transform 0.8s cubic-bezier(0.3, 0, 0.8, 1); }
+        .stone-shard { position: absolute; filter: grayscale(0.2); pointer-events: none; z-index: 100; transition: transform 0.5s ease-out, opacity 0.5s ease-out; }
         
         .modal-text-line { font-size: 1.4rem; font-weight: 900; color: var(--text-secondary); text-shadow: 0 1px 0 rgba(255,255,255,0.8); margin-bottom: 1.5rem;}
         .modal-text-highlight { color: var(--btn-bottom); font-size: 1.8rem; text-shadow: 0 2px 0 rgba(0,0,0,0.1);}
@@ -282,7 +236,7 @@
         input:checked + .slider:before { transform: translateX(30px); }
         
         .theme-selection button { width: 55px; height: 55px; border-radius: 20px; border: 4px solid rgba(0,0,0,0.1); cursor: pointer; box-shadow: 0 5px 0 rgba(0,0,0,0.1); transition: all 0.2s; }
-        .theme-selection button.active { border-color: #fff; transform: translateY(-5px); box-shadow: 0 0 0 4px var(--btn-top), 0 8px 15px rgba(0,0,0,0.3); }
+        .theme-selection button.active { border-color: #fff; transform: translateY(-5px); box-shadow: 0 0 0 4px #fff, 0 8px 15px rgba(0,0,0,0.3); }
         #theme-critters { background: linear-gradient(135deg, #aed581, #7cb342); } #theme-sweets { background: linear-gradient(135deg, #f48fb1, #d81b60); } 
         #theme-nature { background: linear-gradient(135deg, #ffb74d, #f57c00); } #theme-gems { background: linear-gradient(135deg, #b39ddb, #5e35b1); }
     </style>
@@ -290,9 +244,8 @@
 <body class="theme-critters">
     
     <div id="preloader">
-        <h1 id="loading-title">Wonder Match</h1>
+        <h1 id="loading-title">Загрузка...</h1>
         <div id="loading-bar-container"><div id="loading-bar-fill"></div></div>
-        <div class="mt-4 font-black text-white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Загрузка магии...</div>
     </div>
     
     <audio id="menu-music" src="menu_music.mp3" loop preload="auto"></audio>
@@ -301,16 +254,16 @@
     <div class="main-container">
         <!-- Main Menu -->
         <div id="main-menu-screen" class="main-menu">
-            <h1 class="game-title">Wonder<br>Match</h1>
+            <div class="game-title sprite sprite-title"></div>
             <div class="w-full space-y-4 px-4">
-                <button data-mode="levels" id="levels-mode-btn" class="btn btn-primary mode-btn">Уровень 1</button>
-                <button data-mode="goals" class="btn btn-secondary mode-btn">Бесконечность</button>
-                <button data-mode="wall" class="btn btn-secondary mode-btn">Стена</button>
+                <button data-mode="levels" id="levels-mode-btn" class="btn sprite btn-long-green mode-btn">Уровень 1</button>
+                <button data-mode="goals" class="btn sprite btn-long-blue mode-btn">Бесконечность</button>
+                <button data-mode="wall" class="btn sprite btn-long-purple mode-btn">Стена</button>
             </div>
             <div class="icon-btn-group">
-                <button id="settings-btn" class="icon-btn" title="Настройки"><svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.71-1.66-0.98l-0.37-2.54C14.49,2.18,14.27,2,14,2h-4 c-0.27,0-0.49,0.18-0.51,0.42L9.11,4.96c-0.6,0.27-1.16,0.6-1.66,0.98l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.55,8.53 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.66,11.06,4.64,11.37,4.64,11.7c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.06,0.71,1.66,0.98l0.37,2.54 C9.51,21.82,9.73,22,10,22h4c0.27,0,0.49-0.18,0.51-0.42l0.37-2.54c0.6-0.27,1.16-0.6,1.66-0.98l2.39,0.96 c0.22,0.08,0.47,0,0.59,0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.5c-1.93,0-3.5-1.57-3.5-3.5 s1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5S13.93,15.5,12,15.5z"/></svg></button>
-                <button id="rules-btn" class="icon-btn" title="Правила"><svg viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></button>
-                <button id="stats-btn" class="icon-btn" title="Статистика"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-5h2v5zm4 0h-2V7h2v10zm4 0h-2v-3h2v3z"/></svg></button>
+                <button id="settings-btn" class="icon-btn sprite btn-icon-settings" title="Настройки"></button>
+                <button id="rules-btn" class="icon-btn sprite btn-icon-rules" title="Правила"></button>
+                <button id="stats-btn" class="icon-btn sprite btn-icon-stats" title="Статистика"></button>
             </div>
         </div>
         
@@ -320,7 +273,9 @@
                     <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
                     <span id="score">0</span>
                 </div>
-                <div class="pause-btn-container"><button id="pause-btn" class="icon-btn"><svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg></button></div>
+                <div class="pause-btn-container">
+                    <button id="pause-btn" class="icon-btn sprite btn-icon-pause"></button>
+                </div>
                 <div class="header-item hud-panel moves-container"><span id="moves-label" style="font-size:0.9rem; margin-right:4px; opacity:0.8;">ХОД</span><span id="moves-count">0</span></div>
                 <div id="goals-container" class="hidden hud-panel"><div id="goals-list-wrapper"></div></div>
             </div>
@@ -334,9 +289,9 @@
     <div id="pause-modal" class="modal">
         <div class="modal-content"><h2 class="modal-title">Пауза</h2>
             <div class="space-y-4 w-full">
-                <button id="resume-btn" class="btn btn-primary">Продолжить</button>
-                <button id="restart-game-btn" class="btn btn-secondary">Заново</button>
-                <button id="main-menu-btn-pause" class="btn btn-secondary">В меню</button>
+                <button id="resume-btn" class="btn sprite btn-narrow-green">Продолжить</button>
+                <button id="restart-game-btn" class="btn sprite btn-narrow-orange">Заново</button>
+                <button id="main-menu-btn-pause" class="btn sprite btn-narrow-red">В меню</button>
             </div>
         </div>
     </div>
@@ -345,9 +300,9 @@
         <div class="modal-content"><h2 class="modal-title">Финиш!</h2>
             <p id="final-score-line" class="modal-text-line">Очки: <span id="final-score-value" class="modal-text-highlight">0</span></p>
             <div class="space-y-4 w-full">
-                <button id="add-moves-ad-btn" class="btn btn-primary hidden">+ 5 Ходов <span class="ad-label">AD</span></button>
-                <button id="restart-game-over-btn" class="btn btn-primary">Играть снова</button>
-                <button id="main-menu-btn-over" class="btn btn-secondary">В меню</button>
+                <button id="add-moves-ad-btn" class="btn sprite btn-narrow-purple hidden">+ 5 Ходов</button>
+                <button id="restart-game-over-btn" class="btn sprite btn-narrow-green">Играть снова</button>
+                <button id="main-menu-btn-over" class="btn sprite btn-narrow-red">В меню</button>
             </div>
         </div>
     </div>
@@ -356,8 +311,8 @@
         <div class="modal-content"><h2 class="modal-title">Победа!</h2>
             <p id="level-complete-score" class="modal-text-line">Счет: <span id="level-complete-score-value" class="modal-text-highlight">0</span></p>
             <div class="space-y-4 w-full">
-                <button id="next-level-btn" class="btn btn-primary">Далее</button>
-                <button id="main-menu-btn-complete" class="btn btn-secondary">В меню</button>
+                <button id="next-level-btn" class="btn sprite btn-narrow-green">Далее</button>
+                <button id="main-menu-btn-complete" class="btn sprite btn-narrow-red">В меню</button>
             </div>
         </div>
     </div>
@@ -371,7 +326,7 @@
             </div>
             <div class="settings-row"><span class="settings-label">Звуки</span><label class="switch"><input type="checkbox" id="mute-toggle"><span class="slider"></span></label></div>
             <div class="settings-row mb-6"><span class="settings-label">Музыка</span><label class="switch"><input type="checkbox" id="mute-music-toggle"><span class="slider"></span></label></div>
-            <button id="close-settings-btn" class="btn btn-primary">Готово</button>
+            <button id="close-settings-btn" class="btn sprite btn-narrow-green">Готово</button>
         </div>
     </div>
     
@@ -379,18 +334,18 @@
         <div class="modal-content text-left" style="max-width: 450px;"><h2 class="modal-title">Правила</h2>
             <div class="rules-list">
                 <div class="rule-item"><div class="rule-icon">🔄</div><div class="rule-text"><strong>Свайп</strong> Меняй фишки местами.</div></div>
-                <div class="rule-item"><div class="rule-icon"><div style="width:38px;height:38px;background:url('tile-bomb.png') center/contain no-repeat;"></div></div><div class="rule-text"><strong>Бомба (4 в ряд)</strong> Уничтожает всё вокруг себя!</div></div>
-                <div class="rule-item"><div class="rule-icon"><div style="width:38px;height:38px;background:url('tile-rocket.png') center/contain no-repeat;"></div></div><div class="rule-text"><strong>Ракета (5 в ряд)</strong> Выпускает ракеты в 4 стороны.</div></div>
-                <div class="rule-item"><div class="rule-icon"><div style="width:38px;height:38px;background:url('tile-unmovable.png') center/contain no-repeat; filter: grayscale(0.2);"></div></div><div class="rule-text"><strong>Камень</strong> Собирай комбинации рядом, чтобы разбить.</div></div>
+                <div class="rule-item"><div class="rule-icon"><div class="sprite bomb" style="width:38px;height:38px;"></div></div><div class="rule-text"><strong>Бомба (4 в ряд)</strong> Уничтожает всё вокруг себя!</div></div>
+                <div class="rule-item"><div class="rule-icon"><div class="sprite rocket" style="width:38px;height:38px;"></div></div><div class="rule-text"><strong>Ракета (5 в ряд)</strong> Выпускает ракеты в 4 стороны.</div></div>
+                <div class="rule-item"><div class="rule-icon"><div class="sprite unmovable" style="width:38px;height:38px; filter: grayscale(0.2);"></div></div><div class="rule-text"><strong>Камень</strong> Собирай комбинации рядом, чтобы разбить.</div></div>
             </div>
-            <button id="close-rules-btn" class="btn btn-primary">Понятно!</button>
+            <button id="close-rules-btn" class="btn sprite btn-narrow-green">Понятно!</button>
         </div>
     </div>
     
     <div id="stats-modal" class="modal">
         <div class="modal-content"><h2 class="modal-title">Рекорды</h2>
             <div id="stats-content-container" class="stats-content w-full mb-6"></div>
-            <button id="close-stats-btn" class="btn btn-primary">Закрыть</button>
+            <button id="close-stats-btn" class="btn sprite btn-narrow-green">Закрыть</button>
         </div>
     </div>
 
@@ -401,10 +356,9 @@
         'win': 'win.mp3', 'lose': 'lose.mp3'
     };
     
+    // Внимание! Из массива убраны старые картинки фишек и кнопок, добавлен atlas.png
     const IMAGE_FILES = [
-        'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png',
-        'tile-red.png', 'tile-blue.png', 'tile-green.png', 'tile-yellow.png', 'tile-purple.png', 'tile-orange.png',
-        'tile-bomb.png', 'tile-rocket.png', 'tile-unmovable.png'
+        'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png', 'atlas.png'
     ];
     
     const AudioEngine = {
@@ -484,7 +438,7 @@
         
         async function initGameLogic() {
             document.addEventListener('pointerdown', () => { AudioEngine.wakeUp(); }, { capture: true });
-            document.querySelectorAll('button, .icon-btn').forEach(btn => { btn.addEventListener('pointerdown', () => AudioEngine.play('tap')); });
+            document.querySelectorAll('button').forEach(btn => { btn.addEventListener('pointerdown', () => AudioEngine.play('tap')); });
             document.addEventListener('visibilitychange', () => { if (document.hidden) { menuMusic.pause(); gameMusic.pause(); } else { AudioEngine.wakeUp(); playMusic(currentMusicTrack); } });
             
             muteToggle.addEventListener('change', () => { AudioEngine.setMute(!muteToggle.checked); saveGameData(); });
@@ -534,13 +488,11 @@
             
             function updateLevelsButton(lvl) { levelsModeBtn.textContent = `Уровень ${lvl}`; }
             
-            // Получение цвета в зависимости от доступного пула на текущем уровне
             function getRandomColor() { 
                 const pool = window.activeColors || COLORS;
                 return pool[Math.floor(Math.random() * pool.length)]; 
             }
             
-            // --- СИСТЕМА УРОВНЕЙ И АРХЕТИПОВ ---
             function setupGoalsLevel() {
                 const diffLevel = Math.min(level, 300); 
                 goals = {}; 
@@ -561,7 +513,6 @@
                     let activeColorsCount = 4;
 
                     if (archetype === 1 || level === 1) { 
-                        // 1. Классика: Сбалансированные цели, 4-5 цветов
                         activeColorsCount = Math.min(5, 3 + Math.floor(diffLevel / 25));
                         let numGoals = Math.min(3, 1 + Math.floor(diffLevel / 15));
                         let amount = 15 + Math.floor(diffLevel * 0.4);
@@ -571,7 +522,6 @@
                         movesLimit = 18 + Math.floor(diffLevel / 10);
                     } 
                     else if (archetype === 2) { 
-                        // 2. Сборщик: Мало цветов, но огромная цель по 2 цветам
                         activeColorsCount = Math.min(4, 3 + Math.floor(diffLevel / 40));
                         let numGoals = 2;
                         let amount = 30 + Math.floor(diffLevel * 0.6);
@@ -581,7 +531,6 @@
                         movesLimit = 22 + Math.floor(diffLevel / 12);
                     } 
                     else if (archetype === 3) { 
-                        // 3. Каменоломня: Много камней, вторичная цель - цвет
                         activeColorsCount = Math.min(5, 4 + Math.floor(diffLevel / 35));
                         wantedStones = 10 + Math.floor(diffLevel * 0.4);
                         if (wantedStones > 35) wantedStones = 35;
@@ -590,7 +539,6 @@
                         movesLimit = 25 + Math.floor(diffLevel / 10);
                     } 
                     else if (archetype === 4) { 
-                        // 4. Спринт: Мало ходов, очень легкие цели
                         activeColorsCount = 4;
                         let amount = 20 + Math.floor(diffLevel * 0.3);
                         if (amount > 40) amount = 40;
@@ -600,7 +548,6 @@
                         movesLimit = 14 + Math.floor(diffLevel / 20);
                     } 
                     else { 
-                        // 0. Хардкор: Много цветов (тяжело собирать) + камни
                         activeColorsCount = diffLevel > 30 ? 6 : 5;
                         let numGoals = 3;
                         let amount = 15 + Math.floor(diffLevel * 0.3);
@@ -610,15 +557,12 @@
                         movesLimit = 18 + Math.floor(diffLevel / 15);
                     }
 
-                    // Жесткое ограничение максимального количества ходов (чтобы уровни не длились вечность)
                     if (movesLimit > 35) movesLimit = 35;
                     if (movesLimit < 10) movesLimit = 10;
-
-                    // Применяем активные цвета
                     window.activeColors = shuffled.slice(0, activeColorsCount);
                 }
                 else if (gameMode === 'wall') {
-                    window.activeColors = shuffled.slice(0, 5); // 5 цветов для стены идеально
+                    window.activeColors = shuffled.slice(0, 5);
                 }
 
                 window.currentWantedStones = wantedStones; 
@@ -632,7 +576,8 @@
                     const r = Math.floor(Math.random() * (ROWS - 1)) + 1; const c = Math.floor(Math.random() * COLS);
                     const t = board[r][c];
                     if (t && t.type === 'gem' && !t.bonus) {
-                        t.type = 'unmovable'; t.color = null; t.element.className = 'tile unmovable';
+                        t.type = 'unmovable'; t.color = null; 
+                        t.element.className = 'tile unmovable'; // Атлас автоматически подхватит класс
                         const inner = t.element.querySelector('.tile-inner');
                         if (inner) { inner.style.transform = 'scale(0)'; setTimeout(() => { inner.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'; inner.style.transform = 'scale(1)'; }, 50); }
                         placed++;
@@ -654,7 +599,7 @@
                 updateScore(0); mainMenuScreen.classList.add('hidden'); gameScreen.classList.remove('hidden');
                 document.getElementById('goals-container').classList.toggle('hidden', mode === 'wall');
                 
-                setupGoalsLevel(); // Теперь вызывается всегда для инициализации пула цветов
+                setupGoalsLevel(); 
                 requestAnimationFrame(() => { resizeBoard(); initBoard(); setTimeout(resizeBoard, 150); });
                 updateMovesDisplay();
             }
@@ -709,13 +654,21 @@
             }
             
             function createTile(r, c, type, color = null, bonus = null) {
-                const el = document.createElement('div'); el.classList.add('tile'); el.dataset.r = r; el.dataset.c = c;
-                const inner = document.createElement('div'); inner.classList.add('tile-inner'); el.appendChild(inner);
+                const el = document.createElement('div'); 
+                el.classList.add('tile'); 
+                el.dataset.r = r; el.dataset.c = c;
+                
+                const inner = document.createElement('div'); 
+                // Класс .sprite подхватит переменные, которые мы установим родителю!
+                inner.classList.add('tile-inner', 'sprite'); 
+                el.appendChild(inner);
+                
                 const tileData = { r, c, type, color, bonus, element: el }; board[r][c] = tileData;
                 
                 if (type === 'gem') el.classList.add(`tile-${color}`);
                 if (bonus) { el.classList.add(bonus); tileData.color = null; }
                 if (type === 'unmovable') el.classList.add('unmovable');
+                
                 if (TILE_SIZE > 0) { el.style.width = `${TILE_SIZE}px`; el.style.height = `${TILE_SIZE}px`; updateTilePosition(el, r, c); }
                 boardElement.appendChild(el); return tileData;
             }
@@ -730,7 +683,11 @@
             function showStoneShatter(r, c) {
                 const startX = GAP + c * (TILE_SIZE + GAP); const startY = GAP + r * (TILE_SIZE + GAP);
                 for(let i=0; i<6; i++) {
-                    const shard = document.createElement('div'); shard.className = 'stone-shard'; shard.style.width = `${TILE_SIZE/2}px`; shard.style.height = `${TILE_SIZE/2}px`; shard.style.left = `${startX + TILE_SIZE/4}px`; shard.style.top = `${startY + TILE_SIZE/4}px`; boardElement.appendChild(shard);
+                    const shard = document.createElement('div'); 
+                    shard.className = 'stone-shard sprite unmovable'; // Использование атласа
+                    shard.style.width = `${TILE_SIZE/2}px`; shard.style.height = `${TILE_SIZE/2}px`; 
+                    shard.style.left = `${startX + TILE_SIZE/4}px`; shard.style.top = `${startY + TILE_SIZE/4}px`; 
+                    boardElement.appendChild(shard);
                     const angle = Math.random() * Math.PI * 2; const distance = TILE_SIZE * (0.8 + Math.random() * 1.5);
                     const tx = Math.cos(angle) * distance; const ty = Math.sin(angle) * distance; const rot = (Math.random() - 0.5) * 720;
                     requestAnimationFrame(() => { requestAnimationFrame(() => { shard.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(0)`; shard.style.opacity = '0'; }); }); setTimeout(() => shard.remove(), 500);
@@ -855,7 +812,8 @@
                     if (stones.size > 0) { AudioEngine.play('stone_break'); stones.forEach(s => showStoneShatter(s.r, s.c)); }
                     bonusInfo.forEach(info => {
                         let target = info.target; matches.delete(target);
-                        target.color = null; target.bonus = info.type; target.element.className = `tile ${info.type}`; 
+                        target.color = null; target.bonus = info.type; 
+                        target.element.className = `tile ${info.type}`; // Снова подхватывается атлас
                         AudioEngine.play('create_bonus');
                     });
                     stones.forEach(s => matches.add(s)); updateGoalsAndScore(matches); await animateDestruction(matches); await dropTiles(); firstCycle = false;
@@ -876,7 +834,11 @@
                         if(!playedRocket) { AudioEngine.play('rocket'); playedRocket = true; }
                         const startX = GAP + t.c * (TILE_SIZE + GAP); const startY = GAP + t.r * (TILE_SIZE + GAP);
                         [{rot:0,tx:0,ty:-1000}, {rot:180,tx:0,ty:1000}, {rot:-90,tx:-1000,ty:0}, {rot:90,tx:1000,ty:0}].forEach(d => {
-                            const r = document.createElement('div'); r.className = 'flying-rocket'; r.style.width = `var(--tile-size)`; r.style.height = `var(--tile-size)`; r.style.left = `${startX}px`; r.style.top = `${startY}px`; r.style.transform = `translate(0, 0) rotate(${d.rot}deg)`; boardElement.appendChild(r);
+                            const r = document.createElement('div'); 
+                            r.className = 'flying-rocket sprite rocket'; // Ракеты летят из атласа!
+                            r.style.width = `var(--tile-size)`; r.style.height = `var(--tile-size)`; 
+                            r.style.left = `${startX}px`; r.style.top = `${startY}px`; 
+                            r.style.transform = `translate(0, 0) rotate(${d.rot}deg)`; boardElement.appendChild(r);
                             requestAnimationFrame(() => { requestAnimationFrame(() => { r.style.transform = `translate(${d.tx}px, ${d.ty}px) rotate(${d.rot}deg)`; }); }); setTimeout(() => r.remove(), 800);
                         });
                         for(let i=0; i<COLS; i++) { if(board[t.r][i]) { allToDestroy.add(board[t.r][i]); if(board[t.r][i].bonus && !processed.has(board[t.r][i])) queue.push(board[t.r][i]); } }
@@ -950,7 +912,6 @@
                     }
                 }
                 await new Promise(r => setTimeout(r, 400));
-                // Сбрасываем инлайн-стиль, чтобы CSS снова работал (для свайпов)
                 boardElement.querySelectorAll('.tile').forEach(el => el.style.transition = '');
             }
             
@@ -961,35 +922,31 @@
                 updateMovesDisplay(); 
             }
             
-            // --- ПЛАВНЫЙ СДВИГ СТЕНЫ ВВЕРХ ---
             async function shiftWallUp() {
                 let topHasStone = false;
                 for (let c=0; c<COLS; c++) { if (board[0][c] && board[0][c].type === 'unmovable') topHasStone = true; }
                 if (topHasStone) { gameOver("Стена задавила!"); return; }
 
-                // 1. Удаляем из DOM самый верхний ряд
                 for (let c=0; c<COLS; c++) { if (board[0][c] && board[0][c].element) { board[0][c].element.remove(); } }
 
-                // 2. Логически двигаем все фишки на строку вверх и анимируем
                 for (let r = 0; r < ROWS - 1; r++) {
                     for (let c = 0; c < COLS; c++) {
                         const t = board[r+1][c]; board[r][c] = t;
                         if (t) { 
                             t.r = r; 
                             t.element.dataset.r = r;
-                            t.element.style.transition = 'transform 0.4s ease-out'; // Плавное скольжение
+                            t.element.style.transition = 'transform 0.4s ease-out'; 
                             updateTilePosition(t.element, r, c); 
                         }
                     }
                 }
 
-                // 3. Создаем новый ряд камней снизу поля, скрытый границей overflow, и выкатываем его наверх
                 for (let c = 0; c < COLS; c++) {
                     board[ROWS-1][c] = null; 
                     const t = createTile(ROWS-1, c, 'unmovable');
                     
-                    t.element.style.transition = 'none'; // Отключаем анимацию для стартовой позиции
-                    const startY = GAP + (ROWS) * (TILE_SIZE + GAP); // Позиция ЗА нижней границей поля
+                    t.element.style.transition = 'none'; 
+                    const startY = GAP + (ROWS) * (TILE_SIZE + GAP); 
                     const endX = GAP + c * (TILE_SIZE + GAP);
                     const endY = GAP + (ROWS - 1) * (TILE_SIZE + GAP);
                     t.element.style.transform = `translate(${endX}px, ${startY}px)`;
@@ -1006,7 +963,6 @@
                 
                 AudioEngine.play('stone_break');
                 await new Promise(r => setTimeout(r, 400));
-                // Сбрасываем стили после анимации
                 boardElement.querySelectorAll('.tile').forEach(el => el.style.transition = '');
             }
 
@@ -1059,8 +1015,12 @@
                 if (gameMode === 'wall') return; 
                 let html = '';
                 for (const [key, val] of Object.entries(goals)) {
-                    const bg = key === 'unmovable' ? 'tile-unmovable.png' : `tile-${key}.png`;
-                    html += `<div class="flex flex-col items-center" style="margin: 2px 6px;"><div class="bg-contain bg-no-repeat" style="width:30px; height:30px; background-image:url('${bg}'); filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div><span class="font-black" style="font-size:1.1rem; color:#fff; text-shadow:0 2px 2px rgba(0,0,0,0.8); line-height: 1; margin-top: 2px;">${val}</span></div>`;
+                    // Используем атлас для отображения иконки целей!
+                    const bgClass = key === 'unmovable' ? 'unmovable' : `tile-${key}`;
+                    html += `<div class="flex flex-col items-center" style="margin: 2px 6px;">
+                                <div class="sprite ${bgClass}" style="width:30px; height:30px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>
+                                <span class="font-black" style="font-size:1.1rem; color:#fff; text-shadow:0 2px 2px rgba(0,0,0,0.8); line-height: 1; margin-top: 2px;">${val}</span>
+                             </div>`;
                 }
                 goalsListWrapper.innerHTML = html; 
             }
