@@ -30,8 +30,7 @@
             background-color: transparent;
         }
 
-        /* КООРДИНАТЫ АТЛАСА (РАСШИРЕННЫЕ) */
-        /* Общее правило: X-4, Y-4, Ширина+10, Высота+10 */
+        /* КООРДИНАТЫ АТЛАСА */
         .sprite-title { --sx: 44; --sy: 26; --sw: 673; --sh: 350; }
         
         .btn-icon-settings { --sx: 1302; --sy: 57; --sw: 149; --sh: 153; }
@@ -44,11 +43,11 @@
         .btn-long-orange { --sx: 772; --sy: 315; --sw: 460; --sh: 121; }
         .btn-long-purple { --sx: 772; --sy: 444; --sw: 460; --sh: 121; }
         
-        /* Узкие кнопки (Сдвиг влево на 20px, Ширина + 30px) */
-        .btn-narrow-green { --sx: 24; --sy: 877; --sw: 313; --sh: 113; }
-        .btn-narrow-orange { --sx: 324; --sy: 881; --sw: 301; --sh: 105; }
-        .btn-narrow-red { --sx: 614; --sy: 881; --sw: 318; --sh: 105; }
-        .btn-narrow-purple { --sx: 920; --sy: 881; --sw: 296; --sh: 105; }
+        /* Узкие кнопки - исправлено вылезание пикселей сбоку */
+        .btn-narrow-green { --sx: 42; --sy: 879; --sw: 288; --sh: 108; }
+        .btn-narrow-orange { --sx: 342; --sy: 883; --sw: 275; --sh: 99; }
+        .btn-narrow-red { --sx: 632; --sy: 883; --sw: 292; --sh: 99; }
+        .btn-narrow-purple { --sx: 938; --sy: 883; --sw: 270; --sh: 99; }
         
         /* Фишки */
         .tile-blue { --sx: 39; --sy: 407; --sw: 106; --sh: 116; }
@@ -130,7 +129,6 @@
             z-index: 2000; transition: opacity 0.5s ease;
         }
         
-        /* Исправление шрифта в прелоадере */
         #loading-title {
             font-family: var(--font-title); font-size: 5rem; color: #fff;
             text-shadow: 
@@ -148,7 +146,6 @@
         .main-menu { width: 100%; max-width: 420px; height: 100%; max-height: 900px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        /* Заголовок-изображение */
         .game-title {
             width: 100%; max-width: 320px; aspect-ratio: 673 / 350;
             margin: 0 auto 2.5rem; transform: rotate(-3deg);
@@ -180,22 +177,27 @@
         }
         .icon-btn:active { transform: translateY(4px); filter: brightness(0.9); }
         
-        /* Модальные окна */
+        /* Модальные окна (увеличен отступ сверху, чтобы заголовок не налазивал) */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
         .modal.active { opacity: 1; visibility: visible; }
-        .modal-content { position: relative; background: linear-gradient(180deg, var(--modal-bg-top) 0%, var(--modal-bg-bottom) 100%); padding: 4rem 1.5rem 1.5rem; border-radius: 36px; border: 6px solid var(--modal-border); width: 90%; max-width: 400px; box-shadow: 0 15px 0 rgba(0,0,0,0.2), 0 25px 50px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(255,255,255,0.8); transform: scale(0.8) translateY(20px); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1.2); max-height: 85vh; text-align: center; }
+        .modal-content { 
+            position: relative; background: linear-gradient(180deg, var(--modal-bg-top) 0%, var(--modal-bg-bottom) 100%); 
+            padding: 5.5rem 1.5rem 1.5rem; /* УВЕЛИЧЕНО */
+            border-radius: 36px; border: 6px solid var(--modal-border); width: 90%; max-width: 400px; 
+            box-shadow: 0 15px 0 rgba(0,0,0,0.2), 0 25px 50px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(255,255,255,0.8); 
+            transform: scale(0.8) translateY(20px); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1.2); 
+            max-height: 85vh; text-align: center; 
+        }
         .modal.active .modal-content { transform: scale(1) translateY(0); }
         
-        /* Исправление шрифта в заголовках модалок */
+        /* Заголовок модалок - заменена обводка на гладкую тень */
         .modal-title { 
-            position: absolute; top: -25px; left: 50%; transform: translateX(-50%); 
+            position: absolute; top: -30px; left: 50%; transform: translateX(-50%); 
             font-family: var(--font-title); font-size: 2.8rem; color: #fff; 
             background: linear-gradient(180deg, var(--ribbon-top), var(--ribbon-bottom)); 
             padding: 8px 40px; border-radius: 40px; border: 4px solid #fff; 
-            box-shadow: 0 8px 0 var(--ribbon-stroke), 0 15px 15px rgba(0,0,0,0.4), inset 0 -4px 0 rgba(0,0,0,0.2); 
             white-space: nowrap; z-index: 10;
-            
-            /* Убрали text-stroke, заменили на идеальную гладкую тень-обводку */
+            box-shadow: 0 8px 0 var(--ribbon-stroke), 0 15px 15px rgba(0,0,0,0.4), inset 0 -4px 0 rgba(0,0,0,0.2); 
             text-shadow: 
                 -1.5px -1.5px 0 var(--ribbon-stroke),
                  1.5px -1.5px 0 var(--ribbon-stroke),
@@ -221,7 +223,13 @@
         .slot { position: absolute; background-color: rgba(0, 0, 0, 0.05); border-radius: 8px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.5); z-index: 1; }
         .tile { position: absolute; top: 0; left: 0; transition: transform 0.3s ease-in-out; will-change: transform; display: flex; justify-content: center; align-items: center; z-index: 10; }
         
-        .tile-inner { width: 90%; height: 90%; transition: transform 0.2s ease, filter 0.2s; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); }
+        /* УМНАЯ СИСТЕМА СОХРАНЕНИЯ ПРОПОРЦИЙ ФИШЕК */
+        .tile-inner { 
+            height: 90%; 
+            width: calc(90% * (var(--sw) / var(--sh))); 
+            transition: transform 0.2s ease, filter 0.2s; 
+            filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); 
+        }
         
         @keyframes bonus-pulse { 0% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); } 50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6)); } 100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); } }
         .tile.bomb .tile-inner, .tile.rocket .tile-inner { animation: bonus-pulse 1.5s infinite ease-in-out; }
@@ -233,8 +241,17 @@
         .combo-effect { background: radial-gradient(circle, #ffffff 0%, #e040fb 50%, transparent 80%); box-shadow: 0 0 40px #e040fb; }
         @keyframes explodeAnim { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; } }
         
-        .flying-rocket { position: absolute; z-index: 200; pointer-events: none; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); transition: transform 0.8s cubic-bezier(0.3, 0, 0.8, 1); }
-        .stone-shard { position: absolute; filter: grayscale(0.2); pointer-events: none; z-index: 100; transition: transform 0.5s ease-out, opacity 0.5s ease-out; }
+        /* Пропорции для ракет и осколков камней */
+        .flying-rocket { 
+            position: absolute; z-index: 200; pointer-events: none; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); transition: transform 0.8s cubic-bezier(0.3, 0, 0.8, 1); 
+            height: var(--tile-size); 
+            width: calc(var(--tile-size) * (var(--sw) / var(--sh))); 
+        }
+        .stone-shard { 
+            position: absolute; filter: grayscale(0.2); pointer-events: none; z-index: 100; transition: transform 0.5s ease-out, opacity 0.5s ease-out; 
+            height: calc(var(--tile-size) / 2); 
+            width: calc((var(--tile-size) / 2) * (var(--sw) / var(--sh)));
+        }
         
         .modal-text-line { font-size: 1.4rem; font-weight: 900; color: var(--text-secondary); text-shadow: 0 1px 0 rgba(255,255,255,0.8); margin-bottom: 1.5rem;}
         .modal-text-highlight { color: var(--btn-bottom); font-size: 1.8rem; text-shadow: 0 2px 0 rgba(0,0,0,0.1);}
@@ -361,9 +378,9 @@
         <div class="modal-content text-left" style="max-width: 450px;"><h2 class="modal-title">Правила</h2>
             <div class="rules-list">
                 <div class="rule-item"><div class="rule-icon">🔄</div><div class="rule-text"><strong>Свайп</strong> Меняй фишки местами.</div></div>
-                <div class="rule-item"><div class="rule-icon"><div class="sprite bomb" style="width:38px;height:38px;"></div></div><div class="rule-text"><strong>Бомба (4 в ряд)</strong> Уничтожает всё вокруг себя!</div></div>
-                <div class="rule-item"><div class="rule-icon"><div class="sprite rocket" style="width:38px;height:38px;"></div></div><div class="rule-text"><strong>Ракета (5 в ряд)</strong> Выпускает ракеты в 4 стороны.</div></div>
-                <div class="rule-item"><div class="rule-icon"><div class="sprite unmovable" style="width:38px;height:38px; filter: grayscale(0.2);"></div></div><div class="rule-text"><strong>Камень</strong> Собирай комбинации рядом, чтобы разбить.</div></div>
+                <div class="rule-item"><div class="rule-icon"><div class="sprite bomb" style="height:38px; width: calc(38px * (var(--sw) / var(--sh)));"></div></div><div class="rule-text"><strong>Бомба (4 в ряд)</strong> Уничтожает всё вокруг себя!</div></div>
+                <div class="rule-item"><div class="rule-icon"><div class="sprite rocket" style="height:38px; width: calc(38px * (var(--sw) / var(--sh)));"></div></div><div class="rule-text"><strong>Ракета (5 в ряд)</strong> Выпускает ракеты в 4 стороны.</div></div>
+                <div class="rule-item"><div class="rule-icon"><div class="sprite unmovable" style="height:38px; width: calc(38px * (var(--sw) / var(--sh))); filter: grayscale(0.2);"></div></div><div class="rule-text"><strong>Камень</strong> Собирай комбинации рядом, чтобы разбить.</div></div>
             </div>
             <button id="close-rules-btn" class="btn sprite btn-narrow-green">Понятно!</button>
         </div>
@@ -710,7 +727,6 @@
                 for(let i=0; i<6; i++) {
                     const shard = document.createElement('div'); 
                     shard.className = 'stone-shard sprite unmovable'; 
-                    shard.style.width = `${TILE_SIZE/2}px`; shard.style.height = `${TILE_SIZE/2}px`; 
                     shard.style.left = `${startX + TILE_SIZE/4}px`; shard.style.top = `${startY + TILE_SIZE/4}px`; 
                     boardElement.appendChild(shard);
                     const angle = Math.random() * Math.PI * 2; const distance = TILE_SIZE * (0.8 + Math.random() * 1.5);
@@ -861,7 +877,6 @@
                         [{rot:0,tx:0,ty:-1000}, {rot:180,tx:0,ty:1000}, {rot:-90,tx:-1000,ty:0}, {rot:90,tx:1000,ty:0}].forEach(d => {
                             const r = document.createElement('div'); 
                             r.className = 'flying-rocket sprite rocket'; 
-                            r.style.width = `var(--tile-size)`; r.style.height = `var(--tile-size)`; 
                             r.style.left = `${startX}px`; r.style.top = `${startY}px`; 
                             r.style.transform = `translate(0, 0) rotate(${d.rot}deg)`; boardElement.appendChild(r);
                             requestAnimationFrame(() => { requestAnimationFrame(() => { r.style.transform = `translate(${d.tx}px, ${d.ty}px) rotate(${d.rot}deg)`; }); }); setTimeout(() => r.remove(), 800);
@@ -1042,7 +1057,7 @@
                 for (const [key, val] of Object.entries(goals)) {
                     const bgClass = key === 'unmovable' ? 'unmovable' : `tile-${key}`;
                     html += `<div class="flex flex-col items-center" style="margin: 2px 6px;">
-                                <div class="sprite ${bgClass}" style="width:30px; height:30px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>
+                                <div class="sprite ${bgClass}" style="height:35px; width: calc(35px * (var(--sw) / var(--sh))); filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>
                                 <span class="font-black" style="font-size:1.1rem; color:#fff; text-shadow:0 2px 2px rgba(0,0,0,0.8); line-height: 1; margin-top: 2px;">${val}</span>
                              </div>`;
                 }
