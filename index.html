@@ -305,7 +305,7 @@
             <div class="w-full space-y-4 px-4">
                 <button data-mode="levels" id="levels-mode-btn" class="btn btn-primary mode-btn">Уровень 1</button>
                 <button data-mode="goals" class="btn btn-secondary mode-btn">Бесконечность</button>
-                <button data-mode="wall" class="btn btn-secondary mode-btn">Стена (Выживание)</button>
+                <button data-mode="wall" class="btn btn-secondary mode-btn">Стена</button>
             </div>
             <div class="icon-btn-group">
                 <button id="settings-btn" class="icon-btn" title="Настройки"><svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.71-1.66-0.98l-0.37-2.54C14.49,2.18,14.27,2,14,2h-4 c-0.27,0-0.49,0.18-0.51,0.42L9.11,4.96c-0.6,0.27-1.16,0.6-1.66,0.98l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.55,8.53 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.66,11.06,4.64,11.37,4.64,11.7c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.06,0.71,1.66,0.98l0.37,2.54 C9.51,21.82,9.73,22,10,22h4c0.27,0,0.49-0.18,0.51-0.42l0.37-2.54c0.6-0.27,1.16-0.6,1.66-0.98l2.39,0.96 c0.22,0.08,0.47,0,0.59,0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.5c-1.93,0-3.5-1.57-3.5-3.5 s1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5S13.93,15.5,12,15.5z"/></svg></button>
@@ -508,7 +508,7 @@
                 if (!data) { const local = localStorage.getItem('tilepop_save'); if (local) data = JSON.parse(local); }
                 if (data) {
                     maxReachedLevel = data.maxReachedLevel || 1; stats = data.stats || stats;
-                    if(stats.speed) { stats.wall = stats.speed; delete stats.speed; } // Migration
+                    if(stats.speed) { stats.wall = stats.speed; delete stats.speed; } 
                     currentTheme = data.theme || 'critters'; AudioEngine.setMute(!!data.isMuted); isMusicMuted = !!data.isMusicMuted;
                 }
                 updateLevelsButton(maxReachedLevel);
@@ -533,50 +533,97 @@
             }
             
             function updateLevelsButton(lvl) { levelsModeBtn.textContent = `Уровень ${lvl}`; }
-            function getRandomColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
             
-            // --- НОВАЯ ГЕНЕРАЦИЯ УРОВНЕЙ С АРХЕТИПАМИ ---
+            // Получение цвета в зависимости от доступного пула на текущем уровне
+            function getRandomColor() { 
+                const pool = window.activeColors || COLORS;
+                return pool[Math.floor(Math.random() * pool.length)]; 
+            }
+            
+            // --- СИСТЕМА УРОВНЕЙ И АРХЕТИПОВ ---
             function setupGoalsLevel() {
-                const diffLevel = Math.min(level, 120); goals = {}; let wantedStones = 0;
-                const shuffled = [...COLORS].sort(()=>Math.random()-0.5);
+                const diffLevel = Math.min(level, 300); 
+                goals = {}; 
+                const shuffled = [...COLORS].sort(() => Math.random() - 0.5);
+                let wantedStones = 0;
 
                 if (gameMode === 'goals') {
+                    window.activeColors = shuffled.slice(0, 5);
                     movesLimit = Math.floor(15 + (diffLevel / 4)); 
-                    if (level > 1) movesLimit += Math.max(2, 6 - Math.floor(diffLevel / 10)); 
                     if (movesLimit > 45) movesLimit = 45; 
-                    const typesCount = Math.min(COLORS.length, 3 + Math.floor(diffLevel / 20)); 
+                    const typesCount = Math.min(5, 3 + Math.floor(diffLevel / 20)); 
                     const countPerType = Math.min(30, 5 + Math.floor(diffLevel / 5)); 
-                    for(let i=0; i<typesCount; i++) goals[shuffled[i]] = countPerType;
+                    for (let i = 0; i < typesCount; i++) goals[shuffled[i]] = countPerType;
                     wantedStones = level >= 5 ? Math.min(10, Math.floor((level - 2) / 3)) : 0;
-                } else if (gameMode === 'levels') {
-                    const archetype = level % 4; let totalGoalCount = 0;
-                    if (archetype === 1 || level === 1) { // 1. Классика
-                        const typesCount = Math.min(4, 2 + Math.floor(diffLevel / 30));
-                        const countPerType = 10 + Math.floor(diffLevel * 0.5);
-                        for(let i=0; i<typesCount; i++) { goals[shuffled[i]] = countPerType; totalGoalCount += countPerType; }
-                        wantedStones = Math.floor(diffLevel / 5); movesLimit = Math.floor(totalGoalCount / 2.5) + 12;
-                    } else if (archetype === 2) { // 2. Сборщик (1-2 цвета, много)
-                        const typesCount = Math.min(2, 1 + Math.floor(diffLevel / 40));
-                        const countPerType = 25 + Math.floor(diffLevel * 0.8);
-                        for(let i=0; i<typesCount; i++) { goals[shuffled[i]] = countPerType; totalGoalCount += countPerType; }
-                        wantedStones = Math.floor(diffLevel / 10); movesLimit = Math.floor(totalGoalCount / 3) + 15;
-                    } else if (archetype === 3) { // 3. Каменоломня
-                        wantedStones = 5 + Math.floor(diffLevel * 0.4); if (wantedStones > 25) wantedStones = 25;
-                        goals['unmovable'] = wantedStones; // Камни как строгая цель!
-                        const typesCount = 2; const countPerType = 12 + Math.floor(diffLevel * 0.3);
-                        for(let i=0; i<typesCount; i++) { goals[shuffled[i]] = countPerType; totalGoalCount += countPerType; }
-                        movesLimit = Math.floor(wantedStones * 1.5) + Math.floor(totalGoalCount / 3) + 8;
-                    } else { // 0. Хардкор
-                        const typesCount = Math.min(5, 3 + Math.floor(diffLevel / 25));
-                        const countPerType = 15 + Math.floor(diffLevel * 0.4);
-                        for(let i=0; i<typesCount; i++) { goals[shuffled[i]] = countPerType; totalGoalCount += countPerType; }
-                        wantedStones = 8 + Math.floor(diffLevel / 6); if (wantedStones > 20) wantedStones = 20;
-                        movesLimit = Math.floor(totalGoalCount / 2.8) + 10;
+                } 
+                else if (gameMode === 'levels') {
+                    const archetype = level % 5;
+                    let activeColorsCount = 4;
+
+                    if (archetype === 1 || level === 1) { 
+                        // 1. Классика: Сбалансированные цели, 4-5 цветов
+                        activeColorsCount = Math.min(5, 3 + Math.floor(diffLevel / 25));
+                        let numGoals = Math.min(3, 1 + Math.floor(diffLevel / 15));
+                        let amount = 15 + Math.floor(diffLevel * 0.4);
+                        if (amount > 40) amount = 40;
+                        for(let i = 0; i < numGoals; i++) goals[shuffled[i]] = amount;
+                        wantedStones = Math.floor(diffLevel / 8);
+                        movesLimit = 18 + Math.floor(diffLevel / 10);
+                    } 
+                    else if (archetype === 2) { 
+                        // 2. Сборщик: Мало цветов, но огромная цель по 2 цветам
+                        activeColorsCount = Math.min(4, 3 + Math.floor(diffLevel / 40));
+                        let numGoals = 2;
+                        let amount = 30 + Math.floor(diffLevel * 0.6);
+                        if (amount > 75) amount = 75;
+                        for(let i = 0; i < numGoals; i++) goals[shuffled[i]] = amount;
+                        wantedStones = Math.floor(diffLevel / 12);
+                        movesLimit = 22 + Math.floor(diffLevel / 12);
+                    } 
+                    else if (archetype === 3) { 
+                        // 3. Каменоломня: Много камней, вторичная цель - цвет
+                        activeColorsCount = Math.min(5, 4 + Math.floor(diffLevel / 35));
+                        wantedStones = 10 + Math.floor(diffLevel * 0.4);
+                        if (wantedStones > 35) wantedStones = 35;
+                        goals['unmovable'] = wantedStones;
+                        goals[shuffled[0]] = 15 + Math.floor(diffLevel * 0.2);
+                        movesLimit = 25 + Math.floor(diffLevel / 10);
+                    } 
+                    else if (archetype === 4) { 
+                        // 4. Спринт: Мало ходов, очень легкие цели
+                        activeColorsCount = 4;
+                        let amount = 20 + Math.floor(diffLevel * 0.3);
+                        if (amount > 40) amount = 40;
+                        goals[shuffled[0]] = amount;
+                        goals[shuffled[1]] = amount;
+                        wantedStones = Math.floor(diffLevel / 10);
+                        movesLimit = 14 + Math.floor(diffLevel / 20);
+                    } 
+                    else { 
+                        // 0. Хардкор: Много цветов (тяжело собирать) + камни
+                        activeColorsCount = diffLevel > 30 ? 6 : 5;
+                        let numGoals = 3;
+                        let amount = 15 + Math.floor(diffLevel * 0.3);
+                        for(let i = 0; i < numGoals; i++) goals[shuffled[i]] = amount;
+                        wantedStones = 12 + Math.floor(diffLevel * 0.3);
+                        if (wantedStones > 25) wantedStones = 25;
+                        movesLimit = 18 + Math.floor(diffLevel / 15);
                     }
-                    if (movesLimit > 60) movesLimit = 60; if (movesLimit < 12) movesLimit = 12;
+
+                    // Жесткое ограничение максимального количества ходов (чтобы уровни не длились вечность)
+                    if (movesLimit > 35) movesLimit = 35;
+                    if (movesLimit < 10) movesLimit = 10;
+
+                    // Применяем активные цвета
+                    window.activeColors = shuffled.slice(0, activeColorsCount);
                 }
+                else if (gameMode === 'wall') {
+                    window.activeColors = shuffled.slice(0, 5); // 5 цветов для стены идеально
+                }
+
                 window.currentWantedStones = wantedStones; 
-                updateGoalsUI(); updateMovesDisplay();
+                updateGoalsUI(); 
+                updateMovesDisplay();
             }
 
             function spawnStonesOnBoard(count) {
@@ -607,7 +654,7 @@
                 updateScore(0); mainMenuScreen.classList.add('hidden'); gameScreen.classList.remove('hidden');
                 document.getElementById('goals-container').classList.toggle('hidden', mode === 'wall');
                 
-                if (mode !== 'wall') setupGoalsLevel();
+                setupGoalsLevel(); // Теперь вызывается всегда для инициализации пула цветов
                 requestAnimationFrame(() => { resizeBoard(); initBoard(); setTimeout(resizeBoard, 150); });
                 updateMovesDisplay();
             }
@@ -635,7 +682,6 @@
                         if (TILE_SIZE > 0) { slot.style.width = `${TILE_SIZE}px`; slot.style.height = `${TILE_SIZE}px`; updateTilePosition(slot, r, c); }
                         boardElement.appendChild(slot);
                         
-                        // В режиме Стена самый нижний ряд - камни
                         if (gameMode === 'wall' && r === ROWS - 1) { createTile(r, c, 'unmovable'); } 
                         else { createTile(r, c, 'gem', getRandomColor()); }
                     }
@@ -886,14 +932,26 @@
                 for (let c = 0; c < COLS; c++) {
                     for (let r = 0; r < ROWS; r++) {
                         if (board[r][c] === null) {
-                            const t = createTile(r, c, 'gem', getRandomColor()); t.element.style.transition = 'none'; 
-                            const endX = GAP + c * (TILE_SIZE + GAP); const endY = GAP + r * (TILE_SIZE + GAP); const startY = -(TILE_SIZE + 50);
+                            const t = createTile(r, c, 'gem', getRandomColor()); 
+                            t.element.style.transition = 'none'; 
+                            const endX = GAP + c * (TILE_SIZE + GAP); 
+                            const endY = GAP + r * (TILE_SIZE + GAP); 
+                            const startY = -(TILE_SIZE + 50);
                             t.element.style.transform = `translate(${endX}px, ${startY}px)`;
-                            requestAnimationFrame(() => { requestAnimationFrame(() => { if (t.element) { t.element.style.transition = 'transform 0.4s ease-out'; t.element.style.transform = `translate(${endX}px, ${endY}px)`; } }); });
+                            requestAnimationFrame(() => { 
+                                requestAnimationFrame(() => { 
+                                    if (t.element) { 
+                                        t.element.style.transition = 'transform 0.4s ease-out'; 
+                                        t.element.style.transform = `translate(${endX}px, ${endY}px)`; 
+                                    } 
+                                }); 
+                            });
                         }
                     }
                 }
                 await new Promise(r => setTimeout(r, 400));
+                // Сбрасываем инлайн-стиль, чтобы CSS снова работал (для свайпов)
+                boardElement.querySelectorAll('.tile').forEach(el => el.style.transition = '');
             }
             
             function incrementMoves() { 
@@ -903,27 +961,53 @@
                 updateMovesDisplay(); 
             }
             
-            // --- НОВАЯ МЕХАНИКА: СДВИГ СТЕНЫ ВВЕРХ ---
+            // --- ПЛАВНЫЙ СДВИГ СТЕНЫ ВВЕРХ ---
             async function shiftWallUp() {
                 let topHasStone = false;
                 for (let c=0; c<COLS; c++) { if (board[0][c] && board[0][c].type === 'unmovable') topHasStone = true; }
                 if (topHasStone) { gameOver("Стена задавила!"); return; }
 
+                // 1. Удаляем из DOM самый верхний ряд
                 for (let c=0; c<COLS; c++) { if (board[0][c] && board[0][c].element) { board[0][c].element.remove(); } }
 
+                // 2. Логически двигаем все фишки на строку вверх и анимируем
                 for (let r = 0; r < ROWS - 1; r++) {
                     for (let c = 0; c < COLS; c++) {
                         const t = board[r+1][c]; board[r][c] = t;
-                        if (t) { t.r = r; t.element.dataset.r = r; updateTilePosition(t.element, r, c); }
+                        if (t) { 
+                            t.r = r; 
+                            t.element.dataset.r = r;
+                            t.element.style.transition = 'transform 0.4s ease-out'; // Плавное скольжение
+                            updateTilePosition(t.element, r, c); 
+                        }
                     }
                 }
 
+                // 3. Создаем новый ряд камней снизу поля, скрытый границей overflow, и выкатываем его наверх
                 for (let c = 0; c < COLS; c++) {
-                    board[ROWS-1][c] = null; createTile(ROWS-1, c, 'unmovable');
+                    board[ROWS-1][c] = null; 
+                    const t = createTile(ROWS-1, c, 'unmovable');
+                    
+                    t.element.style.transition = 'none'; // Отключаем анимацию для стартовой позиции
+                    const startY = GAP + (ROWS) * (TILE_SIZE + GAP); // Позиция ЗА нижней границей поля
+                    const endX = GAP + c * (TILE_SIZE + GAP);
+                    const endY = GAP + (ROWS - 1) * (TILE_SIZE + GAP);
+                    t.element.style.transform = `translate(${endX}px, ${startY}px)`;
+                    
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            if (t.element) {
+                                t.element.style.transition = 'transform 0.4s ease-out';
+                                t.element.style.transform = `translate(${endX}px, ${endY}px)`;
+                            }
+                        });
+                    });
                 }
                 
                 AudioEngine.play('stone_break');
-                await new Promise(r => setTimeout(r, 300));
+                await new Promise(r => setTimeout(r, 400));
+                // Сбрасываем стили после анимации
+                boardElement.querySelectorAll('.tile').forEach(el => el.style.transition = '');
             }
 
             function checkGameStatus() {
@@ -1001,7 +1085,7 @@
             document.getElementById('stats-btn').addEventListener('click', () => {
                 document.getElementById('stats-content-container').innerHTML = `
                     <div class="stats-group">
-                        <h3 class="stats-group-title">Стена (Выживание)</h3>
+                        <h3 class="stats-group-title">Стена</h3>
                         <div class="stats-row"><span>Игр:</span><span class="stats-row-value">${stats.wall.games}</span></div>
                         <div class="stats-row"><span>Рекорд (Очки):</span><span class="stats-row-value">${stats.wall.hiScore || 0}</span></div>
                     </div>
