@@ -30,34 +30,34 @@
             background-color: transparent;
         }
 
-        /* КООРДИНАТЫ АТЛАСА (Передаем переменные) */
-        .sprite-title { --sx: 48; --sy: 30; --sw: 663; --sh: 340; }
+        /* КООРДИНАТЫ АТЛАСА (Расширены на ~5px во все стороны для фикса обрезки) */
+        .sprite-title { --sx: 46; --sy: 28; --sw: 668; --sh: 345; }
         
-        .btn-icon-settings { --sx: 1306; --sy: 61; --sw: 139; --sh: 143; }
-        .btn-icon-rules { --sx: 1307; --sy: 214; --sw: 136; --sh: 136; }
-        .btn-icon-stats { --sx: 1307; --sy: 359; --sw: 136; --sh: 136; }
-        .btn-icon-pause { --sx: 1307; --sy: 504; --sw: 136; --sh: 135; }
+        .btn-icon-settings { --sx: 1304; --sy: 59; --sw: 144; --sh: 148; }
+        .btn-icon-rules { --sx: 1305; --sy: 212; --sw: 141; --sh: 141; }
+        .btn-icon-stats { --sx: 1305; --sy: 357; --sw: 141; --sh: 141; }
+        .btn-icon-pause { --sx: 1305; --sy: 502; --sw: 141; --sh: 140; }
         
-        .btn-long-green { --sx: 776; --sy: 65; --sw: 450; --sh: 110; }
-        .btn-long-blue { --sx: 775; --sy: 194; --sw: 451; --sh: 109; }
-        .btn-long-orange { --sx: 776; --sy: 319; --sw: 450; --sh: 111; }
-        .btn-long-purple { --sx: 776; --sy: 448; --sw: 450; --sh: 111; }
+        .btn-long-green { --sx: 774; --sy: 63; --sw: 455; --sh: 115; }
+        .btn-long-blue { --sx: 773; --sy: 192; --sw: 456; --sh: 114; }
+        .btn-long-orange { --sx: 774; --sy: 317; --sw: 455; --sh: 116; }
+        .btn-long-purple { --sx: 774; --sy: 446; --sw: 455; --sh: 116; }
         
-        .btn-narrow-green { --sx: 44; --sy: 881; --sw: 283; --sh: 103; }
-        .btn-narrow-orange { --sx: 344; --sy: 885; --sw: 271; --sh: 95; }
-        .btn-narrow-red { --sx: 634; --sy: 885; --sw: 288; --sh: 95; }
-        .btn-narrow-purple { --sx: 940; --sy: 885; --sw: 266; --sh: 95; }
+        .btn-narrow-green { --sx: 42; --sy: 879; --sw: 288; --sh: 108; }
+        .btn-narrow-orange { --sx: 342; --sy: 883; --sw: 276; --sh: 100; }
+        .btn-narrow-red { --sx: 632; --sy: 883; --sw: 293; --sh: 100; }
+        .btn-narrow-purple { --sx: 938; --sy: 883; --sw: 271; --sh: 100; }
         
-        .tile-blue { --sx: 43; --sy: 411; --sw: 96; --sh: 106; }
-        .tile-green { --sx: 159; --sy: 411; --sw: 95; --sh: 105; }
-        .tile-orange { --sx: 278; --sy: 412; --sw: 96; --sh: 101; }
-        .tile-red { --sx: 403; --sy: 410; --sw: 102; --sh: 112; }
-        .tile-yellow { --sx: 529; --sy: 413; --sw: 109; --sh: 101; }
-        .tile-purple { --sx: 658; --sy: 410; --sw: 103; --sh: 105; }
+        .tile-blue { --sx: 41; --sy: 409; --sw: 101; --sh: 111; }
+        .tile-green { --sx: 157; --sy: 409; --sw: 100; --sh: 110; }
+        .tile-orange { --sx: 276; --sy: 410; --sw: 101; --sh: 106; }
+        .tile-red { --sx: 401; --sy: 408; --sw: 107; --sh: 117; }
+        .tile-yellow { --sx: 527; --sy: 411; --sw: 114; --sh: 106; }
+        .tile-purple { --sx: 656; --sy: 408; --sw: 108; --sh: 110; }
         
-        .rocket { --sx: 160; --sy: 550; --sw: 108; --sh: 144; }
-        .bomb { --sx: 296; --sy: 546; --sw: 133; --sh: 166; }
-        .unmovable { --sx: 477; --sy: 562; --sw: 140; --sh: 145; }
+        .rocket { --sx: 158; --sy: 548; --sw: 113; --sh: 149; }
+        .bomb { --sx: 294; --sy: 544; --sw: 138; --sh: 171; }
+        .unmovable { --sx: 475; --sy: 560; --sw: 145; --sh: 150; }
 
         /* === ТЕМЫ (ФОНЫ И ПЛАШКИ) === */
         body.theme-critters { 
@@ -134,13 +134,12 @@
         .main-menu { width: 100%; max-width: 420px; height: 100%; max-height: 900px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        /* Заголовок теперь использует атлас */
+        /* Заголовок (увеличен аспект для соответствия новым габаритам) */
         .game-title {
-            width: 100%; max-width: 320px; aspect-ratio: 663 / 340;
+            width: 100%; max-width: 320px; aspect-ratio: 668 / 345;
             margin: 0 auto 2.5rem; transform: rotate(-3deg);
         }
         
-        /* Кнопки теперь используют атлас */
         .btn { 
             position: relative; color: #fff; border: none; background-color: transparent;
             padding: 1.1rem 1.5rem; font-size: 1.35rem; font-weight: 900; width: 100%; 
@@ -159,7 +158,6 @@
             transform: rotate(10deg); border: 2px solid white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         
-        /* Иконки теперь используют атлас */
         .icon-btn-group { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;}
         .icon-btn { 
             border: none; background-color: transparent; 
@@ -193,7 +191,6 @@
         .slot { position: absolute; background-color: rgba(0, 0, 0, 0.05); border-radius: 8px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.5); z-index: 1; }
         .tile { position: absolute; top: 0; left: 0; transition: transform 0.3s ease-in-out; will-change: transform; display: flex; justify-content: center; align-items: center; z-index: 10; }
         
-        /* Внутренняя часть фишки будет брать переменные из родительского класса (tile-red и тд) */
         .tile-inner { width: 90%; height: 90%; transition: transform 0.2s ease, filter 0.2s; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); }
         
         @keyframes bonus-pulse { 0% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); } 50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6)); } 100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); } }
@@ -356,7 +353,6 @@
         'win': 'win.mp3', 'lose': 'lose.mp3'
     };
     
-    // Внимание! Из массива убраны старые картинки фишек и кнопок, добавлен atlas.png
     const IMAGE_FILES = [
         'bg-critters.png', 'bg-sweets.png', 'bg-nature.png', 'bg-gems.png', 'atlas.png'
     ];
@@ -577,7 +573,7 @@
                     const t = board[r][c];
                     if (t && t.type === 'gem' && !t.bonus) {
                         t.type = 'unmovable'; t.color = null; 
-                        t.element.className = 'tile unmovable'; // Атлас автоматически подхватит класс
+                        t.element.className = 'tile unmovable';
                         const inner = t.element.querySelector('.tile-inner');
                         if (inner) { inner.style.transform = 'scale(0)'; setTimeout(() => { inner.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'; inner.style.transform = 'scale(1)'; }, 50); }
                         placed++;
@@ -659,7 +655,6 @@
                 el.dataset.r = r; el.dataset.c = c;
                 
                 const inner = document.createElement('div'); 
-                // Класс .sprite подхватит переменные, которые мы установим родителю!
                 inner.classList.add('tile-inner', 'sprite'); 
                 el.appendChild(inner);
                 
@@ -684,7 +679,7 @@
                 const startX = GAP + c * (TILE_SIZE + GAP); const startY = GAP + r * (TILE_SIZE + GAP);
                 for(let i=0; i<6; i++) {
                     const shard = document.createElement('div'); 
-                    shard.className = 'stone-shard sprite unmovable'; // Использование атласа
+                    shard.className = 'stone-shard sprite unmovable'; 
                     shard.style.width = `${TILE_SIZE/2}px`; shard.style.height = `${TILE_SIZE/2}px`; 
                     shard.style.left = `${startX + TILE_SIZE/4}px`; shard.style.top = `${startY + TILE_SIZE/4}px`; 
                     boardElement.appendChild(shard);
@@ -813,7 +808,7 @@
                     bonusInfo.forEach(info => {
                         let target = info.target; matches.delete(target);
                         target.color = null; target.bonus = info.type; 
-                        target.element.className = `tile ${info.type}`; // Снова подхватывается атлас
+                        target.element.className = `tile ${info.type}`; 
                         AudioEngine.play('create_bonus');
                     });
                     stones.forEach(s => matches.add(s)); updateGoalsAndScore(matches); await animateDestruction(matches); await dropTiles(); firstCycle = false;
@@ -835,7 +830,7 @@
                         const startX = GAP + t.c * (TILE_SIZE + GAP); const startY = GAP + t.r * (TILE_SIZE + GAP);
                         [{rot:0,tx:0,ty:-1000}, {rot:180,tx:0,ty:1000}, {rot:-90,tx:-1000,ty:0}, {rot:90,tx:1000,ty:0}].forEach(d => {
                             const r = document.createElement('div'); 
-                            r.className = 'flying-rocket sprite rocket'; // Ракеты летят из атласа!
+                            r.className = 'flying-rocket sprite rocket'; 
                             r.style.width = `var(--tile-size)`; r.style.height = `var(--tile-size)`; 
                             r.style.left = `${startX}px`; r.style.top = `${startY}px`; 
                             r.style.transform = `translate(0, 0) rotate(${d.rot}deg)`; boardElement.appendChild(r);
@@ -1015,7 +1010,6 @@
                 if (gameMode === 'wall') return; 
                 let html = '';
                 for (const [key, val] of Object.entries(goals)) {
-                    // Используем атлас для отображения иконки целей!
                     const bgClass = key === 'unmovable' ? 'unmovable' : `tile-${key}`;
                     html += `<div class="flex flex-col items-center" style="margin: 2px 6px;">
                                 <div class="sprite ${bgClass}" style="width:30px; height:30px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>
