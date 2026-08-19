@@ -127,13 +127,14 @@
         .tile { position: absolute; top: 0; left: 0; transition: transform 0.3s ease-in-out; will-change: transform; display: flex; justify-content: center; align-items: center; z-index: 10; }
         .tile-inner { height: 90%; width: calc(90% * (var(--sw) / var(--sh))); transition: transform 0.2s ease, filter 0.2s; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); }
         
-        /* === ОВЕРЛЕЙ ЛЬДА === */
+        /* === ОВЕРЛЕЙ ЛЬДА (ДОБАВЛЕНА ПРОЗРАЧНОСТЬ) === */
         .ice-overlay {
             position: absolute;
             top: -10%; left: -10%; width: 120%; height: 120%;
             background-image: url('tile-ice.png');
             background-size: 100% 100%; background-repeat: no-repeat;
             pointer-events: none; z-index: 15;
+            opacity: 0.75; /* <--- Прозрачность льда на фишке */
             filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
         }
         
@@ -159,7 +160,9 @@
         
         .flying-rocket { position: absolute; z-index: 200; pointer-events: none; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); transition: transform 0.6s cubic-bezier(0.3, 0, 0.8, 1); height: var(--tile-size); width: calc(var(--tile-size) * (var(--sw) / var(--sh))); }
         .stone-shard { position: absolute; filter: grayscale(0.2); pointer-events: none; z-index: 100; transition: transform 0.5s ease-out, opacity 0.5s ease-out; height: calc(var(--tile-size) / 2); width: calc((var(--tile-size) / 2) * (var(--sw) / var(--sh))); }
-        .ice-shard { position: absolute; filter: brightness(1.5) drop-shadow(0 2px 2px rgba(255,255,255,0.8)); pointer-events: none; z-index: 100; background: url('tile-ice.png') center/contain no-repeat; transition: transform 0.5s ease-out, opacity 0.5s ease-out; height: calc(var(--tile-size) / 2); width: calc(var(--tile-size) / 2); }
+        
+        /* Прозрачность для осколков льда */
+        .ice-shard { position: absolute; opacity: 0.75; filter: brightness(1.5) drop-shadow(0 2px 2px rgba(255,255,255,0.8)); pointer-events: none; z-index: 100; background: url('tile-ice.png') center/contain no-repeat; transition: transform 0.5s ease-out, opacity 0.5s ease-out; height: calc(var(--tile-size) / 2); width: calc(var(--tile-size) / 2); }
         
         .modal-text-line { font-size: 1.4rem; font-weight: 900; color: var(--text-secondary); text-shadow: 0 1px 0 rgba(255,255,255,0.8); margin-bottom: 1.5rem;}
         .modal-text-highlight { color: var(--btn-bottom); font-size: 1.8rem; text-shadow: 0 2px 0 rgba(0,0,0,0.1);}
@@ -303,7 +306,8 @@
                     <div class="rule-text"><strong>Камень</strong> Не сдвигается. Собирай комбинации рядом, чтобы разбить.</div>
                 </div>
                 <div class="rule-item">
-                    <div class="rule-icon" style="position:relative;"><img src="tile-ice.png" style="position:absolute; width: 120%; height: 120%;"><div class="sprite tile-blue" style="height:25px; width: calc(25px * (var(--sw) / var(--sh)));"></div></div>
+                    <!-- Прозрачность льда в окне правил -->
+                    <div class="rule-icon" style="position:relative;"><img src="tile-ice.png" style="position:absolute; width: 120%; height: 120%; opacity: 0.75;"><div class="sprite tile-blue" style="height:25px; width: calc(25px * (var(--sw) / var(--sh)));"></div></div>
                     <div class="rule-text"><strong>Лёд</strong> Собери комбинацию С ЭТОЙ ФИШКОЙ, чтобы расколоть лёд!</div>
                 </div>
                 <div class="rule-item">
@@ -354,7 +358,6 @@
         wakeUp() { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(()=>{}); }
     };
 
-    // --- PRNG: ГЕНЕРАТОР ДЕТЕРМИНИРОВАННЫХ ЧИСЕЛ ---
     class PRNG {
         constructor(seed) { this.seed = seed; }
         next() {
@@ -492,7 +495,6 @@
                 return maxColor || getRandomColor();
             }
             
-            // === ПЕРЕПИСАННАЯ ГЕНЕРАЦИЯ УРОВНЕЙ (СИСТЕМА ИЗ ПРОМТА) ===
             function getSymmetricIndices(rng, count, mirrorX, mirrorY) {
                 let indices = new Set();
                 let attempts = 0;
@@ -509,9 +511,8 @@
             }
 
             function setupProceduralLevel(levelNum) {
-                const rng = new PRNG(levelNum + 12345); // Строго детерминированный Seed
+                const rng = new PRNG(levelNum + 12345); 
                 
-                // Кривая сложности: Линейный рост + Волна (синусоида) для передышек
                 let diffLevel = Math.min(levelNum, 300);
                 const wave = Math.sin(diffLevel * 0.5) * 15;
                 const difficulty = 10 + diffLevel * 1.2 + wave; 
@@ -546,7 +547,6 @@
                         movesLimit = 20 + Math.floor(difficulty / 5);
                     } 
                     else if (archetype === 'color') { 
-                        // Сборщик: меньше цветов, гигантские цели
                         activeColorsCount = difficulty > 120 ? 4 : 3; 
                         let numGoals = 2;
                         for(let i=0; i<numGoals; i++) goals[shuffledColors[i]] = rng.nextInt(30, 45) + Math.floor(difficulty/3);
@@ -554,7 +554,6 @@
                         movesLimit = 25 + Math.floor(difficulty / 5); 
                     } 
                     else if (archetype === 'combined') { 
-                        // Каменоломня + Лед
                         activeColorsCount = difficulty > 100 ? 5 : 4;
                         window.levelConfig.stoneCount = rng.nextInt(10, 15) + Math.floor(difficulty / 5); 
                         window.levelConfig.iceCount = levelNum >= 6 ? rng.nextInt(5, 10) + Math.floor(difficulty / 6) : 0;
@@ -571,7 +570,6 @@
                         movesLimit = 12 + Math.floor(difficulty / 8); 
                     } 
                     else { 
-                        // Hardcore
                         activeColorsCount = difficulty > 150 ? 5 : 4; 
                         for(let i=0; i<3; i++) goals[shuffledColors[i]] = rng.nextInt(15, 20) + Math.floor(difficulty/5);
                         window.levelConfig.stoneCount = rng.nextInt(10, 15) + Math.floor(difficulty / 4); 
@@ -579,7 +577,6 @@
                         movesLimit = 16 + Math.floor(difficulty / 6); 
                     }
 
-                    // Жесткие рамки
                     if (movesLimit > 35) movesLimit = 35;
                     if (movesLimit < 10) movesLimit = 10;
                     if (window.levelConfig.stoneCount > 28) window.levelConfig.stoneCount = 28;
@@ -624,7 +621,6 @@
             window.addEventListener('resize', resizeBoard);
             
             function checkValidMoves() {
-                // Легковесный чекер доступных ходов (свап вправо и вниз)
                 for(let r=0; r<ROWS; r++){
                     for(let c=0; c<COLS; c++){
                         if (c<COLS-1 && board[r][c] && board[r][c+1] && board[r][c].type!=='unmovable' && board[r][c+1].type!=='unmovable') { 
@@ -657,15 +653,13 @@
                     }
                 }
                 
-                // РАЗМЕЩЕНИЕ ПРЕПЯТСТВИЙ (Детерминированно по шаблону)
                 const rng = window.levelConfig ? window.levelConfig.rng : new PRNG(Date.now());
                 const stoneCount = window.levelConfig ? window.levelConfig.stoneCount : 0;
                 const iceCount = window.levelConfig ? window.levelConfig.iceCount : 0;
                 
-                // Выбираем симметричные координаты
                 const mirrorX = rng.next() > 0.3; const mirrorY = rng.next() > 0.5;
                 const stonePos = getSymmetricIndices(rng, stoneCount, mirrorX, mirrorY);
-                const icePos = getSymmetricIndices(rng, iceCount, mirrorX, !mirrorY); // Лед чуть по-другому
+                const icePos = getSymmetricIndices(rng, iceCount, mirrorX, !mirrorY); 
 
                 for (let r = 0; r < ROWS; r++) {
                     for (let c = 0; c < COLS; c++) { 
@@ -678,7 +672,7 @@
                         if (isStone) {
                             createTile(r, c, 'unmovable');
                         } else {
-                            let tile = createTile(r, c, 'gem', window.activeColors[0]); // Заполняем временно первым цветом
+                            let tile = createTile(r, c, 'gem', window.activeColors[0]); 
                             if (icePos.includes(`${r},${c}`)) {
                                 tile.hasIce = true;
                                 const iceEl = document.createElement('div');
@@ -689,12 +683,10 @@
                     }
                 }
                 
-                // ВАЛИДАТОР ПОЛЯ (Заполняем так, чтобы не было матчей, но были ходы)
                 let attempts = 0;
                 let validBoard = false;
                 
                 while(!validBoard && attempts < 50) {
-                    // Заполняем поле цветами без готовых матчей
                     for (let r = 0; r < ROWS; r++) {
                         for (let c = 0; c < COLS; c++) { 
                             let t = board[r][c];
@@ -713,7 +705,6 @@
                     attempts++;
                 }
 
-                // Корректируем цели, если препятствий разместилось меньше бюджета
                 if (gameMode === 'levels') {
                     let actualStones = 0; let actualIce = 0;
                     for (let r = 0; r < ROWS; r++) {
@@ -854,10 +845,8 @@
                 
                 activeSwapT1 = null; activeSwapT2 = null;
                 
-                // Защита от тупика после хода
                 if (!isProcessing && !checkValidMoves() && gameMode !== 'wall') {
-                    // Простая перетасовка при тупике (визуально фишки останутся, но цвета сменятся при следующем падении, 
-                    // или можно просто дать им упасть. Здесь надежная защита на старте решает 99% проблем).
+                    // Простая защита от тупика
                 }
 
                 if (wallShiftNeeded) { wallShiftNeeded = false; await shiftWallUp(); await dropTiles(); await processMatches(); }
@@ -962,7 +951,6 @@
                         target.color = null; target.bonus = info.type; 
                         target.element.className = `tile ${info.type}`; 
                         
-                        // Удаляем лед при превращении в бустер
                         if (target.hasIce) { target.hasIce = false; if (goals['ice']) { goals['ice']--; if(goals['ice']<=0) delete goals['ice']; } showStoneShatter(target.r, target.c, true); const iceOl = target.element.querySelector('.ice-overlay'); if(iceOl) iceOl.remove(); }
                         
                         AudioEngine.play('create_bonus');
@@ -1123,7 +1111,6 @@
                 }
                 await new Promise(r => setTimeout(r, 200));
                 
-                // Случайные фишки при падении (тут PRNG не используется, чтобы игра была живой)
                 for (let c = 0; c < COLS; c++) {
                     for (let r = 0; r < ROWS; r++) {
                         if (board[r][c] === null) {
@@ -1252,10 +1239,9 @@
                     if (key === 'unmovable') {
                         iconHtml = `<div class="sprite unmovable" style="height:35px; width: calc(35px * (var(--sw) / var(--sh))); filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>`;
                     } else if (key === 'ice') {
-                        // Отрисовка льда в целях: Иконка льда поверх случайной фишки из пула
                         iconHtml = `<div style="position:relative; width:35px; height:35px;">
                                         <div class="sprite tile-${window.activeColors[0]}" style="position:absolute; top:2px; left:2px; right:2px; bottom:2px; width:100%; height:100%;"></div>
-                                        <img src="tile-ice.png" style="position:absolute; top:-10%; left:-10%; width:120%; height:120%; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));">
+                                        <img src="tile-ice.png" style="position:absolute; top:-10%; left:-10%; width:120%; height:120%; opacity: 0.75; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));">
                                     </div>`;
                     } else {
                         iconHtml = `<div class="sprite tile-${key}" style="height:35px; width: calc(35px * (var(--sw) / var(--sh))); filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>`;
