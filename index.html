@@ -119,22 +119,27 @@
         .header-item span { font-size: 1.3rem; font-weight: 900; color: #fff; text-shadow: 0 2px 3px rgba(0,0,0,0.8); line-height: 1; }
         
         .pause-btn-container .icon-btn { width: 48px; height: 48px; }
-        #goals-container { grid-column: 1 / -1; padding: 6px 12px; margin: 0 0.2rem; display: flex; align-items: center; justify-content: center; min-height: 45px; height: auto; border-radius: 20px; }
+        /* Минимальная высота чтобы окно целей не прыгало */
+        #goals-container { grid-column: 1 / -1; padding: 6px 12px; margin: 0 0.2rem; display: flex; align-items: center; justify-content: center; min-height: 70px; border-radius: 20px; }
         #goals-list-wrapper { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; width: 100%; gap: 6px; }
         
         #game-board { position: relative; overflow: hidden; background-color: var(--board-bg); border: 6px solid var(--board-border); border-radius: 24px; box-sizing: border-box; box-shadow: 0 10px 0 var(--board-shadow), 0 20px 30px rgba(0,0,0,0.5), inset 0 4px 0 rgba(255,255,255,0.5), inset 0 -4px 0 rgba(0,0,0,0.1); }
         .slot { position: absolute; background-color: rgba(0, 0, 0, 0.05); border-radius: 8px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.5); z-index: 1; }
+        
+        /* Z-INDEX для правильного перекрытия + фон для камней */
         .tile { position: absolute; top: 0; left: 0; transition: transform 0.3s ease-in-out; will-change: transform; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        .tile.unmovable { z-index: 20; background-color: var(--board-bg); border-radius: 8px; }
+        
         .tile-inner { height: 90%; width: calc(90% * (var(--sw) / var(--sh))); transition: transform 0.2s ease, filter 0.2s; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); }
         
-        /* === ОВЕРЛЕЙ ЛЬДА (ДОБАВЛЕНА ПРОЗРАЧНОСТЬ) === */
+        /* === ОВЕРЛЕЙ ЛЬДА (Прозрачность 0.5) === */
         .ice-overlay {
             position: absolute;
             top: -10%; left: -10%; width: 120%; height: 120%;
             background-image: url('tile-ice.png');
             background-size: 100% 100%; background-repeat: no-repeat;
             pointer-events: none; z-index: 15;
-            opacity: 0.75; /* <--- Прозрачность льда на фишке */
+            opacity: 0.5;
             filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
         }
         
@@ -142,7 +147,10 @@
             background-image: none !important; background-size: contain !important; background-position: center !important; width: 90% !important;
         }
         .tile.rocket-v .tile-inner { background-image: url('tile-rocket-bi.png') !important; animation: bonus-pulse 1.5s infinite ease-in-out; }
-        .tile.rocket-h .tile-inner { background-image: url('tile-rocket-bi.png') !important; animation: pulse-h 1.5s infinite ease-in-out; }
+        
+        /* Исправление горизонтальной ракеты (жесткий поворот) */
+        .tile.rocket-h .tile-inner { background-image: url('tile-rocket-bi.png') !important; transform: rotate(90deg); animation: pulse-h 1.5s infinite ease-in-out; }
+        
         .tile.color-bomb .tile-inner { background-image: url('tile-color-bomb.png') !important; animation: pulse-color 2.5s infinite ease-in-out; }
 
         @keyframes bonus-pulse { 0% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); } 50% { transform: scale(1.15); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6)); } 100% { transform: scale(1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); } }
@@ -160,9 +168,7 @@
         
         .flying-rocket { position: absolute; z-index: 200; pointer-events: none; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); transition: transform 0.6s cubic-bezier(0.3, 0, 0.8, 1); height: var(--tile-size); width: calc(var(--tile-size) * (var(--sw) / var(--sh))); }
         .stone-shard { position: absolute; filter: grayscale(0.2); pointer-events: none; z-index: 100; transition: transform 0.5s ease-out, opacity 0.5s ease-out; height: calc(var(--tile-size) / 2); width: calc((var(--tile-size) / 2) * (var(--sw) / var(--sh))); }
-        
-        /* Прозрачность для осколков льда */
-        .ice-shard { position: absolute; opacity: 0.75; filter: brightness(1.5) drop-shadow(0 2px 2px rgba(255,255,255,0.8)); pointer-events: none; z-index: 100; background: url('tile-ice.png') center/contain no-repeat; transition: transform 0.5s ease-out, opacity 0.5s ease-out; height: calc(var(--tile-size) / 2); width: calc(var(--tile-size) / 2); }
+        .ice-shard { position: absolute; opacity: 0.5; filter: brightness(1.5) drop-shadow(0 2px 2px rgba(255,255,255,0.8)); pointer-events: none; z-index: 100; background: url('tile-ice.png') center/contain no-repeat; transition: transform 0.5s ease-out, opacity 0.5s ease-out; height: calc(var(--tile-size) / 2); width: calc(var(--tile-size) / 2); }
         
         .modal-text-line { font-size: 1.4rem; font-weight: 900; color: var(--text-secondary); text-shadow: 0 1px 0 rgba(255,255,255,0.8); margin-bottom: 1.5rem;}
         .modal-text-highlight { color: var(--btn-bottom); font-size: 1.8rem; text-shadow: 0 2px 0 rgba(0,0,0,0.1);}
@@ -306,8 +312,11 @@
                     <div class="rule-text"><strong>Камень</strong> Не сдвигается. Собирай комбинации рядом, чтобы разбить.</div>
                 </div>
                 <div class="rule-item">
-                    <!-- Прозрачность льда в окне правил -->
-                    <div class="rule-icon" style="position:relative;"><img src="tile-ice.png" style="position:absolute; width: 120%; height: 120%; opacity: 0.75;"><div class="sprite tile-blue" style="height:25px; width: calc(25px * (var(--sw) / var(--sh)));"></div></div>
+                    <!-- Исправлен размер льда в правилах -->
+                    <div class="rule-icon" style="position:relative;">
+                        <div class="sprite tile-blue" style="height:35px; width: calc(35px * (var(--sw) / var(--sh))); position:absolute;"></div>
+                        <img src="tile-ice.png" style="height:42px; width:42px; position:absolute; opacity: 0.5;">
+                    </div>
                     <div class="rule-text"><strong>Лёд</strong> Собери комбинацию С ЭТОЙ ФИШКОЙ, чтобы расколоть лёд!</div>
                 </div>
                 <div class="rule-item">
@@ -537,54 +546,63 @@
                     const archetype = archetypes[archIndex];
 
                     let activeColorsCount = 4;
+                    const scale = diffLevel / 300; 
 
                     if (archetype === 'clear' || levelNum === 1) { 
-                        activeColorsCount = difficulty > 80 ? 5 : 4;
-                        let numGoals = rng.nextInt(2, 3);
-                        for(let i=0; i<numGoals; i++) goals[shuffledColors[i]] = rng.nextInt(15, 25) + Math.floor(difficulty/4);
-                        window.levelConfig.stoneCount = Math.floor(difficulty / 6);
-                        window.levelConfig.iceCount = levelNum >= 6 ? Math.floor(difficulty / 8) : 0;
-                        movesLimit = 20 + Math.floor(difficulty / 5);
+                        activeColorsCount = diffLevel > 100 ? 5 : 4;
+                        let numGoals = 2 + Math.floor(scale * 2); 
+                        if(numGoals > 3) numGoals = 3;
+                        let amount = 15 + Math.floor(scale * 30); 
+                        for(let i=0; i<numGoals; i++) goals[shuffledColors[i]] = amount;
+                        window.levelConfig.stoneCount = Math.floor(scale * 15); 
+                        movesLimit = 20 + Math.floor(scale * 15); 
                     } 
                     else if (archetype === 'color') { 
-                        activeColorsCount = difficulty > 120 ? 4 : 3; 
+                        activeColorsCount = diffLevel > 150 ? 4 : 3; 
                         let numGoals = 2;
-                        for(let i=0; i<numGoals; i++) goals[shuffledColors[i]] = rng.nextInt(30, 45) + Math.floor(difficulty/3);
-                        window.levelConfig.stoneCount = Math.floor(difficulty / 10);
-                        movesLimit = 25 + Math.floor(difficulty / 5); 
+                        let amount = 30 + Math.floor(scale * 50); 
+                        for(let i=0; i<numGoals; i++) goals[shuffled[i]] = amount;
+                        window.levelConfig.stoneCount = Math.floor(scale * 8); 
+                        movesLimit = 25 + Math.floor(scale * 10); 
                     } 
                     else if (archetype === 'combined') { 
-                        activeColorsCount = difficulty > 100 ? 5 : 4;
-                        window.levelConfig.stoneCount = rng.nextInt(10, 15) + Math.floor(difficulty / 5); 
-                        window.levelConfig.iceCount = levelNum >= 6 ? rng.nextInt(5, 10) + Math.floor(difficulty / 6) : 0;
-                        
+                        activeColorsCount = diffLevel > 80 ? 5 : 4;
+                        window.levelConfig.stoneCount = 10 + Math.floor(scale * 20); 
+                        if (window.levelConfig.stoneCount > 30) window.levelConfig.stoneCount = 30;
                         goals['unmovable'] = window.levelConfig.stoneCount;
-                        if(window.levelConfig.iceCount > 0) goals['ice'] = window.levelConfig.iceCount;
-                        goals[shuffledColors[0]] = 15 + Math.floor(difficulty / 5); 
-                        movesLimit = 22 + Math.floor(difficulty / 4.5); 
+                        goals[shuffledColors[0]] = 10 + Math.floor(scale * 20); 
+                        movesLimit = 22 + Math.floor(scale * 13); 
                     } 
                     else if (archetype === 'sprint') { 
                         activeColorsCount = 4; 
-                        for(let i=0; i<2; i++) goals[shuffledColors[i]] = rng.nextInt(15, 20) + Math.floor(difficulty/5);
-                        window.levelConfig.stoneCount = Math.floor(difficulty / 10); 
-                        movesLimit = 12 + Math.floor(difficulty / 8); 
+                        let numGoals = 2;
+                        let amount = 15 + Math.floor(scale * 25); 
+                        for(let i=0; i<numGoals; i++) goals[shuffled[i]] = amount;
+                        window.levelConfig.stoneCount = Math.floor(scale * 10); 
+                        movesLimit = 12 + Math.floor(scale * 8); 
                     } 
                     else { 
-                        activeColorsCount = difficulty > 150 ? 5 : 4; 
-                        for(let i=0; i<3; i++) goals[shuffledColors[i]] = rng.nextInt(15, 20) + Math.floor(difficulty/5);
-                        window.levelConfig.stoneCount = rng.nextInt(10, 15) + Math.floor(difficulty / 4); 
-                        window.levelConfig.iceCount = levelNum >= 6 ? Math.floor(difficulty / 5) : 0;
-                        movesLimit = 16 + Math.floor(difficulty / 6); 
+                        activeColorsCount = diffLevel > 120 ? 5 : 4; 
+                        let numGoals = 3;
+                        let amount = 15 + Math.floor(scale * 25); 
+                        for(let i=0; i<numGoals; i++) goals[shuffled[i]] = amount;
+                        window.levelConfig.stoneCount = 12 + Math.floor(scale * 18); 
+                        movesLimit = 18 + Math.floor(scale * 10); 
                     }
 
                     if (movesLimit > 35) movesLimit = 35;
                     if (movesLimit < 10) movesLimit = 10;
-                    if (window.levelConfig.stoneCount > 28) window.levelConfig.stoneCount = 28;
-                    if (window.levelConfig.iceCount > 25) window.levelConfig.iceCount = 25;
+                    
+                    // Внедрение льда на уровнях > 5
+                    if (levelNum >= 6 && rng.next() > 0.4) {
+                        window.levelConfig.iceCount = 5 + Math.floor(scale * 15);
+                        goals['ice'] = window.levelConfig.iceCount;
+                    }
                     
                     window.activeColors = shuffledColors.slice(0, activeColorsCount);
                 }
 
+                window.currentWantedStones = window.levelConfig.stoneCount; 
                 updateGoalsUI(); 
                 updateMovesDisplay();
             }
@@ -623,14 +641,14 @@
             function checkValidMoves() {
                 for(let r=0; r<ROWS; r++){
                     for(let c=0; c<COLS; c++){
-                        if (c<COLS-1 && board[r][c] && board[r][c+1] && board[r][c].type!=='unmovable' && board[r][c+1].type!=='unmovable') { 
+                        if (c<COLS-1 && board[r][c] && board[r][c+1] && board[r][c].type!=='unmovable' && board[r][c+1].type!=='unmovable' && !board[r][c].hasIce && !board[r][c+1].hasIce) { 
                             let t1=board[r][c], t2=board[r][c+1];
                             board[r][c]=t2; board[r][c+1]=t1; t1.c=c+1; t2.c=c;
                             let matches = findMatches(false).matches;
                             board[r][c]=t1; board[r][c+1]=t2; t1.c=c; t2.c=c+1;
                             if(matches.size > 0) return true;
                         }
-                        if (r<ROWS-1 && board[r][c] && board[r+1][c] && board[r][c].type!=='unmovable' && board[r+1][c].type!=='unmovable') { 
+                        if (r<ROWS-1 && board[r][c] && board[r+1][c] && board[r][c].type!=='unmovable' && board[r+1][c].type!=='unmovable' && !board[r][c].hasIce && !board[r+1][c].hasIce) { 
                             let t1=board[r][c], t2=board[r+1][c];
                             board[r][c]=t2; board[r+1][c]=t1; t1.r=r+1; t2.r=r;
                             let matches = findMatches(false).matches;
@@ -801,7 +819,7 @@
                     const now = Date.now();
                     if (now - lastTap < 300) { 
                         const t = board[dragStart.r][dragStart.c];
-                        if (t?.bonus) { 
+                        if (t?.bonus && !t?.hasIce) { 
                             isProcessing = true; incrementMoves(); await handleBonusExplosion(new Set([t])); 
                             if (wallShiftNeeded) { wallShiftNeeded = false; await shiftWallUp(); await dropTiles(); await processMatches(); }
                             if (!checkGameStatus()) isProcessing = false; 
@@ -817,7 +835,8 @@
                 if (dir === 'left') c2--; else if (dir === 'right') c2++; else if (dir === 'up') r2--; else r2++;
                 if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) return;
                 const t1 = board[r][c], t2 = board[r2][c2];
-                if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable') return; 
+                // Запрет свайпа если это камень ИЛИ если на фишке лед!
+                if (!t1 || !t2 || t1.type === 'unmovable' || t2.type === 'unmovable' || t1.hasIce || t2.hasIce) return; 
                 
                 isProcessing = true; activeSwapT1 = t1; activeSwapT2 = t2;
                 await animateSwap(t1, t2);
@@ -834,21 +853,18 @@
                     const targetColor = isColor1 ? t2.color : t1.color;
                     await handleColorBomb(cb, targetColor);
                 } else if (t1.bonus || t2.bonus) {
-                    const { matches } = findMatches(true);
-                    if (matches.size > 0) { incrementMoves(); await processMatches(); } 
-                    else { await animateSwap(t1, t2); }
+                    // Активация бустера при простом свайпе (Баг с ракетой пофикшен!)
+                    incrementMoves();
+                    const booster = t1.bonus ? t1 : t2;
+                    await handleBonusExplosion(new Set([booster]));
                 } else {
                     const { matches } = findMatches(true);
                     if (matches.size > 0) { incrementMoves(); await processMatches(); } 
-                    else { await animateSwap(t1, t2); }
+                    else { await animateSwap(t1, t2); } // Возврат
                 }
                 
                 activeSwapT1 = null; activeSwapT2 = null;
                 
-                if (!isProcessing && !checkValidMoves() && gameMode !== 'wall') {
-                    // Простая защита от тупика
-                }
-
                 if (wallShiftNeeded) { wallShiftNeeded = false; await shiftWallUp(); await dropTiles(); await processMatches(); }
                 if (!checkGameStatus()) isProcessing = false;
             }
@@ -945,55 +961,133 @@
                     const stones = findAdjacentUnmovables(matches);
                     if (stones.size > 0) { AudioEngine.play('stone_break'); stones.forEach(s => showStoneShatter(s.r, s.c)); }
                     
+                    const finalDestroy = new Set();
+                    let brokeIce = false;
+
+                    matches.forEach(t => {
+                        if (t.hasIce) {
+                            // Фишка во льду не уничтожается, лед просто слетает!
+                            t.hasIce = false;
+                            const iceOl = t.element.querySelector('.ice-overlay');
+                            if (iceOl) iceOl.remove();
+                            showStoneShatter(t.r, t.c, true);
+                            if (goals['ice']) { goals['ice']--; if(goals['ice']<=0) delete goals['ice']; }
+                            brokeIce = true;
+                        } else {
+                            finalDestroy.add(t);
+                        }
+                    });
+                    if(brokeIce) AudioEngine.play('stone_break');
+                    
+                    stones.forEach(s => finalDestroy.add(s));
+                    
                     bonusInfo.forEach(info => {
-                        let target = info.target; matches.delete(target);
+                        let target = info.target; 
+                        finalDestroy.delete(target); // Сохраняем саму фишку для бустера
                         target.boosterColor = target.color; 
                         target.color = null; target.bonus = info.type; 
                         target.element.className = `tile ${info.type}`; 
-                        
-                        if (target.hasIce) { target.hasIce = false; if (goals['ice']) { goals['ice']--; if(goals['ice']<=0) delete goals['ice']; } showStoneShatter(target.r, target.c, true); const iceOl = target.element.querySelector('.ice-overlay'); if(iceOl) iceOl.remove(); }
-                        
                         AudioEngine.play('create_bonus');
                     });
                     
-                    stones.forEach(s => matches.add(s)); updateGoalsAndScore(matches); await animateDestruction(matches); await dropTiles(); firstCycle = false;
+                    updateGoalsAndScore(finalDestroy); await animateDestruction(finalDestroy); await dropTiles(); firstCycle = false;
                 }
             }
             
             async function handleBonusExplosion(initialSet) {
-                const allToDestroy = new Set(); const queue = [...initialSet]; const processed = new Set();
+                const finalDestroy = new Set(); 
+                const queue = [...initialSet]; 
+                const processed = new Set();
                 let playedBomb = false; let playedRocket = false;
+                let brokeIce = false;
                 
                 while(queue.length) {
                     const t = queue.shift(); if (processed.has(t)) continue;
-                    processed.add(t); allToDestroy.add(t);
+                    processed.add(t);
+                    
+                    if (t.hasIce && !t.bonus) {
+                        // Обычная фишка во льду - только разбиваем лед
+                        t.hasIce = false;
+                        const iceOl = t.element.querySelector('.ice-overlay');
+                        if(iceOl) iceOl.remove();
+                        showStoneShatter(t.r, t.c, true);
+                        if (goals['ice']) { goals['ice']--; if(goals['ice']<=0) delete goals['ice']; }
+                        brokeIce = true;
+                        continue;
+                    }
+                    
+                    finalDestroy.add(t);
+                    
+                    if (t.hasIce && t.bonus) {
+                        t.hasIce = false;
+                        const iceOl = t.element.querySelector('.ice-overlay');
+                        if(iceOl) iceOl.remove();
+                        showStoneShatter(t.r, t.c, true);
+                        if (goals['ice']) { goals['ice']--; if(goals['ice']<=0) delete goals['ice']; }
+                        brokeIce = true;
+                    }
                     
                     if (t.bonus === 'bomb') {
                         showVisualEffect(t.r, t.c, 'bomb'); if(!playedBomb) { AudioEngine.play('bomb'); playedBomb = true; }
-                        for(let r=t.r-1; r<=t.r+1; r++) { for(let c=t.c-1; c<=t.c+1; c++) { if(r>=0 && r<ROWS && c>=0 && c<COLS && board[r][c]) { allToDestroy.add(board[r][c]); if(board[r][c].bonus && !processed.has(board[r][c])) queue.push(board[r][c]); } } }
+                        for(let r=t.r-1; r<=t.r+1; r++) { 
+                            for(let c=t.c-1; c<=t.c+1; c++) { 
+                                if(r>=0 && r<ROWS && c>=0 && c<COLS && board[r][c]) { 
+                                    const n = board[r][c];
+                                    if(!processed.has(n)) {
+                                        if(n.bonus) queue.push(n);
+                                        else if (n.hasIce) queue.push(n); // Бустер задевает лед
+                                        else finalDestroy.add(n); 
+                                    }
+                                } 
+                            } 
+                        }
                     } else if (t.bonus === 'rocket-v' || t.bonus === 'rocket-h' || t.bonus === 'rocket') {
                         if(!playedRocket) { AudioEngine.play('rocket'); playedRocket = true; }
                         if (t.bonus === 'rocket-v') {
                             spawnFlyingRockets(t.r, t.c, [{rot:0,tx:0,ty:-1000}, {rot:180,tx:0,ty:1000}]);
-                            for(let r=0; r<ROWS; r++) { if(board[r][t.c]) { allToDestroy.add(board[r][t.c]); if(board[r][t.c].bonus && !processed.has(board[r][t.c])) queue.push(board[r][t.c]); } }
+                            for(let r=0; r<ROWS; r++) { 
+                                if(board[r][t.c]) { 
+                                    const n = board[r][t.c];
+                                    if(!processed.has(n)) {
+                                        if(n.bonus) queue.push(n);
+                                        else if (n.hasIce) queue.push(n);
+                                        else finalDestroy.add(n);
+                                    }
+                                } 
+                            }
                         } else {
                             spawnFlyingRockets(t.r, t.c, [{rot:-90,tx:-1000,ty:0}, {rot:90,tx:1000,ty:0}]);
-                            for(let c=0; c<COLS; c++) { if(board[t.r][c]) { allToDestroy.add(board[t.r][c]); if(board[t.r][c].bonus && !processed.has(board[t.r][c])) queue.push(board[t.r][c]); } }
+                            for(let c=0; c<COLS; c++) { 
+                                if(board[t.r][c]) { 
+                                    const n = board[t.r][c];
+                                    if(!processed.has(n)) {
+                                        if(n.bonus) queue.push(n);
+                                        else if (n.hasIce) queue.push(n);
+                                        else finalDestroy.add(n);
+                                    }
+                                } 
+                            }
                         }
                     } else if (t.bonus === 'color-bomb') {
                         const targetColor = getMostPrevalentColor();
                         showVisualEffect(t.r, t.c, 'combo');
                         for(let r=0; r<ROWS; r++) {
                             for(let c=0; c<COLS; c++) {
-                                if(board[r][c] && board[r][c].color === targetColor) {
-                                    allToDestroy.add(board[r][c]);
-                                    if(board[r][c].bonus && !processed.has(board[r][c])) queue.push(board[r][c]);
+                                const n = board[r][c];
+                                if(n && n.color === targetColor) {
+                                    if(!processed.has(n)) {
+                                        if(n.bonus) queue.push(n);
+                                        else if (n.hasIce) queue.push(n);
+                                        else finalDestroy.add(n);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                updateGoalsAndScore(allToDestroy); await animateDestruction(allToDestroy); await dropTiles(); await processMatches(); 
+                
+                if(brokeIce) AudioEngine.play('stone_break');
+                updateGoalsAndScore(finalDestroy); await animateDestruction(finalDestroy); await dropTiles(); await processMatches(); 
             }
             
             async function handleColorBomb(cbTile, targetColor) {
@@ -1001,17 +1095,30 @@
                 AudioEngine.play('create_bonus'); 
                 showVisualEffect(cbTile.r, cbTile.c, 'combo');
                 
-                const targets = new Set([cbTile]);
+                const finalDestroy = new Set([cbTile]);
+                let brokeIce = false;
+
                 for(let r=0; r<ROWS; r++) {
                     for(let c=0; c<COLS; c++) {
-                        if(board[r][c] && board[r][c].color === targetColor) {
+                        const t = board[r][c];
+                        if(t && t.color === targetColor && t !== cbTile) {
                             showZapEffect(r, c);
-                            targets.add(board[r][c]);
+                            if (t.hasIce) {
+                                t.hasIce = false;
+                                const iceOl = t.element.querySelector('.ice-overlay');
+                                if (iceOl) iceOl.remove();
+                                showStoneShatter(t.r, t.c, true);
+                                if (goals['ice']) { goals['ice']--; if(goals['ice']<=0) delete goals['ice']; }
+                                brokeIce = true;
+                            } else {
+                                finalDestroy.add(t);
+                            }
                         }
                     }
                 }
+                if(brokeIce) AudioEngine.play('stone_break');
                 await new Promise(res => setTimeout(res, 300));
-                updateGoalsAndScore(targets); await animateDestruction(targets); await dropTiles(); await processMatches();
+                updateGoalsAndScore(finalDestroy); await animateDestruction(finalDestroy); await dropTiles(); await processMatches();
             }
             
             async function handleCombo(t1, t2) {
@@ -1076,7 +1183,31 @@
                     for(let c = cC-1; c <= cC+1; c++) { if(c>=0 && c<COLS) { for(let r=0; r<ROWS; r++) { if(board[r][c]) allToDestroy.add(board[r][c]); } } }
                 }
 
-                updateGoalsAndScore(allToDestroy); await animateDestruction(allToDestroy); await dropTiles(); await processMatches();
+                const actuallyDestroy = new Set();
+                let brokeIce = false;
+                allToDestroy.forEach(t => {
+                    if (t.hasIce && !t.bonus) {
+                        t.hasIce = false;
+                        const iceOl = t.element.querySelector('.ice-overlay');
+                        if (iceOl) iceOl.remove();
+                        showStoneShatter(t.r, t.c, true);
+                        if (goals['ice']) { goals['ice']--; if(goals['ice']<=0) delete goals['ice']; }
+                        brokeIce = true;
+                    } else {
+                        actuallyDestroy.add(t);
+                        if (t.hasIce && t.bonus) {
+                            t.hasIce = false;
+                            const iceOl = t.element.querySelector('.ice-overlay');
+                            if (iceOl) iceOl.remove();
+                            showStoneShatter(t.r, t.c, true);
+                            if (goals['ice']) { goals['ice']--; if(goals['ice']<=0) delete goals['ice']; }
+                            brokeIce = true;
+                        }
+                    }
+                });
+                if(brokeIce) AudioEngine.play('stone_break');
+
+                updateGoalsAndScore(actuallyDestroy); await animateDestruction(actuallyDestroy); await dropTiles(); await processMatches();
             }
             
             function updateGoalsAndScore(tiles) {
@@ -1084,11 +1215,6 @@
                 tiles.forEach(t => {
                     points += 10;
                     if (t.type === 'unmovable') { if (goals['unmovable']) { goals['unmovable']--; if (goals['unmovable'] <= 0) delete goals['unmovable']; } } 
-                    if (t.hasIce) {
-                        t.hasIce = false;
-                        if (goals['ice']) { goals['ice']--; if (goals['ice'] <= 0) delete goals['ice']; }
-                        showStoneShatter(t.r, t.c, true); AudioEngine.play('stone_break');
-                    }
                     if (t.color && goals[t.color]) { goals[t.color]--; if (goals[t.color] <= 0) delete goals[t.color]; }
                 });
                 score += points; updateScore(score); updateGoalsUI();
@@ -1104,7 +1230,17 @@
                 for (let c = 0; c < COLS; c++) {
                     for (let r = ROWS - 1; r >= 0; r--) {
                         if (board[r][c] === null) {
-                            let k = r - 1; while (k >= 0 && (board[k][c] === null || board[k][c].type === 'unmovable')) k--;
+                            let k = r - 1; 
+                            while (k >= 0) {
+                                if (board[k][c] !== null) {
+                                    // Лед блокирует падение фишек сверху!
+                                    if (board[k][c].type === 'unmovable' || board[k][c].hasIce) {
+                                        k = -1; 
+                                        break;
+                                    } else { break; }
+                                }
+                                k--;
+                            }
                             if (k >= 0) { const t = board[k][c]; board[r][c] = t; board[k][c] = null; t.r = r; t.element.dataset.r = r; updateTilePosition(t.element, r, c); }
                         }
                     }
@@ -1241,7 +1377,7 @@
                     } else if (key === 'ice') {
                         iconHtml = `<div style="position:relative; width:35px; height:35px;">
                                         <div class="sprite tile-${window.activeColors[0]}" style="position:absolute; top:2px; left:2px; right:2px; bottom:2px; width:100%; height:100%;"></div>
-                                        <img src="tile-ice.png" style="position:absolute; top:-10%; left:-10%; width:120%; height:120%; opacity: 0.75; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));">
+                                        <img src="tile-ice.png" style="position:absolute; top:-10%; left:-10%; width:120%; height:120%; opacity: 0.5; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));">
                                     </div>`;
                     } else {
                         iconHtml = `<div class="sprite tile-${key}" style="height:35px; width: calc(35px * (var(--sw) / var(--sh))); filter: drop-shadow(0 3px 3px rgba(0,0,0,0.5));"></div>`;
