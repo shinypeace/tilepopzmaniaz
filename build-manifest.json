@@ -1,0 +1,622 @@
+{
+  "version": "3.1.0",
+  "created": "2026-09-29T09:17:53.840Z",
+  "files": [
+    {
+      "path": ".nojekyll",
+      "bytes": 0
+    },
+    {
+      "path": "assets/audio/bomb.mp3",
+      "bytes": 13419
+    },
+    {
+      "path": "assets/audio/create_bonus.mp3",
+      "bytes": 4653
+    },
+    {
+      "path": "assets/audio/error.mp3",
+      "bytes": 16763
+    },
+    {
+      "path": "assets/audio/game_music.mp3",
+      "bytes": 3865388
+    },
+    {
+      "path": "assets/audio/lose.mp3",
+      "bytes": 19898
+    },
+    {
+      "path": "assets/audio/match.mp3",
+      "bytes": 9240
+    },
+    {
+      "path": "assets/audio/menu_music.mp3",
+      "bytes": 4202348
+    },
+    {
+      "path": "assets/audio/rocket.mp3",
+      "bytes": 15405
+    },
+    {
+      "path": "assets/audio/stone_break.mp3",
+      "bytes": 6285
+    },
+    {
+      "path": "assets/audio/swap.mp3",
+      "bytes": 11565
+    },
+    {
+      "path": "assets/audio/tap.mp3",
+      "bytes": 8404
+    },
+    {
+      "path": "assets/audio/win.mp3",
+      "bytes": 29325
+    },
+    {
+      "path": "assets/bg-critters.webp",
+      "bytes": 131762
+    },
+    {
+      "path": "assets/favicon.svg",
+      "bytes": 221
+    },
+    {
+      "path": "assets/fonts/nunito-cyrillic.woff2",
+      "bytes": 20776
+    },
+    {
+      "path": "assets/fonts/nunito-latin.woff2",
+      "bytes": 39128
+    },
+    {
+      "path": "assets/fonts/OFL.txt",
+      "bytes": 4385
+    },
+    {
+      "path": "assets/runtime/arcade.webp",
+      "bytes": 31938
+    },
+    {
+      "path": "assets/runtime/arrow-flight.webp",
+      "bytes": 14394
+    },
+    {
+      "path": "assets/runtime/back.webp",
+      "bytes": 38420
+    },
+    {
+      "path": "assets/runtime/blue.webp",
+      "bytes": 14014
+    },
+    {
+      "path": "assets/runtime/board.webp",
+      "bytes": 262934
+    },
+    {
+      "path": "assets/runtime/bomb.webp",
+      "bytes": 28218
+    },
+    {
+      "path": "assets/runtime/button-blue.webp",
+      "bytes": 36198
+    },
+    {
+      "path": "assets/runtime/button-green.webp",
+      "bytes": 35314
+    },
+    {
+      "path": "assets/runtime/button-grey.webp",
+      "bytes": 23144
+    },
+    {
+      "path": "assets/runtime/button-orange.webp",
+      "bytes": 36326
+    },
+    {
+      "path": "assets/runtime/button-purple.webp",
+      "bytes": 36904
+    },
+    {
+      "path": "assets/runtime/button-red.webp",
+      "bytes": 24408
+    },
+    {
+      "path": "assets/runtime/button-small.webp",
+      "bytes": 22798
+    },
+    {
+      "path": "assets/runtime/cannon-up.webp",
+      "bytes": 35668
+    },
+    {
+      "path": "assets/runtime/cannonball.webp",
+      "bytes": 38670
+    },
+    {
+      "path": "assets/runtime/chain.webp",
+      "bytes": 23674
+    },
+    {
+      "path": "assets/runtime/chapter-1.webp",
+      "bytes": 60774
+    },
+    {
+      "path": "assets/runtime/chapter-10.webp",
+      "bytes": 72574
+    },
+    {
+      "path": "assets/runtime/chapter-11.webp",
+      "bytes": 72650
+    },
+    {
+      "path": "assets/runtime/chapter-12.webp",
+      "bytes": 64706
+    },
+    {
+      "path": "assets/runtime/chapter-13.webp",
+      "bytes": 70344
+    },
+    {
+      "path": "assets/runtime/chapter-14.webp",
+      "bytes": 64126
+    },
+    {
+      "path": "assets/runtime/chapter-15.webp",
+      "bytes": 46988
+    },
+    {
+      "path": "assets/runtime/chapter-16.webp",
+      "bytes": 76250
+    },
+    {
+      "path": "assets/runtime/chapter-17.webp",
+      "bytes": 62258
+    },
+    {
+      "path": "assets/runtime/chapter-18.webp",
+      "bytes": 61918
+    },
+    {
+      "path": "assets/runtime/chapter-19.webp",
+      "bytes": 38986
+    },
+    {
+      "path": "assets/runtime/chapter-2.webp",
+      "bytes": 58042
+    },
+    {
+      "path": "assets/runtime/chapter-20.webp",
+      "bytes": 67746
+    },
+    {
+      "path": "assets/runtime/chapter-21.webp",
+      "bytes": 59590
+    },
+    {
+      "path": "assets/runtime/chapter-22.webp",
+      "bytes": 63344
+    },
+    {
+      "path": "assets/runtime/chapter-23.webp",
+      "bytes": 58476
+    },
+    {
+      "path": "assets/runtime/chapter-24.webp",
+      "bytes": 60452
+    },
+    {
+      "path": "assets/runtime/chapter-25.webp",
+      "bytes": 59674
+    },
+    {
+      "path": "assets/runtime/chapter-3.webp",
+      "bytes": 69348
+    },
+    {
+      "path": "assets/runtime/chapter-4.webp",
+      "bytes": 59766
+    },
+    {
+      "path": "assets/runtime/chapter-5.webp",
+      "bytes": 65788
+    },
+    {
+      "path": "assets/runtime/chapter-6.webp",
+      "bytes": 69792
+    },
+    {
+      "path": "assets/runtime/chapter-7.webp",
+      "bytes": 64876
+    },
+    {
+      "path": "assets/runtime/chapter-8.webp",
+      "bytes": 50836
+    },
+    {
+      "path": "assets/runtime/chapter-9.webp",
+      "bytes": 61952
+    },
+    {
+      "path": "assets/runtime/chest.webp",
+      "bytes": 38652
+    },
+    {
+      "path": "assets/runtime/close.webp",
+      "bytes": 38858
+    },
+    {
+      "path": "assets/runtime/coin.webp",
+      "bytes": 31668
+    },
+    {
+      "path": "assets/runtime/column.webp",
+      "bytes": 32650
+    },
+    {
+      "path": "assets/runtime/crate-cracked.webp",
+      "bytes": 50170
+    },
+    {
+      "path": "assets/runtime/crate.webp",
+      "bytes": 34956
+    },
+    {
+      "path": "assets/runtime/grass-clippings.webp",
+      "bytes": 32484
+    },
+    {
+      "path": "assets/runtime/grass-demo.webp",
+      "bytes": 52408
+    },
+    {
+      "path": "assets/runtime/grass-tile.webp",
+      "bytes": 52318
+    },
+    {
+      "path": "assets/runtime/grass.webp",
+      "bytes": 38104
+    },
+    {
+      "path": "assets/runtime/green.webp",
+      "bytes": 12352
+    },
+    {
+      "path": "assets/runtime/hammer.webp",
+      "bytes": 27568
+    },
+    {
+      "path": "assets/runtime/home.webp",
+      "bytes": 42498
+    },
+    {
+      "path": "assets/runtime/ice-cracked.webp",
+      "bytes": 34222
+    },
+    {
+      "path": "assets/runtime/ice-shell.webp",
+      "bytes": 37020
+    },
+    {
+      "path": "assets/runtime/ice.webp",
+      "bytes": 43354
+    },
+    {
+      "path": "assets/runtime/logo.webp",
+      "bytes": 216086
+    },
+    {
+      "path": "assets/runtime/map-1.webp",
+      "bytes": 124838
+    },
+    {
+      "path": "assets/runtime/map-10.webp",
+      "bytes": 121390
+    },
+    {
+      "path": "assets/runtime/map-11.webp",
+      "bytes": 120398
+    },
+    {
+      "path": "assets/runtime/map-12.webp",
+      "bytes": 119114
+    },
+    {
+      "path": "assets/runtime/map-13.webp",
+      "bytes": 131212
+    },
+    {
+      "path": "assets/runtime/map-14.webp",
+      "bytes": 108834
+    },
+    {
+      "path": "assets/runtime/map-15.webp",
+      "bytes": 100396
+    },
+    {
+      "path": "assets/runtime/map-16.webp",
+      "bytes": 140182
+    },
+    {
+      "path": "assets/runtime/map-17.webp",
+      "bytes": 96262
+    },
+    {
+      "path": "assets/runtime/map-18.webp",
+      "bytes": 138248
+    },
+    {
+      "path": "assets/runtime/map-19.webp",
+      "bytes": 118590
+    },
+    {
+      "path": "assets/runtime/map-2.webp",
+      "bytes": 109812
+    },
+    {
+      "path": "assets/runtime/map-20.webp",
+      "bytes": 141064
+    },
+    {
+      "path": "assets/runtime/map-21.webp",
+      "bytes": 115588
+    },
+    {
+      "path": "assets/runtime/map-22.webp",
+      "bytes": 102410
+    },
+    {
+      "path": "assets/runtime/map-23.webp",
+      "bytes": 72584
+    },
+    {
+      "path": "assets/runtime/map-24.webp",
+      "bytes": 107344
+    },
+    {
+      "path": "assets/runtime/map-25.webp",
+      "bytes": 117598
+    },
+    {
+      "path": "assets/runtime/map-3.webp",
+      "bytes": 134884
+    },
+    {
+      "path": "assets/runtime/map-4.webp",
+      "bytes": 121030
+    },
+    {
+      "path": "assets/runtime/map-5.webp",
+      "bytes": 138472
+    },
+    {
+      "path": "assets/runtime/map-6.webp",
+      "bytes": 132700
+    },
+    {
+      "path": "assets/runtime/map-7.webp",
+      "bytes": 123572
+    },
+    {
+      "path": "assets/runtime/map-8.webp",
+      "bytes": 103486
+    },
+    {
+      "path": "assets/runtime/map-9.webp",
+      "bytes": 117778
+    },
+    {
+      "path": "assets/runtime/map.webp",
+      "bytes": 36990
+    },
+    {
+      "path": "assets/runtime/muzzle-flash.webp",
+      "bytes": 31734
+    },
+    {
+      "path": "assets/runtime/node-blue.webp",
+      "bytes": 34342
+    },
+    {
+      "path": "assets/runtime/node-green.webp",
+      "bytes": 34446
+    },
+    {
+      "path": "assets/runtime/node-locked.webp",
+      "bytes": 38470
+    },
+    {
+      "path": "assets/runtime/node-purple.webp",
+      "bytes": 34468
+    },
+    {
+      "path": "assets/runtime/orange.webp",
+      "bytes": 12180
+    },
+    {
+      "path": "assets/runtime/orb.webp",
+      "bytes": 37870
+    },
+    {
+      "path": "assets/runtime/panel.webp",
+      "bytes": 132986
+    },
+    {
+      "path": "assets/runtime/pause.webp",
+      "bytes": 20998
+    },
+    {
+      "path": "assets/runtime/purple.webp",
+      "bytes": 14972
+    },
+    {
+      "path": "assets/runtime/red.webp",
+      "bytes": 17160
+    },
+    {
+      "path": "assets/runtime/ribbon.webp",
+      "bytes": 81136
+    },
+    {
+      "path": "assets/runtime/rocket-flight.webp",
+      "bytes": 22122
+    },
+    {
+      "path": "assets/runtime/rocket-h.webp",
+      "bytes": 20646
+    },
+    {
+      "path": "assets/runtime/rocket-v.webp",
+      "bytes": 21512
+    },
+    {
+      "path": "assets/runtime/row.webp",
+      "bytes": 20794
+    },
+    {
+      "path": "assets/runtime/rules.webp",
+      "bytes": 22206
+    },
+    {
+      "path": "assets/runtime/settings.webp",
+      "bytes": 25104
+    },
+    {
+      "path": "assets/runtime/shuffle.webp",
+      "bytes": 28608
+    },
+    {
+      "path": "assets/runtime/star.webp",
+      "bytes": 24834
+    },
+    {
+      "path": "assets/runtime/stone-cracked.webp",
+      "bytes": 47344
+    },
+    {
+      "path": "assets/runtime/stone-original.webp",
+      "bytes": 28570
+    },
+    {
+      "path": "assets/runtime/stone.webp",
+      "bytes": 47270
+    },
+    {
+      "path": "assets/runtime/tool-base.webp",
+      "bytes": 35020
+    },
+    {
+      "path": "assets/runtime/trophy.webp",
+      "bytes": 24396
+    },
+    {
+      "path": "assets/runtime/yellow.webp",
+      "bytes": 15476
+    },
+    {
+      "path": "assets/vendor/vk-bridge-LICENSE.txt",
+      "bytes": 1086
+    },
+    {
+      "path": "assets/vendor/vk-bridge.min.js",
+      "bytes": 8038
+    },
+    {
+      "path": "index.html",
+      "bytes": 3736
+    },
+    {
+      "path": "src/app.js",
+      "bytes": 28210
+    },
+    {
+      "path": "src/art-manifest.js",
+      "bytes": 3962
+    },
+    {
+      "path": "src/art.js",
+      "bytes": 766
+    },
+    {
+      "path": "src/audio.js",
+      "bytes": 796
+    },
+    {
+      "path": "src/board-shape.js",
+      "bytes": 2064
+    },
+    {
+      "path": "src/cloud-save.js",
+      "bytes": 2721
+    },
+    {
+      "path": "src/engine.js",
+      "bytes": 19767
+    },
+    {
+      "path": "src/layout.js",
+      "bytes": 417
+    },
+    {
+      "path": "src/level-layouts.js",
+      "bytes": 5361
+    },
+    {
+      "path": "src/levels.js",
+      "bytes": 6489
+    },
+    {
+      "path": "src/obstacles.js",
+      "bytes": 1647
+    },
+    {
+      "path": "src/platform.js",
+      "bytes": 1736
+    },
+    {
+      "path": "src/progress.js",
+      "bytes": 7887
+    },
+    {
+      "path": "src/random.js",
+      "bytes": 592
+    },
+    {
+      "path": "src/renderer.js",
+      "bytes": 17955
+    },
+    {
+      "path": "src/strategy.js",
+      "bytes": 1470
+    },
+    {
+      "path": "src/ui.js",
+      "bytes": 16218
+    },
+    {
+      "path": "src/vk-session.js",
+      "bytes": 4717
+    },
+    {
+      "path": "styles/game.css",
+      "bytes": 4104
+    },
+    {
+      "path": "styles/mobile-ui.css",
+      "bytes": 27197
+    },
+    {
+      "path": "styles/original-style.css",
+      "bytes": 13573
+    },
+    {
+      "path": "styles/play.css",
+      "bytes": 7681
+    },
+    {
+      "path": "styles/responsive.css",
+      "bytes": 86
+    }
+  ]
+}
