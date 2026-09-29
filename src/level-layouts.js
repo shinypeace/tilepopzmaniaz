@@ -1,0 +1,53 @@
+// Spatial compositions, not randomly scattered blockers. c = crate, i = ice,
+// s = stone, x = chain, g = lawn, C = crate on lawn, I = ice on lawn, # = hole.
+export const LAYOUTS={
+  welcome:{family:'collect',rows:['........','........','........','........','........','........','........','........']},
+  firstCrates:{family:'crate',rows:['........','........','........','........','..cc....','..cc....','........','........']},
+  smallCrates:{family:'crate',rows:['........','........','........','........','..cccc..','..cccc..','........','........']},
+  crateSteps:{family:'crate',rows:['........','........','........','........','...cc...','..cccc..','.cccccc.','cccccccc']},
+  warehouse:{family:'crate',rows:['........','........','........','........','cccccccc','cccccccc','cccccccc','cccccccc']},
+  banks:{family:'crate',rows:['........','........','........','cc....cc','ccc..ccc','ccc..ccc','ccc..ccc','ccc..ccc']},
+  courtyard:{family:'crate',rows:['........','........','..cccc..','..cccc..','..cccc..','..cccc..','..cccc..','........']},
+  arch:{family:'crate',rows:['........','........','.cccccc.','.c....c.','.c....c.','.c....c.','.cccccc.','........']},
+  twinVaults:{family:'crate',rows:['#......#','........','........','ccc..ccc','ccc..ccc','ccc..ccc','ccc..ccc','#......#']},
+  firstIce:{family:'ice',rows:['........','........','........','...ii...','...ii...','........','........','........']},
+  iceNine:{family:'ice',rows:['........','........','..iii...','..iii...','..iii...','........','........','........']},
+  glacier:{family:'ice',rows:['........','.iiiii..','.iiiii..','.iiiii..','.iiiii..','.iiiii..','........','........']},
+  iceDiamond:{family:'ice',rows:['........','...ii...','..iiii..','.iiiiii.','.iiiiii.','..iiii..','...ii...','........']},
+  frozenBanks:{family:'ice',rows:['........','........','iii..iii','iii..iii','iii..iii','iii..iii','........','........']},
+  iceRiver:{family:'ice',rows:['..iii...','..iii...','...iii..','...iii..','..iii...','..iii...','...iii..','...iii..']},
+  iceRing:{family:'ice',rows:['........','.iiiiii.','.i....i.','.i....i.','.i....i.','.i....i.','.iiiiii.','........']},
+  firstLawn:{family:'garden',rows:['........','........','........','........','..gggg..','..gggg..','..gggg..','........']},
+  meadow:{family:'garden',rows:['........','........','.gggggg.','.gggggg.','.gggggg.','.gggggg.','.gggggg.','........']},
+  lawnPaths:{family:'garden',rows:['..gggg..','..gggg..','gggggggg','ggg..ggg','ggg..ggg','gggggggg','..gggg..','..gggg..']},
+  gardenVault:{family:'garden',rows:['........','........','.gggggg.','.gCCCCg.','.gCCCCg.','.gCCCCg.','.gggggg.','........']},
+  winterGarden:{family:'garden',rows:['........','........','.IIIIII.','.IIIIII.','.IIIIII.','.IIIIII.','........','........']},
+  firstStone:{family:'powers',rows:['........','........','........','..s..s..','........','..s..s..','........','........']},
+  quarry:{family:'powers',rows:['........','........','........','.ss..ss.','.cc..cc.','.ss..ss.','.cc..cc.','........']},
+  stoneBridge:{family:'powers',rows:['........','........','........','ss....ss','ss....ss','ii....ii','iiiiiiii','........']},
+  stoneCross:{family:'powers',rows:['........','........','...ss...','..cccc..','..cccc..','...ss...','..s..s..','........']},
+  iceVault:{family:'mixed',rows:['........','........','.iiiiii.','.icccci.','.icccci.','.icccci.','.iiiiii.','........']},
+  twoShores:{family:'mixed',rows:['........','........','ccc..iii','ccc..iii','ccc..iii','ccc..iii','ccc..iii','........']},
+  courtyardHole:{family:'mixed',rows:['........','........','.icccci.','.ic##ci.','.ic##ci.','.icccci.','.iiiiii.','........']},
+  chainGate:{family:'chains',rows:['........','........','..xxxx..','..cccc..','..cccc..','..cccc..','..cccc..','........']},
+  chainGarden:{family:'chains',rows:['........','........','.xggggx.','.xCCCCx.','.xCCCCx.','.xggggx.','.gggggg.','........']},
+  frozenLocks:{family:'chains',rows:['........','........','.xiiiix.','.xiiiix.','.xiiiix.','.xiiiix.','........','........']},
+  rainbowWalk:{family:'collect',rows:['#......#','........','........','...##...','...##...','........','........','#......#']},
+};
+
+export const FAMILY_LAYOUTS={
+  collect:['welcome','rainbowWalk'],crate:['warehouse','banks','crateSteps','courtyard','arch','twinVaults'],
+  ice:['glacier','iceDiamond','frozenBanks','iceRiver','iceRing'],garden:['meadow','lawnPaths','gardenVault','winterGarden'],
+  powers:['quarry','stoneBridge','stoneCross'],mixed:['iceVault','twoShores','courtyardHole'],chains:['chainGate','chainGarden','frozenLocks'],
+};
+// Gentle introductions are followed by full spatial puzzles using that mechanic.
+export const OPENING=[
+ ['welcome',4],['welcome',4],['firstCrates',4],['smallCrates',4],['crateSteps',4],
+ ['rainbowWalk',3],['banks',4],['courtyard',4],['arch',4],['warehouse',4],
+ ['firstIce',4],['iceNine',4],['iceDiamond',4],['firstLawn',4],['glacier',4],
+ ['meadow',4],['frozenBanks',4],['gardenVault',4],['twoShores',4],['winterGarden',4],
+ ['firstStone',3],['quarry',4],['stoneBridge',3],['iceRing',4],['stoneCross',4],
+ ['warehouse',3],['lawnPaths',4],['iceVault',4],['twinVaults',4],['courtyardHole',4],
+ ['stoneBridge',4],['glacier',3],['gardenVault',4],['banks',4],['iceVault',4],
+ ['meadow',5],['frozenBanks',4],['quarry',3],['twoShores',4],['courtyardHole',4],
+];
