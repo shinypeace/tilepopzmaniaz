@@ -2,6 +2,7 @@ import {ART} from './art-manifest.js';
 
 const root=new URL('../assets/runtime/',import.meta.url);
 const images=new Map();
+export const artImage=file=>images.get(new URL(file,root).href)?.image;
 const files=[...new Set(['board.webp',...Object.values(ART).map(a=>a.file)])];
 
 function loadImage(url){

@@ -1,3 +1,5 @@
+import {CanvasBoard,needsCanvas} from './canvas-board.js';
+import {effectStages} from './effect-stages.js';
 import { icon, NAMES, fmt } from './ui.js';
 import { key, position } from './engine.js';
 import { fitBoard } from './layout.js';
@@ -5,7 +7,7 @@ import { boardArt } from './art.js';
 import { boardPath } from './board-shape.js';
 import {MotionClock,animationFinished,finiteAnimations,afterPaint} from './motion.js';
 export class Renderer {
-  constructor(board,wrap,settings,sound){this.board=board;this.wrap=wrap;this.settings=settings;this.sound=sound;this.elements=new Map();this.state=null;this.cell=48;this.mask=null;this.cancelled=0;this.clock=new MotionClock();this.animations=new Set();this.pausedAnimations=new Set();this.vkHidden=false;document.addEventListener('visibilitychange',()=>this.syncVisibility());document.addEventListener('vk-app-visibility',e=>{this.vkHidden=!e.detail.visible;this.syncVisibility();});this.syncVisibility();new ResizeObserver(()=>this.resize()).observe(wrap);}
+  constructor(board,wrap,settings,sound,{canvas=needsCanvas()}={}){this.useCanvas=canvas;this.board=board;this.wrap=wrap;this.settings=settings;this.sound=sound;this.elements=new Map();this.state=null;this.cell=48;this.mask=null;this.cancelled=0;this.clock=new MotionClock();this.animations=new Set();this.pausedAnimations=new Set();this.vkHidden=false;document.addEventListener('visibilitychange',()=>this.syncVisibility());document.addEventListener('vk-app-visibility',e=>{this.vkHidden=!e.detail.visible;this.syncVisibility();});this.syncVisibility();new ResizeObserver(()=>this.resize()).observe(wrap);}
   syncVisibility(){
     const hidden=document.hidden||this.vkHidden;
     this.clock.setPaused(hidden);
@@ -29,6 +31,8 @@ export class Renderer {
     this.cancelled++;this.clock.clear();for(const animation of this.animations)animation.cancel();this.animations.clear();this.pausedAnimations.clear();this.board.innerHTML='';this.elements.clear();this.state=null;this.mask=game.config.mask;this.rows=game.rows;this.cols=game.cols;
     this.board.innerHTML='<svg class="board-outline" aria-hidden="true"><defs><clipPath id="board-clip"><path clip-rule="evenodd"/></clipPath></defs><path class="frame-shadow" fill-rule="evenodd"/><path class="frame-main" fill-rule="evenodd"/><path class="frame-shine" fill-rule="evenodd"/></svg><div class="board-pieces"></div><div class="board-effects" aria-hidden="true"></div>';
     this.layer=this.board.querySelector('.board-pieces');
+    this.board.classList.toggle('canvas-board',this.useCanvas);this.canvasBoard=null;
+    if(this.useCanvas){const canvas=document.createElement('canvas');canvas.className='piece-canvas';canvas.setAttribute('aria-hidden','true');this.layer.append(canvas);this.canvasBoard=new CanvasBoard(canvas,this.clock);}
     this.effectLayer=this.board.querySelector('.board-effects');
     for(let r=0;r<game.rows;r++)for(let c=0;c<game.cols;c++)if(this.mask[r][c]){
       const el=document.createElement('div');el.className=`slot ${(r+c)%2?'checker':''}`;el.dataset.p=key(r,c);el.style.setProperty('--r',r);el.style.setProperty('--c',c);this.layer.append(el);
@@ -43,6 +47,7 @@ export class Renderer {
     this.board.style.width=`${size.width}px`;this.board.style.height=`${size.height}px`;
     const outline=this.board.querySelector('svg');outline.setAttribute('viewBox',`0 0 ${size.width} ${size.height}`);
     for(const path of outline.querySelectorAll('path'))path.setAttribute('d',boardPath(this.mask,this.step,this.inset-1,Math.min(7,this.cell*.16)));
+    this.canvasBoard?.resize({...size,cell:this.cell,step:this.step,inset:this.inset,outline:boardPath(this.mask,this.step,this.inset-1,Math.min(7,this.cell*.16))});
     if(this.state)for(const el of this.elements.values())this.place(el,Number(el.dataset.p));
   }
   place(el,p){const[r,c]=position(p);el.style.transform=`translate(${this.inset+c*this.step}px,${this.inset+r*this.step}px)`;}
@@ -71,7 +76,7 @@ export class Renderer {
         let top=r;while(top>0&&this.mask[top-1][c]&&state.board[top-1][c]?.kind==='gem'&&!chains.has(key(top-1,c))&&!ice.has(key(top-1,c)))top--;
         from=`translate(${this.inset+c*this.step}px,${this.inset+(top-1)*this.step}px)`;
       }
-      if((animate||fall)&&!this.reduced&&from&&from!==el.style.transform){const a=this.play(el,[{transform:from,opacity:fresh?.25:1},{transform:el.style.transform,opacity:1}],{duration,easing:fall?'cubic-bezier(.25,.65,.3,1)':'cubic-bezier(.2,.7,.3,1)'});animations.push(a.done);}
+      if(!this.canvasBoard&&(animate||fall)&&!this.reduced&&from&&from!==el.style.transform){const a=this.play(el,[{transform:from,opacity:fresh?.25:1},{transform:el.style.transform,opacity:1}],{duration,easing:fall?'cubic-bezier(.25,.65,.3,1)':'cubic-bezier(.2,.7,.3,1)'});animations.push(a.done);}
     }
     for(const [id,el] of this.elements)if(!present.has(id)){el.remove();this.elements.delete(id);}
     if(!this.board.querySelector('.piece[tabindex="0"]'))this.elements.values().next().value?.setAttribute('tabindex','0');
@@ -79,6 +84,7 @@ export class Renderer {
     document.getElementById('moves-count').textContent=state.moves>999?'∞':state.moves;
     document.querySelector('.moves-panel').classList.toggle('low',state.moves<=5);
     const goalSignature=JSON.stringify(state.goals);if(this.goalSignature!==goalSignature){document.getElementById('goals').innerHTML=Object.entries(state.goals).map(([k,v])=>`<div class="goal ${v===0?'complete':''}" aria-label="${NAMES[k]}: ${v===0?'выполнено':v}" title="${NAMES[k]}">${icon(k)}<b>${v||'✓'}</b></div>`).join('');this.goalSignature=goalSignature;}
+    if(this.canvasBoard)animations.push(this.canvasBoard.render(state,{fall:fall&&!this.reduced,animate:animate&&!this.reduced,duration,mask:this.mask}));
     return Promise.all(animations);
   }
   element(p){return [...this.elements.values()].find(el=>Number(el.dataset.p)===p);}
@@ -138,10 +144,10 @@ export class Renderer {
       const el=this.element(p);
       if(el){
         if(transformFrame?.converted.includes(p)){
-          const tile=transformFrame.state.board[rr][cc];el.innerHTML=boardArt(tile.power);el.dataset.sig='';el.dataset.art=tile.power;el.classList.add('power');
+          const tile=transformFrame.state.board[rr][cc];el.innerHTML=boardArt(tile.power);el.dataset.sig='';el.dataset.art=tile.power;el.classList.add('power');this.canvasBoard?.convert(p,tile.power);
         }
         el.classList.add('orb-ready');
-        this.play(el.firstElementChild,[{scale:.8,filter:'brightness(2)'},{scale:1.16,filter:'brightness(1.5)',offset:.45},{scale:1,filter:'brightness(1)'}],{duration:350,easing:'ease-out'});
+        if(this.canvasBoard)this.canvasBoard.effect(p,'pulse');else this.play(el.firstElementChild,[{scale:.8,filter:'brightness(2)'},{scale:1.16,filter:'brightness(1.5)',offset:.45},{scale:1,filter:'brightness(1)'}],{duration:350,easing:'ease-out'});
       }
       await this.play(ray,[{opacity:.65},{opacity:0}],{duration:350,fill:'forwards'}).done;ray.remove();
     }));
@@ -181,7 +187,7 @@ export class Renderer {
         const ring=document.createElement('div');ring.className='blast-ring';ring.style.cssText=`left:${x}px;top:${y}px;width:${size}px;height:${size}px`;this.transient(ring);
       }
     }
-    for(const p of [...thawed,...destroyed].slice(0,20)){
+    for(const p of thawed.slice(0,20)){
       const[r,c]=position(p);
       const ice=thawed.includes(p);
       for(let i=0;i<3;i++){const el=document.createElement('i');el.className=`particle${ice?' ice-shard':''}`;el.style.cssText=`left:${this.inset+c*this.step+this.cell/2}px;top:${this.inset+r*this.step+this.cell/2}px;--particle:${ice?'#b4f7ff':['#fff3a5','#b8f0ed','#ffd6c9'][i]};--dx:${(i-1)*this.cell*.65}px;--dy:${(-.8+i*.3)*this.cell}px`;this.transient(el);}
@@ -199,26 +205,33 @@ export class Renderer {
         this.render(f.state);transformed=true;
       }else if(f.type==='clear'){
         waves++;
-        const orbs=f.effects.filter(e=>e.power==='orb'||e.variant==='rainbow');
-        await Promise.all(orbs.filter(e=>!(transformed&&e.variant==='rainbow')).map(e=>this.chargeOrb(e,token)));
-        if(token!==this.cancelled)return;
+        for(const phase of effectStages(f)){
+          const orbs=phase.effects.filter(e=>e.power==='orb'||e.variant==='rainbow');
+          await Promise.all(orbs.filter(e=>!(transformed&&e.variant==='rainbow')).map(e=>this.chargeOrb(e,token)));
+          if(token!==this.cancelled)return;
+          for(const el of this.elements.values())el.classList.remove('orb-ready');
+          const shot=phase.effects.find(e=>['row','column','hammer'].includes(e.power)),visuals=[];
+          for(const p of new Set([...phase.destroyed,...phase.damaged])){
+            const el=this.element(p);if(!el)continue;const[r,c]=position(p);
+            const delay=shot?(shot.power==='hammer'?330:shot.power==='row'?80+c/this.cols*450:100+(this.rows-1-r)/this.rows*430):0;
+            el.style.setProperty('--impact-delay',`${delay}ms`);
+            // Removed blockers pop once, instead of the hit class overriding pop.
+            const removing=phase.destroyed.includes(p);
+            if(this.canvasBoard)visuals.push(this.canvasBoard.effect(p,removing?'pop':'hit',delay));
+            else el.classList.add(removing?'clearing':'hit');
+          }
+          this.effects(phase.effects.filter(e=>e.power!=='orb'&&e.variant!=='rainbow'),phase.destroyed,phase.thawed);
+          const powers=phase.effects.map(e=>e.power);
+          if(powers.length||phase.destroyed.length||phase.damaged.length)this.sound.play(powers.some(p=>p==='bomb'||p==='combo')?'bomb':powers.some(p=>p.startsWith('rocket')||['row','column'].includes(p))?'rocket':phase.damaged.length?'stone_break':'match');
+          const affected=[...new Set([...phase.destroyed,...phase.damaged])].map(p=>this.element(p)).filter(Boolean);
+          await Promise.all([...visuals,this.finishVisuals(affected,shot?740:phase.effects.length?430:240)]);
+          if(token!==this.cancelled)return;
+        }
         transformed=false;
-        for(const el of this.elements.values())el.classList.remove('orb-ready');
-        const shot=f.effects.find(e=>['row','column','hammer'].includes(e.power));
-        for(const p of new Set([...f.destroyed,...f.damaged])){const el=this.element(p);if(!el)continue;const[r,c]=position(p);el.style.setProperty('--impact-delay',`${shot?(shot.power==='hammer'?330:shot.power==='row'?80+c/this.cols*450:100+(this.rows-1-r)/this.rows*430):0}ms`);}
-        for(const p of f.destroyed)this.element(p)?.classList.add('clearing');
-        for(const p of f.damaged)this.element(p)?.classList.add('hit');
-        this.effects(f.effects.filter(e=>e.power!=='orb'&&e.variant!=='rainbow'),f.destroyed,f.thawed);
-        const powers=f.effects.map(e=>e.power);
-        this.sound.play(powers.some(p=>p==='bomb'||p==='combo')?'bomb':powers.some(p=>p.startsWith('rocket'))?'rocket':f.damaged.length?'stone_break':'match');
         if(f.creations.length)this.sound.play('create_bonus');
         if(waves>=2){const label=document.getElementById('combo-label');label.textContent=['Отлично!','Здорово!','Великолепно!','Потрясающе!','Невероятно!','Вот это каскад!'][Math.min(5,waves-2)];label.classList.remove('show');void label.offsetWidth;label.classList.add('show');}
-        // Commit the clear/hit classes before observing their actual completion.
-        // A timeout alone can expire while a mobile WebView is still painting.
-        const affected=[...new Set([...f.destroyed,...f.damaged])].map(p=>this.element(p)).filter(Boolean);
-        await this.finishVisuals(affected,powers.some(p=>['column','row','hammer'].includes(p))?740:f.effects.length?430:240);
         if(token!==this.cancelled)return;this.render(f.state);
-        for(const {p} of f.creations){const el=this.element(p);if(el){el.classList.add('created');this.finishVisuals([el],430).then(()=>el.classList.remove('created'));}}
+        for(const {p} of f.creations){const el=this.element(p);if(el){this.canvasBoard?.effect(p,'pulse');el.classList.add('created');this.finishVisuals([el],430).then(()=>el.classList.remove('created'));}}
       }else{
         const movement=this.render(f.state,{fall:f.type==='fall',animate:f.type!=='settled',duration:f.type==='fall'?300:230});
         if(f.type==='shuffle')this.sound.play('create_bonus');

@@ -4,15 +4,16 @@ let session=null,saveTimer=null,saving=false,queued=null;
 
 export async function connectPlatform(guest){
  const params=new URLSearchParams(location.search);
- if(!params.has('vk_app_id'))return {profile:guest,cloud:false,user:null};
  try{
   if(!window.vkBridge)await withTimeout(new Promise((resolve,reject)=>{
    const script=document.createElement('script');script.src=new URL('../assets/vendor/vk-bridge.min.js',import.meta.url).href;script.onload=resolve;script.onerror=reject;document.head.append(script);
   }));
+  if(!params.has('vk_app_id')&&!window.vkBridge?.isWebView?.())return {profile:guest,cloud:false,user:null};
   session=new VKSession(window.vkBridge,{
    storage:localStorage,search:location.search,
    onBanner:height=>document.documentElement.style.setProperty('--vk-banner-inset',`${height}px`),
    onVisibility:visible=>document.dispatchEvent(new CustomEvent('vk-app-visibility',{detail:{visible}})),
+   onReady:()=>session.showBanner(),
   });
   return await session.connect(guest);
  }catch{
@@ -21,6 +22,7 @@ export async function connectPlatform(guest){
  }
 }
 export function showBanner(){return session?.showBanner();}
+export function platformDiagnostics(){return session?{...session.diagnostics,cloud:session.cloudReady}:null;}
 async function flush(){
  if(saving||!queued||!session?.cloudReady)return;
  saving=true;const {profile,onError}=queued;queued=null;

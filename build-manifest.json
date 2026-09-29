@@ -1,6 +1,6 @@
 {
-  "version": "3.1.1",
-  "created": "2026-09-29T10:11:44.517Z",
+  "version": "3.2.0",
+  "created": "2026-09-29T19:22:52.951Z",
   "files": [
     {
       "path": ".nojekyll",
@@ -114,8 +114,8 @@
     },
     {
       "path": "assets/runtime/board.webp",
-      "bytes": 262934,
-      "sha256": "a55c2acc5bde1796b5eaf62b46b6c27315656898a06097b97986669ff8950028"
+      "bytes": 267954,
+      "sha256": "d45730a5a8c339d3c5498da472091c6dd4ff155052767d81b161bc7a890adef9"
     },
     {
       "path": "assets/runtime/bomb.webp",
@@ -324,8 +324,13 @@
     },
     {
       "path": "assets/runtime/crate.webp",
-      "bytes": 34956,
-      "sha256": "e92901d31700146de841f69960ec6428d548002290039a3300959100035bf4cc"
+      "bytes": 44268,
+      "sha256": "08d3066d3787984fef118236acd6d59a779873b9dac16973369b010651148b52"
+    },
+    {
+      "path": "assets/runtime/daily-challenge.webp",
+      "bytes": 42924,
+      "sha256": "41134e3a8e4846e508df521736fa57b18f33e9396f7fbafc3b282e925031fca6"
     },
     {
       "path": "assets/runtime/grass-clippings.webp",
@@ -364,13 +369,13 @@
     },
     {
       "path": "assets/runtime/ice-cracked.webp",
-      "bytes": 34222,
-      "sha256": "7f72c67d390e69957dcc117d51b047224dc4c0f8da51fe09abad79831ffe9f47"
+      "bytes": 67386,
+      "sha256": "91a54cf60ea944ab92b9aaf2bedf53950689a2993533267c59c0979045a379f1"
     },
     {
       "path": "assets/runtime/ice-shell.webp",
-      "bytes": 37020,
-      "sha256": "b4ca2c63a29df3e981ff77595bf10fee4ee4b02a385b37fb2aa36c56ea3790f7"
+      "bytes": 63444,
+      "sha256": "3ba180612a3b01d9660e8be57d25f82514bc63c88c20520f08ed88bd99127efe"
     },
     {
       "path": "assets/runtime/ice.webp",
@@ -659,13 +664,13 @@
     },
     {
       "path": "src/app.js",
-      "bytes": 28210,
-      "sha256": "608228c13301b7277590becf8d8cf72f4f0a5b8f76bf7aa732a24e8376511b0b"
+      "bytes": 29496,
+      "sha256": "c04c86b4b902d6e902ad01d2e9f8ae7c0752dbd4094bb5e41d320856a366286a"
     },
     {
       "path": "src/art-manifest.js",
-      "bytes": 3962,
-      "sha256": "cba29d1595add0d890fdaff47b86ea83d4bbb3740b1e822bb0525bf599f7cf02"
+      "bytes": 4028,
+      "sha256": "62cfb3c32d2ba7b4134e4c02dafe9fd95d06c74f1d330f053d163e73e83ff4c0"
     },
     {
       "path": "src/art.js",
@@ -674,13 +679,13 @@
     },
     {
       "path": "src/asset-loader.js",
-      "bytes": 1577,
-      "sha256": "c7cb0364547a660a6f4b370807031f546ae0819c5d457eee45c6ff9762a6d743"
+      "bytes": 1649,
+      "sha256": "60c5878ad63d6d1e3f8d6f94056027e6a9937f7cd043056449a3bfd72aa82572"
     },
     {
       "path": "src/audio.js",
-      "bytes": 796,
-      "sha256": "d63ce4e437469f873f02e0a61443406f70014c9e7aabce3550f98fefec3b3334"
+      "bytes": 2734,
+      "sha256": "6fd4f3150c647bfb0d68c55201d001505095edbbb6f50a6466f45cc967a4db27"
     },
     {
       "path": "src/board-shape.js",
@@ -688,14 +693,24 @@
       "sha256": "ddb612dd9d3b8a892332439d42541e4b1246e7c4a6c2732169c233b53630ae94"
     },
     {
+      "path": "src/canvas-board.js",
+      "bytes": 4399,
+      "sha256": "dfda2e9346c2fdef89fda8fbe5fc38841f9bcaaeae2658534ae0eaedfc968949"
+    },
+    {
       "path": "src/cloud-save.js",
       "bytes": 2721,
       "sha256": "5919d2001427fe12b7ca317df853c1a0384121aad56bdbe68a0e44eaab9fd0e5"
     },
     {
+      "path": "src/effect-stages.js",
+      "bytes": 773,
+      "sha256": "b35c94d32efc8564cc16194fa26f22dec513275621e3c9e2b42ed610e3d76fac"
+    },
+    {
       "path": "src/engine.js",
-      "bytes": 19767,
-      "sha256": "deeb0e2f4ea08d3e55692c1eecde6915c0ae61e3f539a6bda7b3387568570b71"
+      "bytes": 19838,
+      "sha256": "3134bf36373a01070d986560dec7a24d5bd58eded33255d6d4e1f4e739524691"
     },
     {
       "path": "src/layout.js",
@@ -714,8 +729,8 @@
     },
     {
       "path": "src/motion.js",
-      "bytes": 2374,
-      "sha256": "aadf4dcdc7962bdf4f54fa2a89476ba2438f9f90938bcee89bcd0c02a4e8499c"
+      "bytes": 2628,
+      "sha256": "c3c123aebc79fbfa3d21324027f32286376f6eb6aca4748c375ccc3d13a4f43f"
     },
     {
       "path": "src/obstacles.js",
@@ -724,8 +739,8 @@
     },
     {
       "path": "src/platform.js",
-      "bytes": 1736,
-      "sha256": "88b862c6894344223febd660823d8d9a14cb818aec4c505c93d0b7e8609be32d"
+      "bytes": 1917,
+      "sha256": "e1d05031b8a87186cf1f6fcfa2461ed0b52375671e56b8ddd5f88cb0e6a72219"
     },
     {
       "path": "src/progress.js",
@@ -739,8 +754,8 @@
     },
     {
       "path": "src/renderer.js",
-      "bytes": 20040,
-      "sha256": "0b16eace47972940f496fb8bc89a83a4a1266cce20ad103c479e1ed73ef9c5e4"
+      "bytes": 21283,
+      "sha256": "5d57bcc247bfa2abdd16914f66ff61253af30c0ab7a4fc3add458702c497b426"
     },
     {
       "path": "src/strategy.js",
@@ -749,13 +764,13 @@
     },
     {
       "path": "src/ui.js",
-      "bytes": 16325,
-      "sha256": "310f16b197c077e337007aca498fe48be0d641d747a4fa04a03c3601c89b53f5"
+      "bytes": 16328,
+      "sha256": "f77f919d121c50aa29e29d2a0d70f52177544754156ac8f0a9ad7a4e3707bbff"
     },
     {
       "path": "src/vk-session.js",
-      "bytes": 4717,
-      "sha256": "e922e259f15b0da91571a3e6ccf08411be80ec3710892a046380def6b8d8206c"
+      "bytes": 6438,
+      "sha256": "5b4445873c47a4b5ac1fecb3036ab78a5c49d224a37a9228ef8d3b0499f2fa74"
     },
     {
       "path": "styles/game.css",
@@ -764,8 +779,8 @@
     },
     {
       "path": "styles/mobile-ui.css",
-      "bytes": 27719,
-      "sha256": "a378987afe6a2385bd551fa52e03f3106ee771e679329581856e2a431aefd9cd"
+      "bytes": 28287,
+      "sha256": "33ae746fcf495c8b615c22f8b4f826376bf357be9a055dfc99e62d68410d41a8"
     },
     {
       "path": "styles/original-style.css",

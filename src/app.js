@@ -7,7 +7,7 @@ import {Renderer} from './renderer.js';
 import {prepareArt} from './asset-loader.js';
 import {Sound} from './audio.js';
 import {rankActions} from './strategy.js';
-import {connectPlatform,syncCloud,showBanner,flushCloud} from './platform.js';
+import {connectPlatform,syncCloud,showBanner,flushCloud,platformDiagnostics} from './platform.js';
 
 const $=id=>document.getElementById(id);
 const loaded=loadProfile();
@@ -135,7 +135,7 @@ function updateMeter(){
   if(!game)return;
   const potential=game.moves>=Math.ceil(game.config.moves*.28)?3:game.moves>=Math.ceil(game.config.moves*.12)?2:1;
   $('star-fill').style.width=`${Math.min(100,15+game.moves/game.config.moves*85)}%`;
-  document.querySelectorAll('.meter-star').forEach((el,i)=>{el.classList.toggle('unearned',i>=potential);el.classList.remove('pulse');if(i<potential&&p.settings.motion){requestAnimationFrame(()=>el.classList.add('pulse'));}});
+  document.querySelectorAll('.meter-star').forEach((el,i)=>{const changed=el.classList.contains('unearned')!==(i>=potential);el.classList.toggle('unearned',i>=potential);el.classList.remove('pulse');if(changed&&p.settings.motion){requestAnimationFrame(()=>el.classList.add('pulse'));}});
   const threshold3=Math.ceil(game.config.moves*.28),threshold2=Math.ceil(game.config.moves*.12);
   document.querySelector('.star-meter').setAttribute('title',`3 звезды: закончите с ${threshold3}+ ходами. 2 звезды: с ${threshold2}+.`);
 }
@@ -145,8 +145,8 @@ function scheduleHint(){
   hintTimer=setTimeout(()=>{if(!busy&&!$('modal').open&&!activeTool){const hint=rankActions(game)[0]?.action;if(hint)renderer.hint(hint);}},7000);
 }
 function resultMarkup(result){
-  if(game.status==='won')return `<div class="modal-eyebrow">${mode==='campaign'?`УРОВЕНЬ ${game.config.id} ПРОЙДЕН`:'ПРЕКРАСНАЯ ИГРА'}</div><h2 id="modal-title">${result.stars===3?'Блестящая победа!':'У вас получилось!'}</h2>${stars(result.stars,'result-stars')}<div class="result-values"><div>${fmt(game.score+runScore)}<small>Очки</small></div><div>${icon('coin')} +${result.coins}<small>Награда</small></div></div><p class="modal-subtitle">${mode==='campaign'?(game.config.id===500?'Все 500 уровней пройдены! Возвращайтесь за испытанием дня и недостающими звёздами.':result.first?'Новый путь открыт. Следующее чудо уже ждёт.':'Лучшие звёзды и очки сохранены.') : mode==='daily'?'Сегодняшняя головоломка решена. Завтра будет новая.':'Готовы к следующей волне?'}</p><button class="primary" data-action="${mode==='campaign'&&game.config.id<500?'next':mode==='endless'?'next-wave':'result-map'}">${mode==='campaign'&&game.config.id<500?'Следующий уровень':mode==='endless'?'Следующая волна':'На карту'}</button><button class="secondary" data-action="result-map">${mode==='campaign'?'Вернуться на карту':'Закрыть'}</button>`;
-  return `${icon(mode==='wall'?'crate':'heart','hero-icon')}<div class="modal-eyebrow">ЕЩЁ ОДНА ПОПЫТКА — НОВЫЙ ШАНС</div><h2 id="modal-title">${mode==='wall'?'Стена добралась до верха':'Ходы закончились'}</h2><p class="modal-subtitle">${mode==='wall'?`Ваш результат: ${fmt(game.score)} очков`:'Вы уже близко. Попробуйте объединять бонусы и освобождать пространство.'}</p><div class="modal-goals">${goalList(Object.fromEntries(Object.entries(game.goals).filter(([,n])=>n>0)))}</div>${mode!=='wall'&&!extraUsed?`<button class="primary gold-button" data-action="extra" ${p.coins<150?'disabled':''}>Ещё 5 ходов · ${icon('coin')} 150</button>`:''}<button class="primary" data-action="retry">Попробовать ещё раз</button><button class="secondary" data-action="result-map">На карту</button><p class="notice">Попытки бесплатны. Запас жизней не ограничен.</p>`;
+  if(game.status==='won')return `<div class="modal-eyebrow">${mode==='campaign'?`УРОВЕНЬ ${game.config.id} ПРОЙДЕН`:'ПРЕКРАСНАЯ ИГРА'}</div><h2 id="modal-title">${result.stars===3?'Блестящая победа!':'У вас получилось!'}</h2>${stars(result.stars,'result-stars')}<div class="result-values"><div>${fmt(game.score+runScore)}<small>Очки</small></div><div>${icon('coin')} +${result.coins}<small>Награда</small></div></div><p class="modal-subtitle">${mode==='campaign'?(game.config.id===500?'Все 500 уровней пройдены! Возвращайтесь за испытанием дня и недостающими звёздами.':result.first?'Новый путь открыт. Следующее чудо уже ждёт.':'Лучшие звёзды и очки сохранены.') : mode==='daily'?'Сегодняшняя головоломка решена. Завтра будет новая.':'Готовы к следующей волне?'}</p><button class="primary" data-action="${mode==='campaign'&&game.config.id<500?'next':mode==='endless'?'next-wave':'result-home'}">${mode==='campaign'&&game.config.id<500?'Следующий уровень':mode==='endless'?'Следующая волна':'В меню'}</button>${(mode==='campaign'&&game.config.id<500)||mode==='endless'?'<button class="secondary" data-action="result-home">В меню</button>':''}`;
+  return `${icon(mode==='wall'?'crate':'heart','hero-icon')}<div class="modal-eyebrow">ЕЩЁ ОДНА ПОПЫТКА — НОВЫЙ ШАНС</div><h2 id="modal-title">${mode==='wall'?'Стена добралась до верха':'Ходы закончились'}</h2><p class="modal-subtitle">${mode==='wall'?`Ваш результат: ${fmt(game.score)} очков`:'Вы уже близко. Попробуйте объединять бонусы и освобождать пространство.'}</p><div class="modal-goals">${goalList(Object.fromEntries(Object.entries(game.goals).filter(([,n])=>n>0)))}</div>${mode!=='wall'&&!extraUsed?`<button class="primary gold-button" data-action="extra" ${p.coins<150?'disabled':''}>Ещё 5 ходов · ${icon('coin')} 150</button>`:''}<button class="primary" data-action="retry">Попробовать ещё раз</button><button class="secondary" data-action="result-home">В меню</button><p class="notice">Попытки бесплатны. Запас жизней не ограничен.</p>`;
 }
 function registerOutcome(){
   if(game.status==='playing'||finished)return null;
@@ -155,8 +155,7 @@ function registerOutcome(){
   if(game.status==='won'){
     if(mode!=='daily'||runDate===dayKey())result=recordWin(p,game,{mode,duration:elapsed,today:dayKey()});
     else{result.stars=game.stars();toast('Испытание прошлого дня завершено. Сегодня уже доступно новое.');}
-    sound.play('win');
-  }else sound.play('lose');
+  }
   if(mode==='wall')p.stats.wall=Math.max(p.stats.wall,game.score);
   if(mode==='endless')p.stats.endless=Math.max(p.stats.endless,runScore+game.score);
   persist();chrome();return result;
@@ -183,7 +182,7 @@ async function act(action){
     if(!result.valid&&action.type==='swap')$('game-message').textContent='Нет комбинации — ход сохранён';
     else if(mode==='wall')$('game-message').textContent=`Новая стена через ${5-game.turns%5} ходов`;
     else $('game-message').textContent='';
-    if(outcome)showModal('result',resultMarkup(outcome),{close:false});
+    if(outcome){sound.play(game.status==='won'?'win':'lose');showModal('result',resultMarkup(outcome),{close:false});}
   }catch(error){console.error(error);renderer.render(game.snapshot());toast('Не удалось завершить действие. Сохранение доступно на карте.');}
   finally{busy=false;$('board').classList.remove('busy');if(pauseRequested&&!outcome){pauseRequested=false;pause();}else scheduleHint();}
 }
@@ -201,7 +200,7 @@ function pause(){
   if(!game||game.status!=='playing')return;
   saveSession();showModal('pause',`${icon('leaf','hero-icon')}<div class="modal-eyebrow">МОЖНО НЕ СПЕШИТЬ</div><h2 id="modal-title">Пауза</h2><button class="primary" data-action="close">Продолжить</button><button class="secondary" data-action="settings">Настройки</button><button class="secondary" data-action="nav" data-page="home">В меню</button>`);
 }
-function settings(){showModal('settings',`<div class="modal-eyebrow">ИГРА ПО ВАШИМ ПРАВИЛАМ</div><h2 id="modal-title">Настройки</h2>${[['sound','Звуки','Комбинации и маленькие победы'],['music','Музыка','Сказочное настроение'],['motion','Анимации','Выключите для спокойной игры'],['hints','Подсказки','Подсветить ход после паузы']].map(([k,n,d])=>`<label class="setting-row"><span><strong>${n}</strong><small>${d}</small></span><input type="checkbox" data-setting="${k}" ${p.settings[k]?'checked':''}></label>`).join('')}<button class="primary" data-action="close">Готово</button>`);}
+function settings(){showModal('settings',`<div class="modal-eyebrow">ИГРА ПО ВАШИМ ПРАВИЛАМ</div><h2 id="modal-title">Настройки</h2>${[['sound','Звуки','Комбинации и маленькие победы'],['music','Музыка','Сказочное настроение'],['motion','Анимации','Выключите для спокойной игры'],['hints','Подсказки','Подсветить ход после паузы']].map(([k,n,d])=>`<label class="setting-row"><span><strong>${n}</strong><small>${d}</small></span><input type="checkbox" data-setting="${k}" ${p.settings[k]?'checked':''}></label>`).join('')}${platformDiagnostics()?'<button class="secondary" data-action="vk-status">Проверка VK</button>':''}<button class="primary" data-action="close">Готово</button>`);}
 function gameRules(tab='basics'){
   showModal('rules',`<h2 id="modal-title">Как играть</h2><div class="tab-strip">${RULE_TABS.map(([k,n])=>`<button data-action="modal-rules" data-tab="${k}" class="${tab===k?'active':''}">${n}</button>`).join('')}</div><div class="rules-in-modal">${rulesContent(tab,p.seenObstacles)}</div><button class="primary" data-action="close">Всё понятно</button>`);
 }
@@ -248,6 +247,10 @@ document.addEventListener('click',e=>{
     case 'tool':toolSelection(tool);break;
     case 'cancel-tool':activeTool=null;renderTools();$('game-message').textContent='';break;
     case 'pause':pause();break;
+    case 'vk-status':{
+      const d=platformDiagnostics(),labels={pending:'Ожидание',ready:'Готово',failed:'Ошибка',requesting:'Запрос',shown:'Показан',unavailable:'Нет показа',closed:'Закрыт вами'};
+      showModal('vk-status',`<h2 id="modal-title">Проверка VK</h2><p>Версия 3.2.0 · VK Bridge 2.15.11</p><p>Инициализация: ${labels[d?.init]||'Нет связи'}<br>Баннер: ${labels[d?.banner]||'Нет связи'} (${d?.attempts||0}/4)<br>Облачное сохранение: ${d?.cloud?'подключено':'нет связи'}</p>${d?.error?`<p class="notice">${esc(d.error)}</p>`:''}<p>Поле: ${renderer.useCanvas?'Canvas':'DOM'}<br>Звуки: ${sound.buffers.size}/10 · ${esc(sound.context?.state||'недоступны')}</p><button class="primary" data-action="close">Готово</button>`);break;
+    }
     case 'retry':{
       const config=mode==='campaign'?getLevel(game.config.id):mode==='daily'?getDaily(dayKey()):getChallenge(mode==='wall'?'wall':'goals');
       preboost.clear();begin(config,mode);break;
@@ -257,14 +260,14 @@ document.addEventListener('click',e=>{
     }break;
     case 'next':showPrelevel(getLevel(Math.min(500,game.config.id+1)));break;
     case 'next-wave':runScore+=game.score;stage++;preboost.clear();begin(getChallenge('goals',stage),'endless',{carry:true});break;
-    case 'result-map':game=null;p.active=null;persist();navigate('map');break;
+    case 'result-home':game=null;p.active=null;persist();navigate('home');break;
   }
 });
 document.addEventListener('change',e=>{
   if(e.target.dataset.setting){const k=e.target.dataset.setting;p.settings[k]=k==='theme'?e.target.value:e.target.checked;applySettings();persist();}
   if(e.target.id==='records-chapter'){recordsChapter=Number(e.target.value);renderPage(false);}
 });
-$('modal').addEventListener('cancel',e=>{e.preventDefault();if(modalKind==='obstacle-intro')return;if(modalKind==='result'){game=null;p.active=null;persist();navigate('map');}else closeModal();});
+$('modal').addEventListener('cancel',e=>{e.preventDefault();if(modalKind==='obstacle-intro')return;if(modalKind==='result'){game=null;p.active=null;persist();navigate('home');}else closeModal();});
 $('board').addEventListener('pointerdown',e=>{
   if(busy||$('modal').open||!game||game.status!=='playing'||(e.pointerType==='mouse'&&e.button!==0))return;
   const el=e.target.closest('.piece');if(!el)return;
@@ -290,7 +293,8 @@ $('board').addEventListener('keydown',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('modal').open&&!$('game-screen').hidden){if(activeTool){activeTool=null;renderTools();}else pause();}});
 document.addEventListener('visibilitychange',()=>{sound.sync();if(document.hidden){stopClock();if(game&&!$('game-screen').hidden){saveSession();if(!$('modal').open)pause();}}});
-document.addEventListener('vk-app-visibility',e=>{if(!e.detail.visible){sound.music?.pause();stopClock();if(game&&!$('game-screen').hidden){saveSession();if(!$('modal').open)pause();}flushCloud();}else sound.sync();});
+document.addEventListener('vk-app-visibility',e=>{sound.mutedByHost=!e.detail.visible;sound.sync();if(!e.detail.visible){stopClock();if(game&&!$('game-screen').hidden){saveSession();if(!$('modal').open)pause();}flushCloud();}else sound.sync();});
+for(const event of ['pointerdown','touchstart','keydown'])document.addEventListener(event,()=>sound.unlock(),{capture:true,passive:true});
 for(const event of ['selectstart','dragstart','contextmenu'])document.addEventListener(event,e=>e.preventDefault());
 document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
@@ -298,7 +302,7 @@ window.addEventListener('pagehide',()=>{stopClock();saveSession();flushCloud();}
 window.addEventListener('hashchange',()=>{if(location.hash==='#map')navigate('map');});
 
 try{
-  const [platform]=await Promise.all([connectPlatform(p),prepareArt()]);p=platform.profile;cloud=platform.cloud;chapter=Math.floor((p.unlocked-1)/20);recordsChapter=chapter;
+  const [platform]=await Promise.all([connectPlatform(p),prepareArt(),sound.prepare()]);p=platform.profile;cloud=platform.cloud;chapter=Math.floor((p.unlocked-1)/20);recordsChapter=chapter;
   applySettings();ensureMissions(p);$('app').hidden=false;$('boot').hidden=true;renderPage();sound.setTrack('menu');
   showBanner();
   if(loaded.error)toast(loaded.error);

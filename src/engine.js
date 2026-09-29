@@ -120,13 +120,13 @@ export class Game {
   /** One resolution wave removes at most one layer per cell, even if blasts overlap. */
   damage(initial, {power=false, creations=[], effects=[]}={}) {
     const hit=new Set(initial), matched=new Set(power?[]:initial), powered=new Set(power?initial:[]), processed=new Set();
-    const queue=[...hit].filter(p=>this.cell(p)?.power&&!this.chains.has(p)&&!this.ice.has(p));
+    const queue=[...hit].filter(p=>this.cell(p)?.power&&!this.chains.has(p)&&!this.ice.has(p)).map(p=>({p,stage:effects.length?1:0}));
     while(queue.length) {
-      const p=queue.shift();if(processed.has(p))continue;
+      const {p,stage}=queue.shift();if(processed.has(p))continue;
       processed.add(p);const t=this.cell(p);this.powersUsed++;
       const impacted=this.effect(p,t.power,t.targetColor);
-      effects.push({p,power:t.power,targets:impacted});
-      for(const q of impacted){hit.add(q);powered.add(q);if(this.cell(q)?.power&&!this.chains.has(q)&&!this.ice.has(q)&&!processed.has(q))queue.push(q);}
+      effects.push({p,power:t.power,targets:impacted,stage});
+      for(const q of impacted){hit.add(q);powered.add(q);if(this.cell(q)?.power&&!this.chains.has(q)&&!this.ice.has(q)&&!processed.has(q))queue.push({p:q,stage:stage+1});}
     }
     // Adjacency belongs to an actual colour match, never to a blast or tool.
     // Frozen gems participate in colour matches; neighbouring matches do not break ice.

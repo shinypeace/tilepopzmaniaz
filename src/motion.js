@@ -25,14 +25,20 @@ export class MotionClock{
     this.now=now;this.requestFrame=requestFrame;this.cancelFrame=cancelFrame;
     this.jobs=new Set();this.paused=false;this.frame=null;
   }
-  wait(duration){
-    return new Promise(resolve=>{this.jobs.add({deadline:this.now()+duration,remaining:duration,resolve});this.schedule();});
+  wait(duration){return this.animate(duration);}
+  animate(duration,update=()=>{}){
+    duration=Math.max(1,duration);update(0);
+    return new Promise(resolve=>{this.jobs.add({duration,update,deadline:this.now()+duration,remaining:duration,resolve});this.schedule();});
   }
   schedule(){
     if(this.paused||this.frame!==null||!this.jobs.size)return;
     this.frame=this.requestFrame(timestamp=>{
       this.frame=null;
-      for(const job of this.jobs)if(timestamp>=job.deadline){this.jobs.delete(job);job.resolve();}
+      for(const job of this.jobs){
+        job.update(Math.min(1,Math.max(0,1-(job.deadline-timestamp)/job.duration)));
+        if(timestamp>=job.deadline){this.jobs.delete(job);job.resolve();}
+      }
+      this.onFrame?.();
       this.schedule();
     });
   }

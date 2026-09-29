@@ -73,7 +73,7 @@ dialog{max-height:calc(100dvh - 24px - var(--vk-banner-inset,0px));bottom:var(--
 .hammer-impact{position:absolute;z-index:20;pointer-events:none;transform-origin:80% 60%}.hammer-impact>.icon{width:100%;height:100%}
 .hammer-impact-ring{position:absolute;pointer-events:none;border:3px solid #fff5ad;box-shadow:0 0 9px #ffc238;border-radius:50%;transform:translate(-50%,-50%);animation:hammer-contact .3s .33s both}
 @keyframes hammer-contact{0%{scale:.2;opacity:0}15%{opacity:1}100%{scale:1.3;opacity:0}}
-.orb-charge:before,.orb-charge:after{content:'';position:absolute;inset:4%;border:2px solid #fff6ce;border-radius:50%;box-shadow:0 0 12px #fbbbff;animation:orb-halo 1.3s ease-out infinite}.orb-charge:after{animation-delay:.6s}
+
 .orb-link{position:absolute;height:3px;z-index:17;pointer-events:none;transform-origin:0 50%;background:#fffaf0;border-radius:4px;box-shadow:0 0 5px 2px var(--ray-color)}
 .piece.orb-ready{background:#fff4ac44;box-shadow:inset 0 0 9px #fff6b7}.piece.orb-ready>.board-sprite{animation:orb-breathe .7s ease-in-out infinite}
 @keyframes orb-breathe{50%{filter:brightness(1.3);scale:1.07}}
@@ -87,3 +87,15 @@ dialog{max-height:calc(100dvh - 24px - var(--vk-banner-inset,0px));bottom:var(--
 .home-shortcuts .art-chest{transform:translate(2.2%,7.5%)}
 .home-shortcuts .art-arcade{transform:translate(-2.7%,-1.6%)}
 #boot{text-align:center;padding:24px}#retry-load{padding:12px 28px;border:2px solid #ffe077;border-radius:14px;background:#4d9829;color:white;font:inherit;cursor:pointer}
+
+/* Chapter ribbons have a shallower blue face than the other headings. */
+.chapter-title .ribbon-copy{inset:-3% 10% 42%;gap:1px;justify-content:center}
+.chapter-title strong{font-size:clamp(13px,3.4vw,14px);line-height:1.02;max-width:100%;text-wrap:balance}
+.chapter-title small{font-size:9px;line-height:1;margin:0}
+.star-meter>.meter-star.unearned{filter:grayscale(1) brightness(.8);opacity:.9}
+.star-meter>.meter-star.unearned>.icon{filter:grayscale(1)}
+.piece-canvas{position:absolute;inset:0;pointer-events:none;z-index:1}
+.canvas-board .board-pieces{clip-path:none;z-index:1}
+.canvas-board .piece>.raster-art{display:none!important;animation:none!important}
+.canvas-board .piece.hinted{box-shadow:inset 0 0 0 2px #fff1ad;background:#ffe97144}
+.canvas-board .slot{z-index:-1}
