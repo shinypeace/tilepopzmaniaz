@@ -1,622 +1,786 @@
 {
-  "version": "3.1.0",
-  "created": "2026-09-29T09:17:53.840Z",
+  "version": "3.1.1",
+  "created": "2026-09-29T10:11:44.517Z",
   "files": [
     {
       "path": ".nojekyll",
-      "bytes": 0
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "path": "assets/audio/bomb.mp3",
-      "bytes": 13419
+      "bytes": 13419,
+      "sha256": "660d16136d946d534cb3df469d8830b7efd54e221eddf504d8512e22679aeab9"
     },
     {
       "path": "assets/audio/create_bonus.mp3",
-      "bytes": 4653
+      "bytes": 4653,
+      "sha256": "c3ce53219ddbbe41baf75708a1d20b895182464d317b494ef9c8f31ffd7f2de8"
     },
     {
       "path": "assets/audio/error.mp3",
-      "bytes": 16763
+      "bytes": 16763,
+      "sha256": "551c57e065cd35462e761bd2558298dc9f74a0dad2d82003ca4f8dc85396dfa6"
     },
     {
       "path": "assets/audio/game_music.mp3",
-      "bytes": 3865388
+      "bytes": 3865388,
+      "sha256": "c3ad9d4489d11661303421ea188eff1919210c68aa151816f6dc45350367be9c"
     },
     {
       "path": "assets/audio/lose.mp3",
-      "bytes": 19898
+      "bytes": 19898,
+      "sha256": "259f089bc5d1e5dded0524fdcbaf6a0b2cacf508cd9332daa3caf344b2a3e7cb"
     },
     {
       "path": "assets/audio/match.mp3",
-      "bytes": 9240
+      "bytes": 9240,
+      "sha256": "5d1ea2fa918ff40b49dadc36768a1eb684ac82ee70f713a858aa75c86e85a18a"
     },
     {
       "path": "assets/audio/menu_music.mp3",
-      "bytes": 4202348
+      "bytes": 4202348,
+      "sha256": "5240f666f9f44fcef42981c0b74185682be03e91e56774e4cf4246be368dddda"
     },
     {
       "path": "assets/audio/rocket.mp3",
-      "bytes": 15405
+      "bytes": 15405,
+      "sha256": "db7f00c10c0d23c6828cd669576daf9932080adb305610372e6e570c04ab39c9"
     },
     {
       "path": "assets/audio/stone_break.mp3",
-      "bytes": 6285
+      "bytes": 6285,
+      "sha256": "884a0e159be4a2cfeec5fcb2cf75ec33dcd461b82b917e410665dd0240a93d43"
     },
     {
       "path": "assets/audio/swap.mp3",
-      "bytes": 11565
+      "bytes": 11565,
+      "sha256": "d78b0b09bfa99f9a0f7d7751bce67ef89a91940d5121634a61c4b6523223d205"
     },
     {
       "path": "assets/audio/tap.mp3",
-      "bytes": 8404
+      "bytes": 8404,
+      "sha256": "cec19e07d2a1ad156145252593bf59e04df98dd0e3ce22c4a3369adb0846e80d"
     },
     {
       "path": "assets/audio/win.mp3",
-      "bytes": 29325
+      "bytes": 29325,
+      "sha256": "90e35a5101f6cc5dc5ea2b9f84d51c4d57724ff6edbd53abd1d860bc7ab71c4c"
     },
     {
       "path": "assets/bg-critters.webp",
-      "bytes": 131762
+      "bytes": 131762,
+      "sha256": "8cf16c1a217312e07d42b8d5501acae10264d09de924ab3d33b118994c23d029"
     },
     {
       "path": "assets/favicon.svg",
-      "bytes": 221
+      "bytes": 221,
+      "sha256": "186080ad4572c08e7806770251ab6b083340401f890a29203dada23f7cdd7ae1"
     },
     {
       "path": "assets/fonts/nunito-cyrillic.woff2",
-      "bytes": 20776
+      "bytes": 20776,
+      "sha256": "63b14e3ef0966785438b8947380dfbcad178cbd3c6a5ed2172672ca0d8b839ac"
     },
     {
       "path": "assets/fonts/nunito-latin.woff2",
-      "bytes": 39128
+      "bytes": 39128,
+      "sha256": "ba344451eab25b217a165363b1982048a5e5830a0daf36577973955a04cac793"
     },
     {
       "path": "assets/fonts/OFL.txt",
-      "bytes": 4385
+      "bytes": 4385,
+      "sha256": "580df76c95a1ec5ab878ceb25bb3d85c6a076804e9c970c8c6972aea775fdf65"
     },
     {
       "path": "assets/runtime/arcade.webp",
-      "bytes": 31938
+      "bytes": 31938,
+      "sha256": "b27420a4f8007885bc31bad6883f01194d086ecc3dbede67c40329ff0c565d7f"
     },
     {
       "path": "assets/runtime/arrow-flight.webp",
-      "bytes": 14394
+      "bytes": 14394,
+      "sha256": "2fa083d53f79abe7e18853e8c9e2ccbd1c61baa02291f4c070f81da0b652a1d7"
     },
     {
       "path": "assets/runtime/back.webp",
-      "bytes": 38420
+      "bytes": 38420,
+      "sha256": "915b87552660a8e0623ddd4a301b4deb8a33ae77e73b80ab44929df7d0980436"
     },
     {
       "path": "assets/runtime/blue.webp",
-      "bytes": 14014
+      "bytes": 14014,
+      "sha256": "b754272a5b2a6808da4d262490036685238f566e53add89ab888d020b90a1f83"
     },
     {
       "path": "assets/runtime/board.webp",
-      "bytes": 262934
+      "bytes": 262934,
+      "sha256": "a55c2acc5bde1796b5eaf62b46b6c27315656898a06097b97986669ff8950028"
     },
     {
       "path": "assets/runtime/bomb.webp",
-      "bytes": 28218
+      "bytes": 28218,
+      "sha256": "668dcb892c418f357a689cf3676df8cd56a42b11b73727e69d940dbb4c1d13e8"
     },
     {
       "path": "assets/runtime/button-blue.webp",
-      "bytes": 36198
+      "bytes": 36198,
+      "sha256": "2616a9ef1914421944dc288a990d476c6b48758d6a53b29b3bc95be684c34662"
     },
     {
       "path": "assets/runtime/button-green.webp",
-      "bytes": 35314
+      "bytes": 35314,
+      "sha256": "114dc6960a171512b74d18524ee74b60e18121188084bbfbbe5729679ccbfb08"
     },
     {
       "path": "assets/runtime/button-grey.webp",
-      "bytes": 23144
+      "bytes": 23144,
+      "sha256": "482405381b7e6ae17712e307a09723440549de6c1cc610e5ff7ee85a019bc7ba"
     },
     {
       "path": "assets/runtime/button-orange.webp",
-      "bytes": 36326
+      "bytes": 36326,
+      "sha256": "813cbadb603e4d2e11b323a8f65cc9856f6e84008acd4f477f390d08f86c087f"
     },
     {
       "path": "assets/runtime/button-purple.webp",
-      "bytes": 36904
+      "bytes": 36904,
+      "sha256": "e0ba76ffd7bb1aec976623a04f27a67baba2d2bcabef44fc87e366aedbe24888"
     },
     {
       "path": "assets/runtime/button-red.webp",
-      "bytes": 24408
+      "bytes": 24408,
+      "sha256": "4e90069b86fe982950949dbc9be60488d60bf361389c51df61fbc020b8d7b738"
     },
     {
       "path": "assets/runtime/button-small.webp",
-      "bytes": 22798
+      "bytes": 22798,
+      "sha256": "c2cd9d54a00a4580392fb3273b18e9ffe56df81df903a86477b983e175716c05"
     },
     {
       "path": "assets/runtime/cannon-up.webp",
-      "bytes": 35668
+      "bytes": 35668,
+      "sha256": "dffab174f08e070335f12682be38aec5b6e517c28c9eca73d4ef6cf172b530e0"
     },
     {
       "path": "assets/runtime/cannonball.webp",
-      "bytes": 38670
+      "bytes": 38670,
+      "sha256": "09a41b1357e96ff3c172b64d3d5fdf30eeffc2e63be5d1ad4355dd443e61cea2"
     },
     {
       "path": "assets/runtime/chain.webp",
-      "bytes": 23674
+      "bytes": 23674,
+      "sha256": "a3ef8315ebf9c0ea45c8ff7e7f2543928b271efa077b7a270c2e7516b7cdd05f"
     },
     {
       "path": "assets/runtime/chapter-1.webp",
-      "bytes": 60774
+      "bytes": 60774,
+      "sha256": "f8025553c5f1f9794f86ea31b87f9003c9f0ff4a01b2ecb50590b64230b4109f"
     },
     {
       "path": "assets/runtime/chapter-10.webp",
-      "bytes": 72574
+      "bytes": 72574,
+      "sha256": "ccf2c0d040b64c74d3e9d2426cdf76576476c3e6a1469283660d2d1e077dcdce"
     },
     {
       "path": "assets/runtime/chapter-11.webp",
-      "bytes": 72650
+      "bytes": 72650,
+      "sha256": "50b714da4544e1a72140423ae9c44151c5f33dff689fcf7c3850d6c201b20380"
     },
     {
       "path": "assets/runtime/chapter-12.webp",
-      "bytes": 64706
+      "bytes": 64706,
+      "sha256": "fc6d37bedda78f9cdca91e8b4a06dc56d4d0af53145fe7854d182c29b326f7b4"
     },
     {
       "path": "assets/runtime/chapter-13.webp",
-      "bytes": 70344
+      "bytes": 70344,
+      "sha256": "f2e6e3467cdfb707b8a009308c6830787cdfead83c33c1fdedb2fec0664891c9"
     },
     {
       "path": "assets/runtime/chapter-14.webp",
-      "bytes": 64126
+      "bytes": 64126,
+      "sha256": "7273ad7fc346ccfca706bb25c2440a48a16118aa570c3190404e8cdc6a29f845"
     },
     {
       "path": "assets/runtime/chapter-15.webp",
-      "bytes": 46988
+      "bytes": 46988,
+      "sha256": "abcf999663c90c8ffb83d5665e4ab0f8de2440773b13ae13c67bcb076380e80b"
     },
     {
       "path": "assets/runtime/chapter-16.webp",
-      "bytes": 76250
+      "bytes": 76250,
+      "sha256": "25b7277c5fb9084eb11a12b0f363afd3db68cbcee1269681b00d69f412726db6"
     },
     {
       "path": "assets/runtime/chapter-17.webp",
-      "bytes": 62258
+      "bytes": 62258,
+      "sha256": "0a996c3decca506d1298e447fc0b3c9c9fe2a13339f7edeca05c67dde9790983"
     },
     {
       "path": "assets/runtime/chapter-18.webp",
-      "bytes": 61918
+      "bytes": 61918,
+      "sha256": "9284bcd4a0cab0d45b86f53795e8066dbb74a9595deb55b7038f3e340dba5351"
     },
     {
       "path": "assets/runtime/chapter-19.webp",
-      "bytes": 38986
+      "bytes": 38986,
+      "sha256": "49734be93ef9a3fdecff1acb2dd1863770236e6c7f8a0cc383ee7d896fd45f32"
     },
     {
       "path": "assets/runtime/chapter-2.webp",
-      "bytes": 58042
+      "bytes": 58042,
+      "sha256": "c89d894ef990636e78c9dcde4f8c3cd08b3518ebee12362b51c0f22bf715b3e7"
     },
     {
       "path": "assets/runtime/chapter-20.webp",
-      "bytes": 67746
+      "bytes": 67746,
+      "sha256": "9021b2273314ba82d631f2e60b3966616f1b14fd9be3c30bac44e9aab9607a9a"
     },
     {
       "path": "assets/runtime/chapter-21.webp",
-      "bytes": 59590
+      "bytes": 59590,
+      "sha256": "d1a7bd82d9560ad04f7e6090a87e4f4091979502821d296d042d8771d69eeca4"
     },
     {
       "path": "assets/runtime/chapter-22.webp",
-      "bytes": 63344
+      "bytes": 63344,
+      "sha256": "624039a3d0fa81d5dc04335d6db56ba4e62a823e272242b4df604345614f358c"
     },
     {
       "path": "assets/runtime/chapter-23.webp",
-      "bytes": 58476
+      "bytes": 58476,
+      "sha256": "94881fb949f8326d83d5438461ab98c95a276cc8f936b4ea1a34999fb44128de"
     },
     {
       "path": "assets/runtime/chapter-24.webp",
-      "bytes": 60452
+      "bytes": 60452,
+      "sha256": "8d4853afc10646d4a8d457fc8b2d2c1fca592c77fe733a04bc453e4c4c5261f0"
     },
     {
       "path": "assets/runtime/chapter-25.webp",
-      "bytes": 59674
+      "bytes": 59674,
+      "sha256": "df9ebc7b735d3891c66d83487f7c6333092c2c74366bfa64e8ffa9e5471824fa"
     },
     {
       "path": "assets/runtime/chapter-3.webp",
-      "bytes": 69348
+      "bytes": 69348,
+      "sha256": "5c927fa54213b21e0b2c478de24fba60cd9a04e34deb4429fdd07d0bccba661e"
     },
     {
       "path": "assets/runtime/chapter-4.webp",
-      "bytes": 59766
+      "bytes": 59766,
+      "sha256": "9f27a8bd19d1aacd6297b5e5675febdf95a19a0130c7919642d42e95786768ed"
     },
     {
       "path": "assets/runtime/chapter-5.webp",
-      "bytes": 65788
+      "bytes": 65788,
+      "sha256": "23cce17be69fd601f163390032babbd948eae26796a081a97af8c72d12a644cb"
     },
     {
       "path": "assets/runtime/chapter-6.webp",
-      "bytes": 69792
+      "bytes": 69792,
+      "sha256": "3e5064895b344cd5342a64011d99d833e574bcc4953202ef183998248be30d48"
     },
     {
       "path": "assets/runtime/chapter-7.webp",
-      "bytes": 64876
+      "bytes": 64876,
+      "sha256": "e3e6a4feb1d403a44ba5a04fa72f88e36e6fa59f9bba468f2b18a203fef7f94a"
     },
     {
       "path": "assets/runtime/chapter-8.webp",
-      "bytes": 50836
+      "bytes": 50836,
+      "sha256": "73aa9edce4fe0a0c6adbbd679dadedba9f696e2b57d0a99f0c266b16f4f857f3"
     },
     {
       "path": "assets/runtime/chapter-9.webp",
-      "bytes": 61952
+      "bytes": 61952,
+      "sha256": "8a0702da3471dfa53af6a3b34e41d3e5c08b18b96aa6f42c20e83464d3bcd775"
     },
     {
       "path": "assets/runtime/chest.webp",
-      "bytes": 38652
+      "bytes": 38652,
+      "sha256": "481d7dd6c45fd213e32aa0a770621d1a8032fe73778a523bb1a0f4f749ffb976"
     },
     {
       "path": "assets/runtime/close.webp",
-      "bytes": 38858
+      "bytes": 38858,
+      "sha256": "533f4f2aca7fcf510b857c757175caeba39b0ee5c00e5bce41649fe37f6bb1a6"
     },
     {
       "path": "assets/runtime/coin.webp",
-      "bytes": 31668
+      "bytes": 31668,
+      "sha256": "efe4434fab5b8d2675b2ccbdf8f497deab81ab694bff4c5cf3437dcf83462e6a"
     },
     {
       "path": "assets/runtime/column.webp",
-      "bytes": 32650
+      "bytes": 32650,
+      "sha256": "0c191be9678da3b8e86354a7bf954627a817871a57f52224c6fc40bbe8d5bed6"
     },
     {
       "path": "assets/runtime/crate-cracked.webp",
-      "bytes": 50170
+      "bytes": 50170,
+      "sha256": "1bbce7cb677a5cb76451a47251db61bfabe126e16d9f4e43452771617ab853a6"
     },
     {
       "path": "assets/runtime/crate.webp",
-      "bytes": 34956
+      "bytes": 34956,
+      "sha256": "e92901d31700146de841f69960ec6428d548002290039a3300959100035bf4cc"
     },
     {
       "path": "assets/runtime/grass-clippings.webp",
-      "bytes": 32484
+      "bytes": 32484,
+      "sha256": "297259927031a240d8a2b2aee1278139eeb99ed7e9c633640c3d7986387e99f6"
     },
     {
       "path": "assets/runtime/grass-demo.webp",
-      "bytes": 52408
+      "bytes": 52408,
+      "sha256": "f8bfc003f838c1d9128ada238fbff7940a319bf57129d3de648a494aa9404e44"
     },
     {
       "path": "assets/runtime/grass-tile.webp",
-      "bytes": 52318
+      "bytes": 52318,
+      "sha256": "bc267fff2d5eb4e5710078700d74fcac739deef266f183a9d27354352bd68833"
     },
     {
       "path": "assets/runtime/grass.webp",
-      "bytes": 38104
+      "bytes": 38104,
+      "sha256": "9802996a5ce8b6896e68fe72ec23730a6b66923205748e7293802f23441ee78f"
     },
     {
       "path": "assets/runtime/green.webp",
-      "bytes": 12352
+      "bytes": 12352,
+      "sha256": "05fc8cb6e724988e6db9b9c623d210985e150eea5563ad28364246afd4114012"
     },
     {
       "path": "assets/runtime/hammer.webp",
-      "bytes": 27568
+      "bytes": 27568,
+      "sha256": "ed532014a8b1e1c7a4363de3ac7fae7b84a7c25eab1a57876c40a072b04ef47d"
     },
     {
       "path": "assets/runtime/home.webp",
-      "bytes": 42498
+      "bytes": 42498,
+      "sha256": "1a756b496f8f5167cd15816f10751623f7a1b725c6122ec715b19e78f80a9636"
     },
     {
       "path": "assets/runtime/ice-cracked.webp",
-      "bytes": 34222
+      "bytes": 34222,
+      "sha256": "7f72c67d390e69957dcc117d51b047224dc4c0f8da51fe09abad79831ffe9f47"
     },
     {
       "path": "assets/runtime/ice-shell.webp",
-      "bytes": 37020
+      "bytes": 37020,
+      "sha256": "b4ca2c63a29df3e981ff77595bf10fee4ee4b02a385b37fb2aa36c56ea3790f7"
     },
     {
       "path": "assets/runtime/ice.webp",
-      "bytes": 43354
+      "bytes": 43354,
+      "sha256": "7267852d1ece7f0384d5f7ad05f63c739fd663d9bb21c7d7e63508b005c21fee"
     },
     {
       "path": "assets/runtime/logo.webp",
-      "bytes": 216086
+      "bytes": 216086,
+      "sha256": "84431e9d8050ff39815b20fb54781993e892a06036afadb02fe87e792000ca1b"
     },
     {
       "path": "assets/runtime/map-1.webp",
-      "bytes": 124838
+      "bytes": 124838,
+      "sha256": "ce35a7d90103df762a326675b20688f0aae6de02b7277ceb3729f65a69505fdd"
     },
     {
       "path": "assets/runtime/map-10.webp",
-      "bytes": 121390
+      "bytes": 121390,
+      "sha256": "02d68fbf20a0f88b1b0be4010dc0ed8f3e2d5c9e7272a59d9fb88c8dbcc49724"
     },
     {
       "path": "assets/runtime/map-11.webp",
-      "bytes": 120398
+      "bytes": 120398,
+      "sha256": "5cc7f2b28b16d974bbcde95ec25800080e45f0ade1e1f8f48cd4d9055f2f5b22"
     },
     {
       "path": "assets/runtime/map-12.webp",
-      "bytes": 119114
+      "bytes": 119114,
+      "sha256": "ed17ec9556686187b330a5e6d4e8ea400ce728316b94cf098d2cf2efd34167c1"
     },
     {
       "path": "assets/runtime/map-13.webp",
-      "bytes": 131212
+      "bytes": 131212,
+      "sha256": "4b9cf769d86478ecd81eb9362afdd512b0204dcacd88bac7d468ae2817badebd"
     },
     {
       "path": "assets/runtime/map-14.webp",
-      "bytes": 108834
+      "bytes": 108834,
+      "sha256": "eeb31ca6cc461fcebf11c0de06bc371914e4f1c08dac10035c892a6a516a8400"
     },
     {
       "path": "assets/runtime/map-15.webp",
-      "bytes": 100396
+      "bytes": 100396,
+      "sha256": "686d718e5bf0cbe102fff755b24e875240450529d7bd1056bfe1aaa486706ae6"
     },
     {
       "path": "assets/runtime/map-16.webp",
-      "bytes": 140182
+      "bytes": 140182,
+      "sha256": "84632e8a1591041529b610f006e7d5a16b4582a69c2c187be8dc06187612c846"
     },
     {
       "path": "assets/runtime/map-17.webp",
-      "bytes": 96262
+      "bytes": 96262,
+      "sha256": "222a39bbff0951033c24489178e2d31647337b136b5fb114a6d94986459d1768"
     },
     {
       "path": "assets/runtime/map-18.webp",
-      "bytes": 138248
+      "bytes": 138248,
+      "sha256": "3f2190b676b9a906c9dd9b34e671a06a56fdda8bed4bbbac4e490c5cebbffb59"
     },
     {
       "path": "assets/runtime/map-19.webp",
-      "bytes": 118590
+      "bytes": 118590,
+      "sha256": "f71b6cf59f690117bbeef4010cb7328d1facd94cb751c145b6120963c9620fb9"
     },
     {
       "path": "assets/runtime/map-2.webp",
-      "bytes": 109812
+      "bytes": 109812,
+      "sha256": "f745c82b58635f46edefa69f2343ee568127e3c44f612ca0a337da73e49c16ff"
     },
     {
       "path": "assets/runtime/map-20.webp",
-      "bytes": 141064
+      "bytes": 141064,
+      "sha256": "b6e0fd759e822acf54b0595b0dc16d0b4d6f8cee2065dfc2277a4440f3a402fa"
     },
     {
       "path": "assets/runtime/map-21.webp",
-      "bytes": 115588
+      "bytes": 115588,
+      "sha256": "e5cd4befc0cfdc0f207740bc7ee1cdde9b71bac9cab3496abe41c34320d900fc"
     },
     {
       "path": "assets/runtime/map-22.webp",
-      "bytes": 102410
+      "bytes": 102410,
+      "sha256": "a7d17f1fc4dc0780a4ee5aa6925cfe6aaf2ef231718efd3159abea1df9d25ab6"
     },
     {
       "path": "assets/runtime/map-23.webp",
-      "bytes": 72584
+      "bytes": 72584,
+      "sha256": "823ec302642bb7c35298ff30075eba7bc54cc515d00eb5fba944e0894a9fa8ad"
     },
     {
       "path": "assets/runtime/map-24.webp",
-      "bytes": 107344
+      "bytes": 107344,
+      "sha256": "7d039c09c3092862f3e162add9c21c59f3ae6fe8626f65c4a32a36f1c7aa1863"
     },
     {
       "path": "assets/runtime/map-25.webp",
-      "bytes": 117598
+      "bytes": 117598,
+      "sha256": "474eedb64a8f95f3a88587d1e07ea59720fdc44ae0df0aebd39c61ebcec49ff7"
     },
     {
       "path": "assets/runtime/map-3.webp",
-      "bytes": 134884
+      "bytes": 134884,
+      "sha256": "c57c28b7703f9de62f15d454b489ff11389874bb3b2e4ca85439941cfb75be0b"
     },
     {
       "path": "assets/runtime/map-4.webp",
-      "bytes": 121030
+      "bytes": 121030,
+      "sha256": "6ef9442713991eb51c25e9bbb077edbef9858ae7f9724b991a1732d7cb19ae8f"
     },
     {
       "path": "assets/runtime/map-5.webp",
-      "bytes": 138472
+      "bytes": 138472,
+      "sha256": "c141592c9bed9725d92c5a67b9457188d3d568623565a2712896a5d184f91f70"
     },
     {
       "path": "assets/runtime/map-6.webp",
-      "bytes": 132700
+      "bytes": 132700,
+      "sha256": "3c76bfc7a5a26671dff6bd8f2286dec8d676f21da4fe40b541fcdbf53bfd2d8c"
     },
     {
       "path": "assets/runtime/map-7.webp",
-      "bytes": 123572
+      "bytes": 123572,
+      "sha256": "b9567528da33faa04ff9027c323cabb5757b40d49caa16912476a569e4348abd"
     },
     {
       "path": "assets/runtime/map-8.webp",
-      "bytes": 103486
+      "bytes": 103486,
+      "sha256": "16d7467a716af6e28be18f8f6a9dae4d80b973913a5bd1175fa6b49daefb0bba"
     },
     {
       "path": "assets/runtime/map-9.webp",
-      "bytes": 117778
+      "bytes": 117778,
+      "sha256": "4abbfc642a84fa872291582e1cb334e90dfcc662403e77edb63198f9a4c138ef"
     },
     {
       "path": "assets/runtime/map.webp",
-      "bytes": 36990
+      "bytes": 36990,
+      "sha256": "801fc84a92015797a887468295b6d316ee3b2bf9bdbcb7c38bfa2f79feb8a63d"
     },
     {
       "path": "assets/runtime/muzzle-flash.webp",
-      "bytes": 31734
+      "bytes": 31734,
+      "sha256": "39d8f7b156337f655e77c31deda5884d51b2c3f794db888d3f5ff7f1625dfeef"
     },
     {
       "path": "assets/runtime/node-blue.webp",
-      "bytes": 34342
+      "bytes": 34342,
+      "sha256": "b28084c3b6e464cf407aa87a2e25eba0fad0c208afd3a5925ecad031af16e1a6"
     },
     {
       "path": "assets/runtime/node-green.webp",
-      "bytes": 34446
+      "bytes": 34446,
+      "sha256": "d5adba149d073396d60726d63f05d6da19c1fe028d16482178120802525ae59c"
     },
     {
       "path": "assets/runtime/node-locked.webp",
-      "bytes": 38470
+      "bytes": 38470,
+      "sha256": "81e7e1492e47de8c9cd3acf72836733f8b408ac66862f0f8a80cf9e3de8405a0"
     },
     {
       "path": "assets/runtime/node-purple.webp",
-      "bytes": 34468
+      "bytes": 34468,
+      "sha256": "ecbeb3db488948d916cf1d084d4ab6ad19036f89e05abbc8b389a77b00b89e6c"
     },
     {
       "path": "assets/runtime/orange.webp",
-      "bytes": 12180
+      "bytes": 12180,
+      "sha256": "a32b7a4f95902017ae2ad7bc75d563b8cfe8b989a95bfdfd55e4237ff98ff60c"
     },
     {
       "path": "assets/runtime/orb.webp",
-      "bytes": 37870
+      "bytes": 37870,
+      "sha256": "c44a814f0859f64df6dc0d19f7ce643fed5c4a2bd1e1bf61a85d81fb98f5cf51"
     },
     {
       "path": "assets/runtime/panel.webp",
-      "bytes": 132986
+      "bytes": 132986,
+      "sha256": "07ab5f9dc63831b9a9c5730b5ef4dd33c380df47ce9f95eaa0b0e9da383e081b"
     },
     {
       "path": "assets/runtime/pause.webp",
-      "bytes": 20998
+      "bytes": 20998,
+      "sha256": "0c8eba72b3b90fbceda0105b39b18ae9cf8486ea09f0470d8877636747d0f0d9"
     },
     {
       "path": "assets/runtime/purple.webp",
-      "bytes": 14972
+      "bytes": 14972,
+      "sha256": "a4b86674bed915d63cfe01fc9cb8cf763e3714ccb56bc126bb7e3ea420852600"
     },
     {
       "path": "assets/runtime/red.webp",
-      "bytes": 17160
+      "bytes": 17160,
+      "sha256": "b5ee89e01e2cc8403d531f3c1bc71f5e6b98da2d2dc1be8539215a280e826e87"
     },
     {
       "path": "assets/runtime/ribbon.webp",
-      "bytes": 81136
+      "bytes": 81136,
+      "sha256": "797b8a85434e4fbaa60a7ab41761b48bafab15312775a753696a6fe14e36f586"
     },
     {
       "path": "assets/runtime/rocket-flight.webp",
-      "bytes": 22122
+      "bytes": 22122,
+      "sha256": "e8445b367ac5a9f99bac448c9afc74fb3197995365c9a82b079713306963660c"
     },
     {
       "path": "assets/runtime/rocket-h.webp",
-      "bytes": 20646
+      "bytes": 20646,
+      "sha256": "265266a29fe5eb5e02217425e206dd25f253c8355571e47342a9b3367fdab78c"
     },
     {
       "path": "assets/runtime/rocket-v.webp",
-      "bytes": 21512
+      "bytes": 21512,
+      "sha256": "bbe801e54754819b1229d57a069c9056f9ebbd88d53e30c4438ab0b9ab35a3e9"
     },
     {
       "path": "assets/runtime/row.webp",
-      "bytes": 20794
+      "bytes": 20794,
+      "sha256": "0982f3e84f11a9ecbd3c10ec4dd93cbf14aaf22be0ebf8ae3e82417875399f33"
     },
     {
       "path": "assets/runtime/rules.webp",
-      "bytes": 22206
+      "bytes": 22206,
+      "sha256": "7b25029f0091b91324e3499efc126461501bc7f37babd3e5ec1a711e90aad567"
     },
     {
       "path": "assets/runtime/settings.webp",
-      "bytes": 25104
+      "bytes": 25104,
+      "sha256": "bc60353dfc390e5abc9349ecc72e7628370f05b5742dfa8e04995e7272af2c90"
     },
     {
       "path": "assets/runtime/shuffle.webp",
-      "bytes": 28608
+      "bytes": 28608,
+      "sha256": "a12bca19952ee5acd6405c0943307d71f3338453ce8f18be36245144d6e6a1b0"
     },
     {
       "path": "assets/runtime/star.webp",
-      "bytes": 24834
+      "bytes": 24834,
+      "sha256": "917293ce331e48535a46b434fa45d7f51dd418c31d0f2943f9469dcdce20bdda"
     },
     {
       "path": "assets/runtime/stone-cracked.webp",
-      "bytes": 47344
+      "bytes": 47344,
+      "sha256": "0127a4279a927c4ae6c37b981c361f1d3682054d6fdf716916d59a104d357184"
     },
     {
       "path": "assets/runtime/stone-original.webp",
-      "bytes": 28570
+      "bytes": 28570,
+      "sha256": "9eacfa4df552289e26d4c3d20979dc2d3b0907369ef996878e7e249730d85a23"
     },
     {
       "path": "assets/runtime/stone.webp",
-      "bytes": 47270
+      "bytes": 47270,
+      "sha256": "3e0059182adf9cdbfb1ca7da75460dd592c73cb13d6c82ff97b55c13f996d7e2"
     },
     {
       "path": "assets/runtime/tool-base.webp",
-      "bytes": 35020
+      "bytes": 35020,
+      "sha256": "16507478ed07e5a9c6c141c601a09bfa14a565f85b4938170f307867d02b4f37"
     },
     {
       "path": "assets/runtime/trophy.webp",
-      "bytes": 24396
+      "bytes": 24396,
+      "sha256": "cab3f38854b7500513776fdb7ac73b5c2e80873bd28ce3cca5010045fdd89ec0"
     },
     {
       "path": "assets/runtime/yellow.webp",
-      "bytes": 15476
+      "bytes": 15476,
+      "sha256": "3760f37d05fbad3a0bd40d11bffcc64b0d3c9c82055c7f5b1c1a1aa8e42a57d8"
     },
     {
       "path": "assets/vendor/vk-bridge-LICENSE.txt",
-      "bytes": 1086
+      "bytes": 1086,
+      "sha256": "15752ef20d62ef8f9b56deb04f8afbcb05d63823215ef2a2325da0890c940ab9"
     },
     {
       "path": "assets/vendor/vk-bridge.min.js",
-      "bytes": 8038
+      "bytes": 8038,
+      "sha256": "8a818801c20e998c2f75346f52798b0e0a22613c0c7582280d1429121a4dba6e"
     },
     {
       "path": "index.html",
-      "bytes": 3736
+      "bytes": 3736,
+      "sha256": "805f1d53dceb01e84ab6a9b385bb75f2a1176725fe8ed4d5d549168f63b258ca"
     },
     {
       "path": "src/app.js",
-      "bytes": 28210
+      "bytes": 28210,
+      "sha256": "608228c13301b7277590becf8d8cf72f4f0a5b8f76bf7aa732a24e8376511b0b"
     },
     {
       "path": "src/art-manifest.js",
-      "bytes": 3962
+      "bytes": 3962,
+      "sha256": "cba29d1595add0d890fdaff47b86ea83d4bbb3740b1e822bb0525bf599f7cf02"
     },
     {
       "path": "src/art.js",
-      "bytes": 766
+      "bytes": 766,
+      "sha256": "6f373faa4c8e55a27703926245ed8b380c150d79b425b48733b9e9a65d11e473"
+    },
+    {
+      "path": "src/asset-loader.js",
+      "bytes": 1577,
+      "sha256": "c7cb0364547a660a6f4b370807031f546ae0819c5d457eee45c6ff9762a6d743"
     },
     {
       "path": "src/audio.js",
-      "bytes": 796
+      "bytes": 796,
+      "sha256": "d63ce4e437469f873f02e0a61443406f70014c9e7aabce3550f98fefec3b3334"
     },
     {
       "path": "src/board-shape.js",
-      "bytes": 2064
+      "bytes": 2064,
+      "sha256": "ddb612dd9d3b8a892332439d42541e4b1246e7c4a6c2732169c233b53630ae94"
     },
     {
       "path": "src/cloud-save.js",
-      "bytes": 2721
+      "bytes": 2721,
+      "sha256": "5919d2001427fe12b7ca317df853c1a0384121aad56bdbe68a0e44eaab9fd0e5"
     },
     {
       "path": "src/engine.js",
-      "bytes": 19767
+      "bytes": 19767,
+      "sha256": "deeb0e2f4ea08d3e55692c1eecde6915c0ae61e3f539a6bda7b3387568570b71"
     },
     {
       "path": "src/layout.js",
-      "bytes": 417
+      "bytes": 417,
+      "sha256": "24f40623b117f2ea770dc9681267c121f988b5f16e4131bd4cb1fc7f50fd1232"
     },
     {
       "path": "src/level-layouts.js",
-      "bytes": 5361
+      "bytes": 5361,
+      "sha256": "2e74ba35d9c33ff01f54d1888264b643bfd1c96b10d81af51a86eb39cb810213"
     },
     {
       "path": "src/levels.js",
-      "bytes": 6489
+      "bytes": 6489,
+      "sha256": "fa9876e6a1ffd1f9e7caed249c89a45d1daeefb1df9320b67ba30a6b8842c52d"
+    },
+    {
+      "path": "src/motion.js",
+      "bytes": 2374,
+      "sha256": "aadf4dcdc7962bdf4f54fa2a89476ba2438f9f90938bcee89bcd0c02a4e8499c"
     },
     {
       "path": "src/obstacles.js",
-      "bytes": 1647
+      "bytes": 1647,
+      "sha256": "60f8ef7a17744a97655bbc8352fe9bca6918ac0ed582b0aae9a32fcb81616cbc"
     },
     {
       "path": "src/platform.js",
-      "bytes": 1736
+      "bytes": 1736,
+      "sha256": "88b862c6894344223febd660823d8d9a14cb818aec4c505c93d0b7e8609be32d"
     },
     {
       "path": "src/progress.js",
-      "bytes": 7887
+      "bytes": 7887,
+      "sha256": "864e9116070313f0061faebd425eb1b53aa9a7fa500c3fc72a9f8fc4463169c5"
     },
     {
       "path": "src/random.js",
-      "bytes": 592
+      "bytes": 592,
+      "sha256": "e8132797e0f811c55b8b35d27c5db71d72f5c170a17e96bad9710201173619d0"
     },
     {
       "path": "src/renderer.js",
-      "bytes": 17955
+      "bytes": 20040,
+      "sha256": "0b16eace47972940f496fb8bc89a83a4a1266cce20ad103c479e1ed73ef9c5e4"
     },
     {
       "path": "src/strategy.js",
-      "bytes": 1470
+      "bytes": 1470,
+      "sha256": "71656e06961883cee9b82bd101e21f3567c1bcfea347dedc28d1cfb6fbb40e1e"
     },
     {
       "path": "src/ui.js",
-      "bytes": 16218
+      "bytes": 16325,
+      "sha256": "310f16b197c077e337007aca498fe48be0d641d747a4fa04a03c3601c89b53f5"
     },
     {
       "path": "src/vk-session.js",
-      "bytes": 4717
+      "bytes": 4717,
+      "sha256": "e922e259f15b0da91571a3e6ccf08411be80ec3710892a046380def6b8d8206c"
     },
     {
       "path": "styles/game.css",
-      "bytes": 4104
+      "bytes": 4104,
+      "sha256": "1a03d72b9d21f595ca745c8cba4bcc03b69ec2a0710c35198088e51792eabc55"
     },
     {
       "path": "styles/mobile-ui.css",
-      "bytes": 27197
+      "bytes": 27719,
+      "sha256": "a378987afe6a2385bd551fa52e03f3106ee771e679329581856e2a431aefd9cd"
     },
     {
       "path": "styles/original-style.css",
-      "bytes": 13573
+      "bytes": 13573,
+      "sha256": "39330d7f6da64c654b0b8a894dc30cb033ad580c1f003017251f7faeb3bb930f"
     },
     {
       "path": "styles/play.css",
-      "bytes": 7681
+      "bytes": 7681,
+      "sha256": "aa4b9e96d84e71991f02f6fceaa0dfd3ca1b7ea515c3fe7e3f3771144a67ea01"
     },
     {
       "path": "styles/responsive.css",
-      "bytes": 86
+      "bytes": 86,
+      "sha256": "9571199f323d0fe840afcb36d3f4012558f5f344e10dc7aed8b17b8208e769cf"
     }
   ]
 }
